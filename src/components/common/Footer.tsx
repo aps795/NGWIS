@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
                   International School
                 </p>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest">
-                  Saidpur, Ghazipur (U.P.)
+                  Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
                 </p>
               </div>
             </div>
@@ -148,8 +148,8 @@ export const Footer: React.FC = () => {
               <div>
                 <p className="font-semibold text-white">New Global Wisdom International School</p>
                 <p>Bhujehuan, Sauna</p>
-                <p>Saidpur, Ghazipur</p>
-                <p>Uttar Pradesh – 233307, India</p>
+                <p>Ghazipur, Uttar Pradesh – 233307</p>
+                <p className="text-slate-400 text-[11px]">(Saidpur, Ghazipur)</p>
               </div>
             </div>
 
@@ -182,7 +182,7 @@ export const Footer: React.FC = () => {
 
           <div className="flex items-center space-x-4 text-[11px]">
             <span className="text-slate-400">
-              Saidpur, Ghazipur, Uttar Pradesh
+              Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
             </span>
             <span>&bull;</span>
             <button onClick={() => handleNav('admin')} className="text-gold-400 hover:underline">

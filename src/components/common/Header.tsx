@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <span className="flex items-center text-slate-300 font-medium">
               <MapPin className="w-3.5 h-3.5 mr-1 text-gold-400" />
-              Bhujehuan, Sauna, Saidpur, Ghazipur (U.P.) – 233307
+              Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307
             </span>
             <span className="text-navy-700">|</span>
             <span className="text-gold-300 font-medium flex items-center">
@@ -107,7 +107,7 @@ export const Header: React.FC = () => {
                 International School
               </span>
               <span className="text-[10px] text-slate-300 hidden sm:block tracking-wider uppercase font-semibold">
-                Saidpur, Ghazipur (U.P.)
+                Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
               </span>
             </div>
           </div>
@@ -170,7 +170,7 @@ export const Header: React.FC = () => {
             {/* Quick Badge */}
             <div className="bg-navy-900 border border-navy-800 rounded-lg p-3 text-xs text-slate-300 flex items-center space-x-2">
               <MapPin className="w-4 h-4 text-gold-400 flex-shrink-0" />
-              <span>Bhujehuan, Sauna, Saidpur, Ghazipur – 233307</span>
+              <span>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</span>
             </div>
 
             {/* Menu items */}

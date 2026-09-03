@@ -366,7 +366,7 @@ export const AdmissionsPage: React.FC = () => {
               </div>
 
               <p className="text-xs text-slate-300 leading-relaxed border-t border-navy-800 pt-3">
-                Parents are warmly invited to visit our administrative office at <strong>Bhujehuan, Sauna, Saidpur (Ghazipur)</strong> to observe our classroom infrastructure and meet our admissions coordinators in person.
+                Parents are warmly invited to visit our administrative office at <strong>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</strong> to observe our classroom infrastructure and meet our admissions coordinators in person.
               </p>
 
               <div className="p-3 bg-navy-950 rounded-xl border border-navy-800 text-[11px] text-gold-300">

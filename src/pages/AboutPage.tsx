@@ -54,7 +54,7 @@ export const AboutPage: React.FC = () => {
             />
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-              <strong>New Global Wisdom International School</strong> is established at <strong>Bhujehuan, Sauna, Saidpur, Ghazipur, Uttar Pradesh – 233307</strong> to meet the growing need for high-standard, value-grounded English-medium education in eastern Uttar Pradesh.
+              <strong>New Global Wisdom International School</strong> is established at <strong>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</strong> to meet the growing need for high-standard, value-grounded English-medium education in eastern Uttar Pradesh.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -82,7 +82,7 @@ export const AboutPage: React.FC = () => {
               <MapPin className="w-5 h-5 text-gold-400 flex-shrink-0" />
               <div>
                 <span className="font-bold text-gold-300 block">Campus Location</span>
-                <span>Bhujehuan, Sauna, Saidpur, Ghazipur (U.P.) – 233307</span>
+                <span>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</span>
               </div>
             </div>
           </div>

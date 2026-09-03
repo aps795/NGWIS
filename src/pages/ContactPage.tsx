@@ -83,11 +83,10 @@ export const ContactPage: React.FC = () => {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-navy-900">Campus Address</h4>
-                  <p className="mt-0.5 font-medium">Bhujehuan, Sauna</p>
-                  <p>Tehsil: Saidpur</p>
-                  <p>District: Ghazipur</p>
-                  <p>Uttar Pradesh – 233307, India</p>
+                  <h4 className="font-bold text-navy-900 text-sm sm:text-base">Full Campus Address</h4>
+                  <p className="mt-1 font-semibold text-navy-950 text-sm sm:text-base">Bhujehuan, Sauna</p>
+                  <p className="font-medium text-slate-800">Ghazipur, Uttar Pradesh – 233307</p>
+                  <p className="text-xs text-slate-500 mt-1">(Tehsil: Saidpur, District: Ghazipur, Uttar Pradesh, India)</p>
                 </div>
               </div>
 
