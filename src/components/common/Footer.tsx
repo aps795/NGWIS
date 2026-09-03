@@ -4,7 +4,8 @@ import {
   MapPin,
   Clock,
   ChevronRight,
-  GraduationCap
+  GraduationCap,
+  Shield
 } from 'lucide-react';
 import { FacebookIcon } from './FacebookIcon';
 import schoolLogo from '../../assets/logo.jpg';
@@ -184,9 +185,13 @@ export const Footer: React.FC = () => {
             <span className="text-slate-400">
               Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
             </span>
-            <span>&bull;</span>
-            <button onClick={() => handleNav('admin')} className="text-gold-400 hover:underline">
-              Staff CMS Login
+            <button
+              onClick={() => handleNav('admin')}
+              className="text-gold-400 hover:text-gold-300 font-medium flex items-center gap-1 hover:underline transition-colors"
+              title="Restricted access for School IT Department and Senior Administration"
+            >
+              <Shield className="w-3 h-3 text-gold-400" />
+              <span>Administration & IT Portal</span>
             </button>
           </div>
         </div>

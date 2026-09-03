@@ -16,9 +16,12 @@ import {
   CheckCircle,
   MessageSquare,
   Image,
-  Home
+  Home,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import type { NoticeCategory, EnquiryStatus } from '../types/school';
+import { AdminLoginGate, type AdminUser } from '../components/admin/AdminLoginGate';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -44,6 +47,28 @@ export const AdminDashboard: React.FC = () => {
   } = useSchoolData();
 
   const [activeTab, setActiveTab] = useState<'enquiries' | 'notices' | 'events' | 'gallery' | 'testimonials' | 'settings'>('enquiries');
+
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(() => {
+    try {
+      const session = sessionStorage.getItem('ngwis_admin_auth_session');
+      if (session) return JSON.parse(session);
+      const remembered = localStorage.getItem('ngwis_admin_auth_remembered');
+      if (remembered) return JSON.parse(remembered);
+      return null;
+    } catch {
+      return null;
+    }
+  });
+
+  const handleLogout = () => {
+    try {
+      sessionStorage.removeItem('ngwis_admin_auth_session');
+      localStorage.removeItem('ngwis_admin_auth_remembered');
+    } catch {
+      // ignore
+    }
+    setCurrentUser(null);
+  };
 
   // Enquiries search & filter
   const [enquirySearch, setEnquirySearch] = useState('');
@@ -166,6 +191,15 @@ export const AdminDashboard: React.FC = () => {
     setTimeout(() => setSettingsSaved(false), 3000);
   };
 
+  if (!currentUser) {
+    return (
+      <AdminLoginGate
+        onLoginSuccess={(user) => setCurrentUser(user)}
+        onReturnHome={() => setCurrentView('home')}
+      />
+    );
+  }
+
   return (
     <div className="w-full bg-slate-50 min-h-screen py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -177,14 +211,20 @@ export const AdminDashboard: React.FC = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider bg-gold-500 text-navy-950 px-2 py-0.5 rounded">
-                  Administration
+                <span className="text-[11px] font-bold uppercase tracking-wider bg-gold-500 text-navy-950 px-2 py-0.5 rounded shadow">
+                  {currentUser.role === 'IT_ADMIN' ? 'School IT Department' : 'Senior Administration'}
                 </span>
-                <span className="text-xs text-slate-300">CMS Portal &bull; Saidpur Campus</span>
+                <span className="text-xs text-slate-300">
+                  {currentUser.department} &bull; Estd. 2016
+                </span>
               </div>
               <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
                 School Management Desk
               </h1>
+              <div className="flex items-center gap-2 mt-1 text-xs text-gold-300">
+                <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Active Session: <strong>{currentUser.name}</strong> ({currentUser.email})</span>
+              </div>
             </div>
           </div>
 
@@ -194,7 +234,7 @@ export const AdminDashboard: React.FC = () => {
               className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors border border-white/20"
             >
               <Home className="w-4 h-4" />
-              <span>View Public Website</span>
+              <span>Public Website</span>
             </button>
 
             <button
@@ -204,11 +244,20 @@ export const AdminDashboard: React.FC = () => {
                   alert('Demo database reset to default records.');
                 }
               }}
-              className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-rose-500/40"
+              className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-amber-500/40"
               title="Reset records to default template"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Reset Seed Data</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-md hover:shadow-rose-600/30"
+              title="Log out and secure administrative portal"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
             </button>
           </div>
         </div>
