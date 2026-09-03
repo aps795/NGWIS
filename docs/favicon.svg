@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="crestGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B2545" />
+      <stop offset="100%" stop-color="#051326" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9ECC1" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#B48A18" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Shield Contour -->
+  <path d="M 60,6 L 108,22 C 108,68 88,102 60,114 C 32,102 12,68 12,22 Z" fill="url(#crestGrad)" stroke="url(#goldGrad)" stroke-width="4" stroke-linejoin="round" />
+  <!-- Inner Shield Inset -->
+  <path d="M 60,14 L 100,28 C 100,66 82,96 60,106 C 38,96 20,66 20,28 Z" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="2 1" opacity="0.7" />
+  <!-- Torch / Flame of Wisdom -->
+  <path d="M 60,26 C 63,32 67,35 65,40 C 63,44 57,44 55,40 C 53,35 57,32 60,26 Z" fill="#F59E0B" />
+  <path d="M 59,31 C 61,34 63,36 61,39 C 60,41 57,41 56,39 C 55,36 57,34 59,31 Z" fill="#FEF08A" />
+  <!-- Open Book Symbol -->
+  <path d="M 60,54 C 54,48 42,48 34,51 L 34,71 C 42,68 54,68 60,74 C 66,68 78,68 86,71 L 86,51 C 78,48 66,48 60,54 Z" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M 60,54 L 60,74" stroke="url(#goldGrad)" stroke-width="2" />
+  <!-- Center Book Spine Lines -->
+  <path d="M 39,57 C 46,55 53,56 57,59" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+  <path d="M 39,63 C 46,61 53,62 57,65" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+  <path d="M 81,57 C 74,55 67,56 63,59" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+  <path d="M 81,63 C 74,61 67,62 63,65" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.8" />
+  <!-- Wisdom Stars -->
+  <polygon points="60,82 62,86 66,86 63,88 64,92 60,89 56,92 57,88 54,86 58,86" fill="url(#goldGrad)" />
+  <polygon points="46,78 47,81 50,81 48,83 49,86 46,84 43,86 44,83 42,81 45,81" fill="url(#goldGrad)" opacity="0.8" transform="scale(0.8) translate(12, 18)" />
+  <polygon points="74,78 75,81 78,81 76,83 77,86 74,84 71,86 72,83 70,81 73,81" fill="url(#goldGrad)" opacity="0.8" transform="scale(0.8) translate(18, 18)" />
+</svg>
