@@ -3,11 +3,11 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
 import {
   ExternalLink,
-  ThumbsUp,
   Calendar,
   Sparkles
 } from 'lucide-react';
 import { FacebookIcon } from '../common/FacebookIcon';
+import { YouTubeIcon } from '../common/YouTubeIcon';
 
 export const FacebookConnect: React.FC = () => {
   const { settings } = useSchoolData();
@@ -16,42 +16,55 @@ export const FacebookConnect: React.FC = () => {
     <section className="py-16 sm:py-20 bg-slate-50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          subtitle="Social Media Connection"
-          title="Connect With Us on Facebook"
-          description="Follow our official school page for updates, student life photographs, campus activities, and announcements."
+          subtitle="Official Media & Video Channels"
+          title="Connect With Us on YouTube & Facebook"
+          description="Subscribe to our official YouTube channel for campus event videos and follow our Facebook page for student activities, photographs, and announcements."
         />
 
         <div className="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-academic-lg overflow-hidden">
           {/* Top Banner Ribbon */}
-          <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-navy-900 p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-academic-900 p-6 sm:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 border-b border-gold-500/30">
             <div className="flex items-center space-x-4">
-              <div className="w-16 h-16 rounded-2xl bg-white text-blue-700 flex items-center justify-center flex-shrink-0 shadow-lg">
-                <FacebookIcon className="w-10 h-10" />
+              <div className="w-16 h-16 rounded-2xl bg-white text-red-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                <YouTubeIcon className="w-10 h-10" />
               </div>
               <div className="text-center sm:text-left">
                 <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-gold-300 uppercase tracking-wider mb-1">
                   <Sparkles className="w-3 h-3" />
-                  Official Page
+                  Official Video & Social Channels
                 </div>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-white leading-tight">
+                <h3 className="font-crest text-xl sm:text-2xl font-bold text-white leading-tight">
                   New Global Wisdom International School
                 </h3>
-                <p className="text-xs text-blue-100 mt-0.5">
-                  @NewGlobalWisdom &bull; Education &bull; Saidpur, Ghazipur
+                <p className="text-xs text-slate-300 mt-0.5">
+                  @newglobalwisdominternation2959 &bull; Bhujehuan, Sauna, Ghazipur
                 </p>
               </div>
             </div>
 
-            <a
-              href={settings.facebookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-xs sm:text-sm px-6 py-3 rounded-xl transition-all shadow-md flex items-center space-x-2 flex-shrink-0 hover:scale-105"
-            >
-              <ThumbsUp className="w-4 h-4 text-navy-950" />
-              <span>Follow Us on Facebook</span>
-              <ExternalLink className="w-3.5 h-3.5 ml-1" />
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-red-600 hover:bg-red-500 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all shadow-md flex items-center space-x-2 flex-shrink-0 hover:scale-105"
+              >
+                <YouTubeIcon className="w-4 h-4 text-white" />
+                <span>Subscribe on YouTube</span>
+                <ExternalLink className="w-3.5 h-3.5 ml-1" />
+              </a>
+
+              <a
+                href={settings.facebookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all shadow-md flex items-center space-x-2 flex-shrink-0 hover:scale-105"
+              >
+                <FacebookIcon className="w-4 h-4 text-navy-950" />
+                <span>Follow Facebook</span>
+                <ExternalLink className="w-3.5 h-3.5 ml-1" />
+              </a>
+            </div>
           </div>
 
           {/* Social Update Cards Preview */}

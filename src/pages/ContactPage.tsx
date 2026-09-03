@@ -10,6 +10,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { FacebookIcon } from '../components/common/FacebookIcon';
+import { YouTubeIcon } from '../components/common/YouTubeIcon';
 
 export const ContactPage: React.FC = () => {
   const { settings, addEnquiry } = useSchoolData();
@@ -102,13 +103,13 @@ export const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Social Presence */}
+              {/* Facebook Presence */}
               <div className="flex items-start space-x-3.5 text-xs sm:text-sm text-slate-700 pt-2 border-t border-slate-200/80">
                 <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow">
                   <FacebookIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-navy-900">Official Social Channel</h4>
+                  <h4 className="font-bold text-navy-900">Official Facebook Page</h4>
                   <a
                     href={settings.facebookUrl}
                     target="_blank"
@@ -118,7 +119,27 @@ export const ContactPage: React.FC = () => {
                     facebook.com/NewGlobalWisdom
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Follow for photos, functions & updates</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Follow for photos, events & regular campus updates</p>
+                </div>
+              </div>
+
+              {/* YouTube Channel */}
+              <div className="flex items-start space-x-3.5 text-xs sm:text-sm text-slate-700 pt-2 border-t border-slate-200/80">
+                <div className="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center flex-shrink-0 shadow">
+                  <YouTubeIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-navy-900">Official YouTube Channel</h4>
+                  <a
+                    href={settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-0.5 text-red-600 hover:text-red-700 font-semibold flex items-center gap-1"
+                  >
+                    @newglobalwisdominternation2959
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Watch school event videos, celebrations & student presentations</p>
                 </div>
               </div>
             </div>

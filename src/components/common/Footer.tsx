@@ -8,6 +8,7 @@ import {
   Shield
 } from 'lucide-react';
 import { FacebookIcon } from './FacebookIcon';
+import { YouTubeIcon } from './YouTubeIcon';
 import schoolLogo from '../../assets/logo.jpg';
 
 export const Footer: React.FC = () => {
@@ -62,13 +63,24 @@ export const Footer: React.FC = () => {
 
             {/* Social Links */}
             <div className="pt-2">
-              <p className="text-xs font-semibold text-slate-200 mb-2">Official Social Presence</p>
-              <div className="flex items-center space-x-3">
+              <p className="text-xs font-semibold text-slate-200 mb-2">Official Social & Video Channels</p>
+              <div className="flex items-center space-x-2.5">
+                <a
+                  href={settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white flex items-center gap-1.5 transition-all border border-red-500/40 text-xs font-semibold group shadow-sm"
+                  title="Official YouTube Channel (@newglobalwisdominternation2959)"
+                >
+                  <YouTubeIcon className="w-4 h-4 text-red-500 group-hover:text-white transition-colors" />
+                  <span>YouTube Channel</span>
+                </a>
+
                 <a
                   href={settings.facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-navy-900 hover:bg-academic-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-navy-800 hover:border-academic-500"
+                  className="w-9 h-9 rounded-lg bg-navy-900 hover:bg-blue-600 text-slate-300 hover:text-white flex items-center justify-center transition-colors border border-navy-800 hover:border-blue-500 shadow-sm"
                   title="Official Facebook Page"
                 >
                   <FacebookIcon className="w-4 h-4" />

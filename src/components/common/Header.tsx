@@ -10,9 +10,11 @@ import {
   Sparkles
 } from 'lucide-react';
 import schoolLogo from '../../assets/logo.jpg';
+import { FacebookIcon } from './FacebookIcon';
+import { YouTubeIcon } from './YouTubeIcon';
 
 export const Header: React.FC = () => {
-  const { currentView, setCurrentView } = useSchoolData();
+  const { currentView, setCurrentView, settings } = useSchoolData();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -58,10 +60,30 @@ export const Header: React.FC = () => {
             </span>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <span className="text-slate-300">
+          <div className="flex items-center space-x-3">
+            <span className="text-slate-300 hidden md:inline">
               Office Hours: 8:00 AM – 2:00 PM
             </span>
+            <span className="text-navy-700 hidden md:inline">|</span>
+            <a
+              href={settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-2.5 py-0.5 rounded-full bg-red-600/20 hover:bg-red-600 text-red-300 hover:text-white transition-all flex items-center gap-1.5 border border-red-500/30 text-[11px] font-semibold group shadow-sm"
+              title="Official YouTube Channel (@newglobalwisdominternation2959)"
+            >
+              <YouTubeIcon className="w-3.5 h-3.5 text-red-500 group-hover:text-white transition-colors" />
+              <span>YouTube</span>
+            </a>
+            <a
+              href={settings.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-blue-600/30 transition-colors"
+              title="Official Facebook Page"
+            >
+              <FacebookIcon className="w-3.5 h-3.5 text-blue-400" />
+            </a>
             <span className="text-navy-700">|</span>
             <button
               onClick={() => handleNavClick('admin')}
@@ -69,7 +91,7 @@ export const Header: React.FC = () => {
               title="School Administration Portal"
             >
               <Shield className="w-3.5 h-3.5 text-gold-400" />
-              Admin Portal
+              <span>Admin Portal</span>
             </button>
           </div>
         </div>
@@ -204,12 +226,22 @@ export const Header: React.FC = () => {
                 <span>Admission Enquiry</span>
               </button>
 
+              <a
+                href={settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-4 rounded-lg text-center flex items-center justify-center space-x-2 text-xs shadow-md transition-colors"
+              >
+                <YouTubeIcon className="w-4 h-4" />
+                <span>Official YouTube Channel</span>
+              </a>
+
               <button
                 onClick={() => handleNavClick('admin')}
                 className="w-full bg-navy-900 hover:bg-navy-800 text-slate-300 hover:text-white text-xs font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center space-x-2 border border-navy-700"
               >
                 <Shield className="w-4 h-4 text-gold-400" />
-                <span>School Admin CMS</span>
+                <span>Administration & IT Portal</span>
               </button>
             </div>
           </div>
