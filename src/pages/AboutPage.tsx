@@ -5,9 +5,11 @@ import {
   Sparkles,
   Compass,
   Target,
-  MapPin
+  MapPin,
+  Calendar
 } from 'lucide-react';
 import schoolLogo from '../assets/logo.jpg';
+import campusBuilding from '../assets/campus-building.jpg';
 
 export const AboutPage: React.FC = () => {
 
@@ -27,13 +29,13 @@ export const AboutPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-gold-500/20 text-gold-300 border border-gold-500/30 mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            Institutional Identity
+            Established in 2016 • Institutional Identity
           </span>
           <h1 className="font-serif text-3xl sm:text-5xl font-bold text-white mb-4">
             About New Global Wisdom International School
           </h1>
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal">
-            An educational institution in Saidpur, Ghazipur committed to character building, academic discipline, and comprehensive child development.
+            Established in 2016 in Ghazipur, Uttar Pradesh — committed to character building, academic discipline, and comprehensive child development.
           </p>
         </div>
 
@@ -48,13 +50,13 @@ export const AboutPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
             <SectionHeading
-              subtitle="Our Educational Foundation"
+              subtitle="Our Educational Foundation • Estd. 2016"
               title="A Purposeful Institution in Ghazipur"
               align="left"
             />
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-              <strong>New Global Wisdom International School</strong> is established at <strong>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</strong> to meet the growing need for high-standard, value-grounded English-medium education in eastern Uttar Pradesh.
+              <strong>New Global Wisdom International School</strong> was <strong>established in 2016</strong> at <strong>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</strong> under the vision of <strong>Hon. Mr. Rajnikant Singh (Managing Director & Founder)</strong> to meet the growing need for high-standard, value-grounded English-medium education in eastern Uttar Pradesh.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
@@ -71,18 +73,27 @@ export const AboutPage: React.FC = () => {
           </div>
 
           <div className="lg:col-span-5 space-y-4">
-            <div className="rounded-2xl overflow-hidden shadow-academic-lg border-4 border-white">
+            <div className="rounded-2xl overflow-hidden shadow-academic-lg border-4 border-white relative">
               <img
-                src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1000&q=80"
-                alt="Classroom learning at New Global Wisdom International School"
+                src={campusBuilding}
+                alt="New Global Wisdom International School Campus Building, Estd. 2016"
                 className="w-full h-80 object-cover"
               />
+              <div className="absolute top-3 right-3 bg-navy-950/85 backdrop-blur-md text-gold-300 border border-gold-400/40 text-xs px-3 py-1 rounded-full font-bold shadow flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-gold-400" />
+                <span>Estd. 2016</span>
+              </div>
             </div>
-            <div className="p-4 bg-navy-900 rounded-xl text-white flex items-center space-x-3 text-xs">
-              <MapPin className="w-5 h-5 text-gold-400 flex-shrink-0" />
-              <div>
-                <span className="font-bold text-gold-300 block">Campus Location</span>
-                <span>Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307</span>
+            <div className="p-4 bg-navy-900 rounded-xl text-white flex items-center justify-between text-xs">
+              <div className="flex items-center space-x-3">
+                <MapPin className="w-5 h-5 text-gold-400 flex-shrink-0" />
+                <div>
+                  <span className="font-bold text-gold-300 block">Campus Location</span>
+                  <span>Bhujehuan, Sauna, Ghazipur – 233307</span>
+                </div>
+              </div>
+              <div className="bg-gold-500 text-navy-950 px-3 py-1 rounded-full font-bold text-[11px] whitespace-nowrap shadow">
+                Since 2016
               </div>
             </div>
           </div>

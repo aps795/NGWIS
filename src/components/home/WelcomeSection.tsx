@@ -54,7 +54,7 @@ export const WelcomeSection: React.FC = () => {
             <div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-gold-50 text-gold-700 border border-gold-200 mb-3 shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-gold-500" />
-                Educational Philosophy
+                Established in 2016 • Educational Philosophy
               </span>
 
               <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-navy-900 leading-tight">
@@ -70,7 +70,7 @@ export const WelcomeSection: React.FC = () => {
             </div>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-              Located in <strong>Bhujehuan, Sauna, Saidpur (Ghazipur)</strong>, New Global Wisdom International School is dedicated to providing children with an education that goes beyond textbooks. We believe that true learning occurs when intellectual curiosity is paired with strong human values, discipline, and creative expression.
+              <strong>Established in 2016</strong> in <strong>Bhujehuan, Sauna, Ghazipur (Uttar Pradesh – 233307)</strong>, New Global Wisdom International School is dedicated to providing children with an education that goes beyond textbooks. We believe that true learning occurs when intellectual curiosity is paired with strong human values, discipline, and creative expression.
             </p>
 
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">

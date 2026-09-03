@@ -54,7 +54,7 @@ export const Header: React.FC = () => {
             <span className="text-navy-700">|</span>
             <span className="text-gold-300 font-medium flex items-center">
               <Sparkles className="w-3 h-3 mr-1" />
-              English Medium &bull; Co-Educational
+              Estd. 2016 &bull; English Medium &bull; Co-Educational
             </span>
           </div>
 
@@ -107,7 +107,7 @@ export const Header: React.FC = () => {
                 International School
               </span>
               <span className="text-[10px] text-slate-300 hidden sm:block tracking-wider uppercase font-semibold">
-                Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
+                Bhujehuan, Sauna, Ghazipur &bull; Estd. 2016
               </span>
             </div>
           </div>

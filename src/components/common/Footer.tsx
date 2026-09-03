@@ -41,7 +41,7 @@ export const Footer: React.FC = () => {
                   International School
                 </p>
                 <p className="text-[10px] text-slate-400 uppercase tracking-widest">
-                  Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
+                  Bhujehuan, Sauna, Ghazipur &bull; Estd. 2016
                 </p>
               </div>
             </div>

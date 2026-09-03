@@ -41,6 +41,8 @@ export const HeroSection: React.FC = () => {
         {/* Institutional Badge */}
         <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-gold-400/50 text-gold-300 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-6 shadow-lg animate-fadeIn">
           <Sparkles className="w-4 h-4 text-gold-400" />
+          <span className="font-bold text-white">Estd. 2016</span>
+          <span className="text-white/40">&bull;</span>
           <span>Official Institutional Website</span>
           <span className="text-white/40">&bull;</span>
           <span className="flex items-center text-slate-200">
