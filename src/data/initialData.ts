@@ -285,6 +285,34 @@ export const initialGallery: GalleryItem[] = [
     caption: 'Students of New Global Wisdom International School dressed in vibrant traditional attire performing folk dance and celebrating cultural harmony.'
   },
   {
+    id: 'gal-insta-summercamp',
+    title: 'Summer Camp 2024 — Joyful Learning & Fun',
+    category: 'Activities',
+    imageUrl: './gallery/post_c7_1.jpg',
+    caption: 'Glimpse of Summer Camp 2024 at New Global Wisdom International School where students enthusiastically participated in creative workshops and educational games.'
+  },
+  {
+    id: 'gal-insta-quotewriting',
+    title: 'Quote Writing Activity — Class 7 Creative Minds',
+    category: 'Activities',
+    imageUrl: './gallery/post_da_1.jpg',
+    caption: 'Class 7 students presenting inspiring quote writing posters and thoughts, showcasing their creativity and expressive language skills.'
+  },
+  {
+    id: 'gal-insta-educationaltour',
+    title: 'Educational Excursion — Gorakhpur & Kushinagar Heritage Tour',
+    category: 'Events',
+    imageUrl: './gallery/post_dc_1.jpg',
+    caption: 'Students of New Global Wisdom International School on an educational excursion exploring historical landmarks and cultural heritage in Gorakhpur and Kushinagar.'
+  },
+  {
+    id: 'gal-insta-cbse',
+    title: 'CBSE Board Examination Results & Academic Pride',
+    category: 'Events',
+    imageUrl: './gallery/post_c6_1.jpg',
+    caption: 'Celebrating the outstanding academic achievements and excellent performance of New Global Wisdom International School students in CBSE Board Examinations.'
+  },
+  {
     id: 'gal-02',
     title: 'Interactive Classroom Learning Session',
     category: 'Classrooms',

@@ -75,7 +75,7 @@ interface SchoolDataContextType {
 
 const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undefined);
 
-const STORAGE_PREFIX = 'ngwis_school_v3_';
+const STORAGE_PREFIX = 'ngwis_school_v4_';
 
 export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setCurrentViewRaw] = useState<PageView>('home');
