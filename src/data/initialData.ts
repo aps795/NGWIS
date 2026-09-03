@@ -311,62 +311,6 @@ export const initialGallery: GalleryItem[] = [
     category: 'Events',
     imageUrl: './gallery/post_c6_1.jpg',
     caption: 'Celebrating the outstanding academic achievements and excellent performance of New Global Wisdom International School students in CBSE Board Examinations.'
-  },
-  {
-    id: 'gal-02',
-    title: 'Interactive Classroom Learning Session',
-    category: 'Classrooms',
-    imageUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Students engaged in interactive classroom instruction and group discussion.'
-  },
-  {
-    id: 'gal-03',
-    title: 'Annual Sports Day Track Competition',
-    category: 'Sports',
-    imageUrl: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Energetic student sprint competition on the school sports grounds.'
-  },
-  {
-    id: 'gal-04',
-    title: 'Art, Drawing & Creative Expression',
-    category: 'Activities',
-    imageUrl: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Young students showcasing creative artwork during the school creative arts period.'
-  },
-  {
-    id: 'gal-05',
-    title: 'Science Project Demonstration',
-    category: 'Events',
-    imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Students presenting scientific models during the annual institutional exhibition.'
-  },
-  {
-    id: 'gal-06',
-    title: 'Cultural Festival Performance',
-    category: 'Celebrations',
-    imageUrl: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Traditional folk performance during school celebration gathering.'
-  },
-  {
-    id: 'gal-07',
-    title: 'Student Assembly & Morning Prayers',
-    category: 'Students',
-    imageUrl: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Students assembled with discipline during the morning session and physical wellness drill.'
-  },
-  {
-    id: 'gal-08',
-    title: 'School Library & Quiet Study Area',
-    category: 'Infrastructure',
-    imageUrl: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80',
-    caption: 'The quiet learning resource corner supporting student reading habits.'
-  },
-  {
-    id: 'gal-09',
-    title: 'Outdoor Play & Recreation',
-    category: 'Sports',
-    imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1200&q=80',
-    caption: 'Students participating in supervised outdoor recreational and sports activities.'
   }
 ];
 

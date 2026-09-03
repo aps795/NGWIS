@@ -75,7 +75,7 @@ interface SchoolDataContextType {
 
 const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undefined);
 
-const STORAGE_PREFIX = 'ngwis_school_v4_';
+const STORAGE_PREFIX = 'ngwis_school_v5_';
 
 export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setCurrentViewRaw] = useState<PageView>('home');
@@ -132,10 +132,11 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const saved = localStorage.getItem(`${STORAGE_PREFIX}gallery`);
     if (!saved) return initialGallery;
     try {
-      const parsed = JSON.parse(saved);
-      const existingIds = new Set(parsed.map((item: GalleryItem) => item.id));
+      const parsed: GalleryItem[] = JSON.parse(saved);
+      const filtered = parsed.filter(item => !item.imageUrl.includes('unsplash.com'));
+      const existingIds = new Set(filtered.map(item => item.id));
       const missing = initialGallery.filter(item => !existingIds.has(item.id));
-      return [...missing, ...parsed];
+      return [...missing, ...filtered];
     } catch {
       return initialGallery;
     }
