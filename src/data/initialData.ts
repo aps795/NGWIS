@@ -20,11 +20,11 @@ export const initialSchoolSettings: SchoolSettings = {
   facebookUrl: 'https://www.facebook.com/NewGlobalWisdom',
   youtubeUrl: '',
   instagramUrl: '',
-  principalTitle: 'Principal / Academic Director',
-  principalName: '[School Leadership / Principal Name]',
-  principalPhotoUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80',
+  principalTitle: 'Managing Director & Founder',
+  principalName: 'Hon. Mr. Rajnikant Singh',
+  principalPhotoUrl: './rajnikant-singh.jpg',
   principalMessage: [
-    "Welcome to New Global Wisdom International School, Saidpur. At our institution, we firmly believe that every child possesses innate curiosity, immense potential, and a unique spark of intellect waiting to be nurtured.",
+    "Welcome to New Global Wisdom International School, Bhujehuan, Sauna, Ghazipur. At our institution, we firmly believe that every child possesses innate curiosity, immense potential, and a unique spark of intellect waiting to be nurtured.",
     "Our educational philosophy centers around fostering a holistic atmosphere where rigorous academic foundations meet character building, discipline, and moral values. We do not merely prepare students for examinations; we prepare them for life with strong moral compasses, self-confidence, and critical thinking capabilities.",
     "True education is a collaborative journey between devoted educators and caring parents. We invite you to join us in shaping a bright, disciplined, and purposeful future for your child in Ghazipur."
   ],

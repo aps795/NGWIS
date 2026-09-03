@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { Quote, Sparkles, Settings, CheckCircle2 } from 'lucide-react';
+import founderPhoto from '../../assets/rajnikant-singh.jpg';
+import schoolLogo from '../../assets/logo.jpg';
 
 export const PrincipalMessage: React.FC = () => {
   const { settings, setCurrentView } = useSchoolData();
@@ -13,33 +15,33 @@ export const PrincipalMessage: React.FC = () => {
             {/* Left Portrait Column */}
             <div className="lg:col-span-4 bg-navy-900 text-white p-8 sm:p-10 flex flex-col items-center text-center justify-center relative">
               {/* Background crest watermark */}
-              <div className="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none">
-                <img src="/favicon.svg" alt="crest" className="w-64 h-64 object-contain" />
+              <div className="absolute inset-0 opacity-10 flex items-center justify-center pointer-events-none">
+                <img src={schoolLogo} alt="School Crest Watermark" className="w-64 h-64 object-contain rounded-full" />
               </div>
 
-              {/* Portrait Placeholder Container */}
+              {/* Portrait Container */}
               <div className="relative mb-6">
-                <div className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden border-4 border-gold-400/80 shadow-2xl bg-navy-950">
+                <div className="w-44 h-44 sm:w-52 sm:h-52 rounded-2xl overflow-hidden border-4 border-gold-400 shadow-2xl bg-navy-950">
                   <img
-                    src={settings.principalPhotoUrl}
-                    alt={settings.principalName}
-                    className="w-full h-full object-cover object-top filter brightness-95"
+                    src={founderPhoto}
+                    alt="Hon. Mr. Rajnikant Singh - Managing Director & Founder"
+                    className="w-full h-full object-cover object-top filter brightness-100"
                   />
                 </div>
-                <div className="absolute -bottom-3 bg-gold-500 text-navy-950 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                  Leadership Desk
+                <div className="absolute -bottom-3 bg-gradient-to-r from-gold-500 to-gold-600 text-navy-950 text-[10px] sm:text-xs font-extrabold px-4 py-1 rounded-full uppercase tracking-wider shadow-md">
+                  Founder's Desk
                 </div>
               </div>
 
               <h3 className="font-serif font-bold text-lg sm:text-xl text-white tracking-wide">
                 {settings.principalName}
               </h3>
-              <p className="text-xs text-gold-300 font-medium uppercase tracking-wider mt-1">
+              <p className="text-xs text-gold-300 font-bold uppercase tracking-wider mt-1">
                 {settings.principalTitle}
               </p>
-              <p className="text-[11px] text-slate-300 mt-2 max-w-xs">
+              <p className="text-[11px] text-slate-300 mt-2 max-w-xs leading-relaxed">
                 New Global Wisdom International School <br />
-                Saidpur, Ghazipur
+                Bhujehuan, Sauna, Ghazipur
               </p>
 
               {/* Admin quick customize button */}
@@ -61,13 +63,13 @@ export const PrincipalMessage: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-gold-50 text-gold-700 border border-gold-200 shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-gold-500" />
-                    Leadership Desk
+                    Founder & Leadership Desk
                   </span>
                   <Quote className="w-10 h-10 text-gold-400/40" />
                 </div>
 
                 <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-navy-900 mb-6">
-                  Message from the Principal
+                  Message from the Founder & Managing Director
                 </h2>
 
                 <div className="space-y-4 text-slate-700 text-sm sm:text-base leading-relaxed">
