@@ -75,7 +75,7 @@ interface SchoolDataContextType {
 
 const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undefined);
 
-const STORAGE_PREFIX = 'ngwis_school_v1_';
+const STORAGE_PREFIX = 'ngwis_school_v2_';
 
 export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setCurrentViewRaw] = useState<PageView>('home');
@@ -130,7 +130,15 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   // Gallery
   const [gallery, setGallery] = useState<GalleryItem[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_PREFIX}gallery`);
-    return saved ? JSON.parse(saved) : initialGallery;
+    if (!saved) return initialGallery;
+    try {
+      const parsed = JSON.parse(saved);
+      const existingIds = new Set(parsed.map((item: GalleryItem) => item.id));
+      const missing = initialGallery.filter(item => !existingIds.has(item.id));
+      return [...missing, ...parsed];
+    } catch {
+      return initialGallery;
+    }
   });
 
   // Testimonials

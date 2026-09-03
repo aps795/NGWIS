@@ -257,6 +257,27 @@ export const initialGallery: GalleryItem[] = [
     caption: 'Official building facade and illuminated frontage of New Global Wisdom International School in Bhujehuan, Sauna, Ghazipur.'
   },
   {
+    id: 'gal-insta-01',
+    title: 'Holi Celebrations — Festival of Colors & Joy',
+    category: 'Celebrations',
+    imageUrl: './gallery/holi1_1.jpg',
+    caption: 'Students and teachers at New Global Wisdom International School celebrating Holi with flower petals, gulal, and joyful cultural camaraderie.'
+  },
+  {
+    id: 'gal-insta-02',
+    title: 'Holi Festivities & Creative Harmony',
+    category: 'Celebrations',
+    imageUrl: './gallery/holi2_1.jpg',
+    caption: 'Joyous festive moments, laughter, and enthusiastic celebrations during the annual school Holi gathering.'
+  },
+  {
+    id: 'gal-insta-03',
+    title: 'Dussehra Utsav — Student Cultural Presentation',
+    category: 'Celebrations',
+    imageUrl: './gallery/dussehra_1.jpg',
+    caption: 'Students celebrating Vijayadashami / Dussehra at New Global Wisdom International School with traditional attire, artistic displays, and festive cheer.'
+  },
+  {
     id: 'gal-02',
     title: 'Interactive Classroom Learning Session',
     category: 'Classrooms',
