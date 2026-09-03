@@ -278,6 +278,13 @@ export const initialGallery: GalleryItem[] = [
     caption: 'Students celebrating Vijayadashami / Dussehra at New Global Wisdom International School with traditional attire, artistic displays, and festive cheer.'
   },
   {
+    id: 'gal-children-dandiya',
+    title: 'Student Cultural Dandiya & Festive Celebration',
+    category: 'Celebrations',
+    imageUrl: './school-children.jpg',
+    caption: 'Students of New Global Wisdom International School dressed in vibrant traditional attire performing folk dance and celebrating cultural harmony.'
+  },
+  {
     id: 'gal-02',
     title: 'Interactive Classroom Learning Session',
     category: 'Classrooms',

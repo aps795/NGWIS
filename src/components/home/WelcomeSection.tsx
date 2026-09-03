@@ -5,6 +5,7 @@ import {
   ArrowRight,
   BookOpen
 } from 'lucide-react';
+import schoolChildrenImg from '../../assets/school-children.jpg';
 
 export const WelcomeSection: React.FC = () => {
   const { setCurrentView } = useSchoolData();
@@ -24,9 +25,9 @@ export const WelcomeSection: React.FC = () => {
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden shadow-academic-lg border-4 border-white">
               <img
-                src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1000&q=80"
-                alt="Students learning in classroom at New Global Wisdom International School"
-                className="w-full h-[380px] sm:h-[460px] object-cover hover:scale-105 transition-transform duration-700"
+                src={schoolChildrenImg}
+                alt="Students of New Global Wisdom International School in cultural festivities"
+                className="w-full h-[380px] sm:h-[460px] object-cover object-center hover:scale-105 transition-transform duration-700 filter brightness-100"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-transparent to-transparent" />
 
@@ -38,7 +39,7 @@ export const WelcomeSection: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-xs sm:text-sm text-white">Nurturing Every Child</h4>
-                    <p className="text-[11px] text-slate-300">A child-friendly learning atmosphere in Bhujehuan, Sauna, Ghazipur</p>
+                    <p className="text-[11px] text-slate-300">Active student life & cultural joy in Bhujehuan, Sauna, Ghazipur</p>
                   </div>
                 </div>
               </div>
