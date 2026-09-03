@@ -47,6 +47,21 @@
   </head>
   <body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
+    <script>
+      if (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
+        var script = document.createElement('script');
+        script.type = 'module';
+        script.crossOrigin = 'anonymous';
+        script.src = './assets/index-AlrsZ39j.js';
+        document.body.appendChild(script);
+
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.crossOrigin = 'anonymous';
+        link.href = './assets/index-CO30CcVn.css';
+        document.head.appendChild(link);
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
