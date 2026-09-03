@@ -38,7 +38,7 @@ export const WelcomeSection: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="font-bold text-xs sm:text-sm text-white">Nurturing Every Child</h4>
-                    <p className="text-[11px] text-slate-300">A child-friendly learning atmosphere in Saidpur</p>
+                    <p className="text-[11px] text-slate-300">A child-friendly learning atmosphere in Bhujehuan, Sauna, Ghazipur</p>
                   </div>
                 </div>
               </div>

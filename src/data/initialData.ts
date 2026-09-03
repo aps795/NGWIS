@@ -251,10 +251,10 @@ export const initialActivities: ActivityItem[] = [
 export const initialGallery: GalleryItem[] = [
   {
     id: 'gal-01',
-    title: 'School Campus Frontage & Entrance',
+    title: 'School Campus Building & Main Entrance',
     category: 'Campus',
-    imageUrl: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1200&q=80',
-    caption: 'The welcoming entrance of New Global Wisdom International School in Saidpur, Ghazipur.'
+    imageUrl: './campus-building.jpg',
+    caption: 'Official building facade and illuminated frontage of New Global Wisdom International School in Bhujehuan, Sauna, Ghazipur.'
   },
   {
     id: 'gal-02',

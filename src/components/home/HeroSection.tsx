@@ -7,6 +7,7 @@ import {
   Sparkles,
   MapPin
 } from 'lucide-react';
+import campusBuildingImg from '../../assets/campus-building.jpg';
 
 export const HeroSection: React.FC = () => {
   const { setCurrentView, settings } = useSchoolData();
@@ -20,31 +21,31 @@ export const HeroSection: React.FC = () => {
 
   return (
     <div className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center justify-center bg-navy-950 overflow-hidden">
-      {/* Authentic School Campus Hero Background Image */}
+      {/* Authentic Official School Campus Building Hero Background */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=2000&q=85"
-          alt="New Global Wisdom International School Campus Atmosphere"
-          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-10000 hover:scale-100 filter brightness-90"
+          src={campusBuildingImg}
+          alt="New Global Wisdom International School Building - Bhujehuan, Sauna, Ghazipur"
+          className="w-full h-full object-cover object-center transform scale-100 transition-transform duration-10000 filter brightness-95"
         />
-        {/* Academic Deep Navy Layered Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-900/85 to-navy-950/90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-navy-950/70" />
+        {/* Layered Gradient Overlays for Elegance, Warmth & Clear Text Readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-950/80 via-navy-950/60 to-navy-950/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 via-transparent to-navy-950/80" />
       </div>
 
-      {/* Decorative Golden Ambient Glows */}
+      {/* Decorative Golden Ambient Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content Container */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center text-white">
         {/* Institutional Badge */}
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-gold-400/40 text-gold-300 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-6 shadow-md animate-fadeIn">
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-gold-400/50 text-gold-300 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-6 shadow-lg animate-fadeIn">
           <Sparkles className="w-4 h-4 text-gold-400" />
           <span>Official Institutional Website</span>
           <span className="text-white/40">&bull;</span>
           <span className="flex items-center text-slate-200">
             <MapPin className="w-3.5 h-3.5 mr-1 text-gold-400" />
-            Saidpur, Ghazipur
+            Bhujehuan, Sauna, Ghazipur
           </span>
         </div>
 
