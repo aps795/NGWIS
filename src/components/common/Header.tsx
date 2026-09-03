@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
+import schoolLogo from '../../assets/logo.jpg';
 
 export const Header: React.FC = () => {
   const { currentView, setCurrentView } = useSchoolData();
@@ -88,12 +89,12 @@ export const Header: React.FC = () => {
             onClick={() => handleNavClick('home')}
             className="flex items-center space-x-3 cursor-pointer group select-none"
           >
-            {/* Crest Emblem */}
-            <div className="relative w-11 h-11 sm:w-13 sm:h-13 flex-shrink-0">
+            {/* Official School Crest Logo */}
+            <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gold-400/90 shadow-md bg-white p-0.5">
               <img
-                src="/favicon.svg"
-                alt="New Global Wisdom International School Crest"
-                className="w-full h-full object-contain filter drop-shadow-md group-hover:scale-105 transition-transform"
+                src={schoolLogo}
+                alt="New Global Wisdom International School Logo"
+                className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform"
               />
             </div>
 

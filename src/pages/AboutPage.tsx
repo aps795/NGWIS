@@ -7,6 +7,7 @@ import {
   Target,
   MapPin
 } from 'lucide-react';
+import schoolLogo from '../assets/logo.jpg';
 
 export const AboutPage: React.FC = () => {
 
@@ -38,7 +39,7 @@ export const AboutPage: React.FC = () => {
 
         {/* Decorative background crest */}
         <div className="absolute left-1/2 -translate-x-1/2 -bottom-20 opacity-10 pointer-events-none">
-          <img src="/favicon.svg" alt="crest watermark" className="w-96 h-96" />
+          <img src={schoolLogo} alt="crest watermark" className="w-80 h-80 rounded-full object-cover" />
         </div>
       </div>
 

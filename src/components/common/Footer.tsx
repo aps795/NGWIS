@@ -7,6 +7,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { FacebookIcon } from './FacebookIcon';
+import schoolLogo from '../../assets/logo.jpg';
 
 export const Footer: React.FC = () => {
   const { setCurrentView, settings } = useSchoolData();
@@ -25,11 +26,13 @@ export const Footer: React.FC = () => {
           {/* Column 1: School Identity */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <img
-                src="/favicon.svg"
-                alt="New Global Wisdom International School Crest"
-                className="w-12 h-12 object-contain"
-              />
+              <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gold-400/90 shadow-md bg-white p-0.5">
+                <img
+                  src={schoolLogo}
+                  alt="New Global Wisdom International School Logo"
+                  className="w-full h-full object-cover rounded-full"
+                />
+              </div>
               <div>
                 <h3 className="font-crest font-bold text-white text-base leading-tight">
                   New Global Wisdom
