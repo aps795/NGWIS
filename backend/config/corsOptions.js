@@ -5,8 +5,12 @@ export const corsOptions = {
     // Allow requests with no origin (like mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
 
+    const cleanOrigin = origin.replace(/\/$/, '');
     const allowed = config.allowedOrigins.some(allowedOrigin => {
-      return origin === allowedOrigin || origin.endsWith('.github.io') || origin.endsWith('.vercel.app');
+      return cleanOrigin === allowedOrigin ||
+        origin.endsWith('.github.io') ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com');
     });
 
     if (allowed || config.nodeEnv === 'development') {
