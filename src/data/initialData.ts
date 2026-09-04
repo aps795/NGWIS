@@ -278,6 +278,20 @@ export const initialGallery: GalleryItem[] = [
     caption: 'Students celebrating Vijayadashami / Dussehra at New Global Wisdom International School with traditional attire, artistic displays, and festive cheer.'
   },
   {
+    id: 'gal-dussehra-staff-01',
+    title: 'Dussehra Celebrations — Faculty & Staff with Student Performers',
+    category: 'Celebrations',
+    imageUrl: './gallery/dussehra_staff_1.jpg',
+    caption: 'Teaching faculty and administrative staff of New Global Wisdom International School celebrating Vijayadashami (Dussehra) with students dressed in traditional mythological attire.'
+  },
+  {
+    id: 'gal-dussehra-staff-02',
+    title: 'Vijayadashami & Navratri Utsav — Teachers & Cultural Presentation',
+    category: 'Celebrations',
+    imageUrl: './gallery/dussehra_staff_2.jpg',
+    caption: 'Educators and students commemorating the auspicious occasion of Vijayadashami and Navratri with festive cheer, traditional dresses, and cultural presentations.'
+  },
+  {
     id: 'gal-children-dandiya',
     title: 'Student Cultural Dandiya & Festive Celebration',
     category: 'Celebrations',
