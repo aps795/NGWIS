@@ -9,6 +9,7 @@ import {
   FileText,
   X
 } from 'lucide-react';
+import { FacultySection } from '../components/academics/FacultySection';
 
 export const AcademicsPage: React.FC = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
@@ -219,6 +220,9 @@ export const AcademicsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Official Faculty & Academic Staff Directory (Total Staff: 42) */}
+      <FacultySection />
 
       {/* Download Info Modal */}
       {showDownloadModal && (
