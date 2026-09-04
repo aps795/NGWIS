@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "backend": "node backend/server.js",
+    "backend:test": "npm --prefix backend test"
   },
   "dependencies": {
     "lucide-react": "^1.40.0",

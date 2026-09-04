@@ -1,0 +1,76 @@
+{
+  "adminUsers": [
+    {
+      "id": "adm_1",
+      "email": "admin@newglobalwisdom.edu.in",
+      "name": "School Administration",
+      "role": "admin",
+      "department": "Senior Administration & Leadership",
+      "passwordHash": "$2a$10$7zB3cT7w6L3c6hL8H4W1yuxP0E8mN0V9iO5jD7K3F2s1A0Q9W8e.e"
+    },
+    {
+      "id": "it_1",
+      "email": "it@newglobalwisdom.edu.in",
+      "name": "IT Department Administrator",
+      "role": "it_admin",
+      "department": "School IT & Infrastructure",
+      "passwordHash": "$2a$10$7zB3cT7w6L3c6hL8H4W1yuxP0E8mN0V9iO5jD7K3F2s1A0Q9W8e.e"
+    }
+  ],
+  "notices": [
+    {
+      "id": "not-1",
+      "title": "Admissions Open for Academic Session 2025-26",
+      "date": "2025-01-10",
+      "category": "Admission",
+      "summary": "Registration open from Nursery to Class IX & XI. Prospectus and application forms available at school reception and online.",
+      "content": "New Global Wisdom International School announces admissions for the academic year 2025-26. Parents are requested to fill the admission enquiry form online or visit the school office between 8:00 AM to 2:00 PM on working days.",
+      "isPinned": true,
+      "isPublished": true
+    },
+    {
+      "id": "not-2",
+      "title": "Annual Sports Meet 'Urja 2025' Announcement",
+      "date": "2025-01-20",
+      "category": "Event",
+      "summary": "Inter-house sports competitions scheduled from February 15-17, 2025. Track and field events for all age categories.",
+      "content": "All students from Classes 3 to 12 are invited to register for athletics, football, cricket, and indoor games with their respective house captains.",
+      "isPinned": false,
+      "isPublished": true
+    },
+    {
+      "id": "not-3",
+      "title": "Holiday Notification: Maha Shivratri",
+      "date": "2025-02-26",
+      "category": "Holiday",
+      "summary": "School will remain closed on the auspicious occasion of Maha Shivratri. Regular classes will resume next working day.",
+      "content": "All academic and administrative offices will observe a holiday. Normal school timings will apply from the following morning.",
+      "isPinned": false,
+      "isPublished": true
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-1",
+      "title": "Annual Cultural Festival - 'Pratibha'",
+      "date": "2025-03-25",
+      "time": "09:30 AM - 02:00 PM",
+      "venue": "School Main Auditorium & Campus Grounds",
+      "category": "Cultural",
+      "description": "Celebrating student talents across traditional Indian dance, musical orchestrations, theatrical performances, and art showcases.",
+      "imageUrl": "assets/school-children.jpg"
+    },
+    {
+      "id": "evt-2",
+      "title": "Science & Innovation Fair 2025",
+      "date": "2025-04-12",
+      "time": "10:00 AM - 01:30 PM",
+      "venue": "Campus Composite Laboratories",
+      "category": "Academic",
+      "description": "Hands-on robotics exhibits, environmental conservation models, and working scientific prototypes by middle and senior school scholars.",
+      "imageUrl": "assets/summer-camp-2024.jpg"
+    }
+  ],
+  "enquiries": [],
+  "contactMessages": []
+}
