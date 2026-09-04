@@ -1,3 +1,13 @@
+import virendraImg from '../assets/faculty/virendra-nath-singh.jpg';
+import rkSinghImg from '../assets/faculty/rk-singh.jpg';
+import nilayImg from '../assets/faculty/nilay-singh.jpg';
+import nikhilImg from '../assets/faculty/nikhil-singh.jpg';
+import aditeeImg from '../assets/faculty/aditee-singh.jpg';
+import swapnilImg from '../assets/faculty/swapnil-singh.jpg';
+import atulImg from '../assets/faculty/atul-singh.jpg';
+import manojImg from '../assets/faculty/manoj-kumar.jpg';
+import pankajImg from '../assets/faculty/pankaj-dubey.jpg';
+
 export interface FacultyMember {
   id: number;
   name: string;
@@ -5,6 +15,7 @@ export interface FacultyMember {
   departmentOrSubject: string;
   isSeniorLeadership: boolean; // Bold in official school records (1, 2, 3, 4, 5, 6, 7, 8, 11, 22)
   roleCategory: 'leadership' | 'hod' | 'coordinator' | 'teacher' | 'parent_teacher';
+  photoUrl?: string;
 }
 
 // Complete 42 staff members in strict Serial Number (S.No. / Kram) order 1 to 42
@@ -15,7 +26,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Ex. Principal',
     departmentOrSubject: 'Institutional Advisory & Governance',
     isSeniorLeadership: true,
-    roleCategory: 'leadership'
+    roleCategory: 'leadership',
+    photoUrl: virendraImg
   },
   {
     id: 2,
@@ -23,7 +35,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Chairman',
     departmentOrSubject: 'School Trust & Management',
     isSeniorLeadership: true,
-    roleCategory: 'leadership'
+    roleCategory: 'leadership',
+    photoUrl: rkSinghImg
   },
   {
     id: 3,
@@ -31,7 +44,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Principal',
     departmentOrSubject: 'Head of Institution & Academic Administration',
     isSeniorLeadership: true,
-    roleCategory: 'leadership'
+    roleCategory: 'leadership',
+    photoUrl: nilayImg
   },
   {
     id: 4,
@@ -39,15 +53,17 @@ export const facultyList: FacultyMember[] = [
     designation: 'HoD – Leadership and Management',
     departmentOrSubject: 'Institutional Leadership & Operations',
     isSeniorLeadership: true,
-    roleCategory: 'hod'
+    roleCategory: 'hod',
+    photoUrl: nikhilImg
   },
   {
     id: 5,
-    name: 'Mr. Aditee Singh',
+    name: 'Mrs. Aditee Singh',
     designation: 'HoD – Academic Development',
     departmentOrSubject: 'Pedagogy & Curriculum Standards',
     isSeniorLeadership: true,
-    roleCategory: 'hod'
+    roleCategory: 'hod',
+    photoUrl: aditeeImg
   },
   {
     id: 6,
@@ -55,7 +71,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Coordinator',
     departmentOrSubject: 'Academic & Co-curricular Coordination',
     isSeniorLeadership: true,
-    roleCategory: 'coordinator'
+    roleCategory: 'coordinator',
+    photoUrl: swapnilImg
   },
   {
     id: 7,
@@ -71,7 +88,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'HoD – IT / Planning and Strategy Development',
     departmentOrSubject: 'Information Technology & Strategic Planning',
     isSeniorLeadership: true,
-    roleCategory: 'hod'
+    roleCategory: 'hod',
+    photoUrl: atulImg
   },
   {
     id: 9,
@@ -95,7 +113,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Associate Teacher – Science',
     departmentOrSubject: 'General & Applied Sciences',
     isSeniorLeadership: true,
-    roleCategory: 'teacher'
+    roleCategory: 'teacher',
+    photoUrl: manojImg
   },
   {
     id: 12,
@@ -183,7 +202,8 @@ export const facultyList: FacultyMember[] = [
     designation: 'Associate Teacher – Hindi',
     departmentOrSubject: 'Hindi Language & Vyakaran',
     isSeniorLeadership: true,
-    roleCategory: 'teacher'
+    roleCategory: 'teacher',
+    photoUrl: pankajImg
   },
   {
     id: 23,

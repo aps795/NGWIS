@@ -118,24 +118,42 @@ export const FacultySection: React.FC = () => {
                 key={leader.id}
                 className="bg-white rounded-2xl p-5 border-2 border-gold-400/50 shadow-academic hover:shadow-academic-lg hover:border-gold-500 transition-all duration-300 relative group flex flex-col justify-between"
               >
-                {/* Top Badge with Record Index */}
-                <div className="flex items-center justify-between mb-3">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-navy-950 text-gold-400 font-bold text-xs shadow-sm">
-                    #{leader.id}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-gold-100 text-navy-900 border border-gold-300">
-                    {leader.roleCategory === 'leadership' ? 'Leadership' : leader.roleCategory === 'hod' ? 'HoD' : leader.roleCategory === 'coordinator' ? 'Coordinator' : 'Senior Faculty'}
-                  </span>
-                </div>
-
-                {/* Name (BOLD) */}
                 <div>
-                  <h4 className="font-bold text-sm sm:text-base text-navy-950 group-hover:text-academic-700 transition-colors leading-snug">
-                    {leader.name}
-                  </h4>
-                  <p className="text-xs font-semibold text-gold-700 mt-1">
-                    {leader.designation}
-                  </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-navy-950 text-gold-300 font-bold text-xs shadow">
+                      #{leader.id}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gold-100 text-navy-950 border border-gold-300">
+                      {leader.roleCategory === 'leadership' ? 'Leadership' : leader.roleCategory === 'hod' ? 'HoD' : leader.roleCategory === 'coordinator' ? 'Coordinator' : 'Senior Faculty'}
+                    </span>
+                  </div>
+
+                  {/* Profile Photo */}
+                  <div className="flex justify-center mb-4">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-gradient-to-tr from-gold-500 via-amber-400 to-navy-900 shadow-md group-hover:scale-105 transition-transform overflow-hidden">
+                      {leader.photoUrl ? (
+                        <img
+                          src={leader.photoUrl}
+                          alt={leader.name}
+                          className="w-full h-full object-cover rounded-full bg-slate-100"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-navy-900 text-gold-300 flex items-center justify-center font-serif font-bold text-xl sm:text-2xl">
+                          {leader.name.split(' ').filter(n => !['Mr.', 'Mrs.', 'Miss', 'Ms.'].includes(n)).map(n => n[0]).join('')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="text-center">
+                    <h4 className="font-bold text-sm sm:text-base text-navy-950 group-hover:text-academic-700 transition-colors leading-snug">
+                      {leader.name}
+                    </h4>
+                    <p className="text-xs font-semibold text-gold-700 mt-1">
+                      {leader.designation}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Department / Subject */}
@@ -222,15 +240,37 @@ export const FacultySection: React.FC = () => {
                       : 'bg-slate-50/70 border-slate-200 hover:border-academic-300 hover:bg-white'
                   }`}
                 >
-                  <div className="flex items-start space-x-3">
-                    <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm ${
+                  <div className="flex items-center space-x-3.5">
+                    {/* Profile Photo Avatar & S.No. Badge */}
+                    <div className="relative flex-shrink-0">
+                      <div
+                        className={`w-12 h-12 rounded-full overflow-hidden flex items-center justify-center font-bold text-xs shadow-sm border-2 ${
+                          staff.isSeniorLeadership
+                            ? 'border-gold-400 bg-navy-950 text-gold-300 ring-2 ring-gold-400/20'
+                            : 'border-slate-200 bg-white text-slate-700'
+                        }`}
+                        style={{ width: '3rem', height: '3rem' }}
+                      >
+                        {staff.photoUrl ? (
+                          <img
+                            src={staff.photoUrl}
+                            alt={staff.name}
+                            className="w-full h-full object-cover rounded-full bg-slate-100"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-xs">
+                            {staff.name.split(' ').filter(n => !['Mr.', 'Mrs.', 'Miss', 'Ms.'].includes(n)).map(n => n[0]).join('') || `#${staff.id}`}
+                          </div>
+                        )}
+                      </div>
+                      <span className={`absolute -top-1 -right-1 text-[9px] font-bold px-1.5 py-0.2 rounded-full shadow-sm ${
                         staff.isSeniorLeadership
-                          ? 'bg-navy-950 text-gold-400'
-                          : 'bg-white text-slate-700 border border-slate-200'
-                      }`}
-                    >
-                      {staff.id}
+                          ? 'bg-navy-950 text-gold-300 border border-gold-500/50'
+                          : 'bg-slate-700 text-white'
+                      }`}>
+                        #{staff.id}
+                      </span>
                     </div>
 
                     <div className="flex-1 min-w-0">
