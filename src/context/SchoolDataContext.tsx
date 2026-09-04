@@ -20,7 +20,7 @@ import {
   initialTestimonials,
   initialEnquiries
 } from '../data/initialData';
-import { validateSessionToken } from '../services/adminAuth';
+import { getCurrentSession } from '../auth/authService';
 
 export type PageView =
   | 'home'
@@ -32,8 +32,8 @@ export type PageView =
   | 'admissions'
   | 'notices'
   | 'contact'
-  | 'admin'
   | 'admin-login'
+  | 'admin-dashboard'
   | 'faculty';
 
 interface SchoolDataContextType {
@@ -85,58 +85,149 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Handle URL navigation and route protection
   const setCurrentView = (view: PageView) => {
-    if (view === 'admin') {
-      const active = validateSessionToken();
-      if (!active) {
-        // Redirect unauthorized user to admin-login
+    // If attempting to go to admin-dashboard, verify session
+    if (view === 'admin-dashboard') {
+      const session = getCurrentSession();
+      if (!session) {
         setCurrentViewRaw('admin-login');
-        window.location.hash = 'admin-login';
+        try {
+          window.history.pushState(null, '', '/admin/login');
+          window.location.hash = 'admin/login';
+        } catch {}
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
     }
+
     setCurrentViewRaw(view);
-    window.location.hash = view;
+
+    try {
+      if (view === 'admin-login') {
+        window.history.pushState(null, '', '/admin/login');
+        window.location.hash = 'admin/login';
+      } else if (view === 'admin-dashboard') {
+        window.history.pushState(null, '', '/admin/dashboard');
+        window.location.hash = 'admin/dashboard';
+      } else if (view === 'home') {
+        window.history.pushState(null, '', '/');
+        window.location.hash = '';
+      } else {
+        window.history.pushState(null, '', `/${view}`);
+        window.location.hash = view;
+      }
+    } catch {}
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
     const handleRoute = () => {
-      // 1. Check pathname (e.g. /admin, /admin-login)
-      const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
-      let detectedView: PageView | null = null;
-      if (path.endsWith('/admin-login') || path === 'admin-login') {
-        detectedView = 'admin-login';
-      } else if (path.endsWith('/admin') || path === 'admin') {
-        detectedView = 'admin';
+      const rawPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+      const rawHash = window.location.hash.toLowerCase().replace(/^#\/?/, '');
+
+      // 1. Check for legacy admin routes (/admin, /admin#admin, #/admin, #admin)
+      const isLegacyAdmin =
+        rawPath === '/admin' ||
+        rawHash === 'admin' ||
+        rawHash === 'admin#admin' ||
+        rawHash === '/admin';
+
+      if (isLegacyAdmin) {
+        const session = getCurrentSession();
+        if (session) {
+          try {
+            window.history.replaceState(null, '', '/admin/dashboard');
+            window.location.hash = 'admin/dashboard';
+          } catch {}
+          setCurrentViewRaw('admin-dashboard');
+        } else {
+          try {
+            window.history.replaceState(null, '', '/admin/login');
+            window.location.hash = 'admin/login';
+          } catch {}
+          setCurrentViewRaw('admin-login');
+        }
+        return;
       }
 
-      // 2. Check hash (e.g. #admin-login, #admin, #gallery, etc.)
-      const hash = window.location.hash.replace('#', '').toLowerCase() as PageView;
-      const validViews: PageView[] = [
-        'home', 'about', 'academics', 'facilities', 'activities',
-        'gallery', 'admissions', 'notices', 'contact', 'admin', 'admin-login', 'faculty'
+      // 2. Check for admin login (/admin/login, /admin-login, #admin/login, #admin-login)
+      const isAdminLogin =
+        rawPath === '/admin/login' ||
+        rawPath === '/admin-login' ||
+        rawHash === 'admin/login' ||
+        rawHash === 'admin-login' ||
+        rawHash === '/admin/login';
+
+      if (isAdminLogin) {
+        const session = getCurrentSession();
+        if (session) {
+          // If already logged in, redirect to dashboard
+          try {
+            window.history.replaceState(null, '', '/admin/dashboard');
+            window.location.hash = 'admin/dashboard';
+          } catch {}
+          setCurrentViewRaw('admin-dashboard');
+        } else {
+          setCurrentViewRaw('admin-login');
+        }
+        return;
+      }
+
+      // 3. Check for admin dashboard (/admin/dashboard, /admin-dashboard, #admin/dashboard, #admin-dashboard)
+      const isAdminDashboard =
+        rawPath === '/admin/dashboard' ||
+        rawPath === '/admin-dashboard' ||
+        rawHash === 'admin/dashboard' ||
+        rawHash === 'admin-dashboard' ||
+        rawHash === '/admin/dashboard';
+
+      if (isAdminDashboard) {
+        const session = getCurrentSession();
+        if (!session) {
+          try {
+            window.history.replaceState(null, '', '/admin/login');
+            window.location.hash = 'admin/login';
+          } catch {}
+          setCurrentViewRaw('admin-login');
+        } else {
+          setCurrentViewRaw('admin-dashboard');
+        }
+        return;
+      }
+
+      // 4. Match public pages by path or hash
+      const validPublicViews: PageView[] = [
+        'home',
+        'about',
+        'academics',
+        'faculty',
+        'facilities',
+        'activities',
+        'gallery',
+        'admissions',
+        'notices',
+        'contact'
       ];
 
-      const targetView = detectedView || (validViews.includes(hash) ? hash : null);
+      const pathView = rawPath.replace(/^\//, '') as PageView;
+      const hashView = rawHash.replace(/^\//, '') as PageView;
 
-      if (targetView) {
-        if (targetView === 'admin') {
-          const active = validateSessionToken();
-          if (!active) {
-            // Protected route: Redirect to admin-login if not authenticated
-            setCurrentViewRaw('admin-login');
-            window.location.hash = 'admin-login';
-            return;
-          }
-        }
-        setCurrentViewRaw(targetView);
+      if (validPublicViews.includes(pathView)) {
+        setCurrentViewRaw(pathView);
+      } else if (validPublicViews.includes(hashView)) {
+        setCurrentViewRaw(hashView);
+      } else if (rawPath === '/' && (!rawHash || rawHash === 'home')) {
+        setCurrentViewRaw('home');
       }
     };
 
     handleRoute();
     window.addEventListener('hashchange', handleRoute);
-    return () => window.removeEventListener('hashchange', handleRoute);
+    window.addEventListener('popstate', handleRoute);
+    return () => {
+      window.removeEventListener('hashchange', handleRoute);
+      window.removeEventListener('popstate', handleRoute);
+    };
   }, []);
 
   // Settings

@@ -21,7 +21,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import type { NoticeCategory, EnquiryStatus } from '../types/school';
-import { validateSessionToken, destroySession, type AdminUser } from '../services/adminAuth';
+import { useAuth } from '../auth/AuthContext';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -46,27 +46,26 @@ export const AdminDashboard: React.FC = () => {
     setCurrentView
   } = useSchoolData();
 
+  const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'enquiries' | 'notices' | 'events' | 'gallery' | 'testimonials' | 'settings'>('enquiries');
 
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(() => {
-    const session = validateSessionToken();
-    return session ? session.user : null;
-  });
-
-  // Verify authentication on mount and redirect if unauthenticated
-  React.useEffect(() => {
-    const session = validateSessionToken();
-    if (!session) {
-      setCurrentView('admin-login');
-    } else {
-      setCurrentUser(session.user);
-    }
-  }, [setCurrentView]);
+  const currentUser = user || {
+    id: 'adm-user',
+    name: 'Administrator',
+    email: 'admin@newglobalwisdom.edu.in',
+    role: 'ADMIN',
+    department: 'School Administration'
+  };
 
   const handleLogout = () => {
-    destroySession();
-    setCurrentUser(null);
+    logout();
     setCurrentView('admin-login');
+    try {
+      window.history.replaceState(null, '', '/admin/login');
+      window.location.hash = 'admin/login';
+    } catch {
+      // ignore
+    }
   };
 
   // Enquiries search & filter
@@ -190,15 +189,6 @@ export const AdminDashboard: React.FC = () => {
     setTimeout(() => setSettingsSaved(false), 3000);
   };
 
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 text-white">
-        <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-xs font-semibold text-slate-300">Verifying administrator authorization...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full bg-slate-50 min-h-screen py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -229,7 +219,15 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={() => setCurrentView('home')}
+              onClick={() => {
+                setCurrentView('home');
+                try {
+                  window.history.pushState(null, '', '/');
+                  window.location.hash = '';
+                } catch {
+                  // ignore
+                }
+              }}
               className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors border border-white/20"
             >
               <Home className="w-4 h-4" />

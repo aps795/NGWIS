@@ -1,5 +1,7 @@
 import React from 'react';
 import { SchoolDataProvider, useSchoolData } from './context/SchoolDataContext';
+import { AuthProvider } from './auth/AuthContext';
+import { ProtectedRoute } from './auth/ProtectedRoute';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { LightboxModal } from './components/common/LightboxModal';
@@ -25,6 +27,24 @@ import { FacebookIcon } from './components/common/FacebookIcon';
 const SchoolAppContent: React.FC = () => {
   const { currentView, setCurrentView, settings } = useSchoolData();
 
+  // 1. ISOLATED ADMIN LOGIN VIEW (Zero public layout, zero public headers/footers)
+  if (currentView === 'admin-login') {
+    return (
+      <div className="min-h-screen bg-slate-900 font-sans antialiased">
+        <AdminLoginPage />
+      </div>
+    );
+  }
+
+  // 2. ISOLATED ADMIN DASHBOARD VIEW (Guarded by ProtectedRoute, Zero public layout)
+  if (currentView === 'admin-dashboard') {
+    return (
+      <ProtectedRoute>
+        <AdminDashboard />
+      </ProtectedRoute>
+    );
+  }
+
   const renderCurrentPage = () => {
     switch (currentView) {
       case 'home':
@@ -47,23 +67,12 @@ const SchoolAppContent: React.FC = () => {
         return <NoticesPage />;
       case 'contact':
         return <ContactPage />;
-      case 'admin':
-        return <AdminDashboard />;
-      case 'admin-login':
-        return <AdminLoginPage />;
       default:
         return <HomePage />;
     }
   };
 
-  if (currentView === 'admin-login') {
-    return (
-      <div className="min-h-screen bg-slate-900 font-sans antialiased">
-        <AdminLoginPage />
-      </div>
-    );
-  }
-
+  // 3. PUBLIC WEBSITE LAYOUT (Institutional Header, Content, Footer, Floating CTAs)
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">
       {/* Sticky Header */}
@@ -81,8 +90,8 @@ const SchoolAppContent: React.FC = () => {
       <LightboxModal />
       <NoticeModal />
 
-      {/* Floating Bottom Action CTA (Mobile/Desktop) */}
-      {currentView !== 'admissions' && currentView !== 'admin' && (
+      {/* Floating Bottom Action CTA (Mobile/Desktop) - Only on public pages */}
+      {currentView !== 'admissions' && (
         <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-2.5">
           {/* Official Facebook Quick Trigger */}
           <a
@@ -114,8 +123,10 @@ const SchoolAppContent: React.FC = () => {
 
 export default function App() {
   return (
-    <SchoolDataProvider>
-      <SchoolAppContent />
-    </SchoolDataProvider>
+    <AuthProvider>
+      <SchoolDataProvider>
+        <SchoolAppContent />
+      </SchoolDataProvider>
+    </AuthProvider>
   );
 }
