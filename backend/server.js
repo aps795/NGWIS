@@ -47,8 +47,8 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/contact', contactRoutes);
 
-// Catch 404 for undefined /api routes
-app.all('/api/*', (req, res) => {
+// Catch 404 for undefined /api routes (prefix match, no wildcard needed)
+app.use('/api', (req, res) => {
   res.status(404).json({
     success: false,
     error: `API Route ${req.originalUrl} not found.`
@@ -58,7 +58,7 @@ app.all('/api/*', (req, res) => {
 // Serve static frontend assets if built (Render full-stack web service mode)
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
-  app.get('*', (req, res) => {
+  app.use((req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
