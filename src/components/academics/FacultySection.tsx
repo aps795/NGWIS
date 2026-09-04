@@ -18,9 +18,9 @@ export const FacultySection: React.FC = () => {
     return facultyList.filter(f => f.isSeniorLeadership);
   }, []);
 
-  // Filtered members for the full list / search
+  // Filtered members for the full list / search in strict S.No. order (1 to 42)
   const filteredList = useMemo(() => {
-    let list = facultyList;
+    let list = [...facultyList].sort((a, b) => a.id - b.id);
 
     // Category filter
     if (activeTab === 'senior') {

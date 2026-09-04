@@ -31,7 +31,8 @@ export type PageView =
   | 'admissions'
   | 'notices'
   | 'contact'
-  | 'admin';
+  | 'admin'
+  | 'faculty';
 
 interface SchoolDataContextType {
   currentView: PageView;
@@ -92,7 +93,7 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const hash = window.location.hash.replace('#', '') as PageView;
       const validViews: PageView[] = [
         'home', 'about', 'academics', 'facilities', 'activities',
-        'gallery', 'admissions', 'notices', 'contact', 'admin'
+        'gallery', 'admissions', 'notices', 'contact', 'admin', 'faculty'
       ];
       if (validViews.includes(hash)) {
         setCurrentViewRaw(hash);

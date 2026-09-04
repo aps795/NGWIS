@@ -3,12 +3,12 @@ export interface FacultyMember {
   name: string;
   designation: string;
   departmentOrSubject: string;
-  isSeniorLeadership: boolean; // Top bold teachers (1, 2, 3, 4, 5, 6, 7, 8, 11, 22)
+  isSeniorLeadership: boolean; // Bold in official school records (1, 2, 3, 4, 5, 6, 7, 8, 11, 22)
   roleCategory: 'leadership' | 'hod' | 'coordinator' | 'teacher' | 'parent_teacher';
 }
 
+// Complete 42 staff members in strict Serial Number (S.No. / Kram) order 1 to 42
 export const facultyList: FacultyMember[] = [
-  // --- SENIOR FACULTY & KEY LEADERSHIP (BOLD IN OFFICIAL RECORDS) ---
   {
     id: 1,
     name: 'Mr. Virendra Nath Singh',
@@ -74,24 +74,6 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'hod'
   },
   {
-    id: 11,
-    name: 'Mr. Manoj Kumar',
-    designation: 'Associate Teacher – Science',
-    departmentOrSubject: 'General & Applied Sciences',
-    isSeniorLeadership: true,
-    roleCategory: 'teacher'
-  },
-  {
-    id: 22,
-    name: 'Mr. Pankaj Dubey',
-    designation: 'Associate Teacher – Hindi',
-    departmentOrSubject: 'Hindi Language & Vyakaran',
-    isSeniorLeadership: true,
-    roleCategory: 'teacher'
-  },
-
-  // --- TEACHING FACULTY & STAFF ---
-  {
     id: 9,
     name: 'Mr. Sunil Kumar',
     designation: 'Associate Teacher – Math',
@@ -106,6 +88,14 @@ export const facultyList: FacultyMember[] = [
     departmentOrSubject: 'Parent-Teacher Collaboration & Student Support',
     isSeniorLeadership: false,
     roleCategory: 'parent_teacher'
+  },
+  {
+    id: 11,
+    name: 'Mr. Manoj Kumar',
+    designation: 'Associate Teacher – Science',
+    departmentOrSubject: 'General & Applied Sciences',
+    isSeniorLeadership: true,
+    roleCategory: 'teacher'
   },
   {
     id: 12,
@@ -185,6 +175,14 @@ export const facultyList: FacultyMember[] = [
     designation: 'Assistant Teacher – Hindi',
     departmentOrSubject: 'Hindi Language & Moral Education',
     isSeniorLeadership: false,
+    roleCategory: 'teacher'
+  },
+  {
+    id: 22,
+    name: 'Mr. Pankaj Dubey',
+    designation: 'Associate Teacher – Hindi',
+    departmentOrSubject: 'Hindi Language & Vyakaran',
+    isSeniorLeadership: true,
     roleCategory: 'teacher'
   },
   {

@@ -30,6 +30,7 @@ export const Header: React.FC = () => {
     { label: 'Home', view: 'home' },
     { label: 'About Us', view: 'about' },
     { label: 'Academics', view: 'academics' },
+    { label: 'Our Faculty', view: 'faculty' },
     { label: 'Facilities', view: 'facilities' },
     { label: 'Activities', view: 'activities' },
     { label: 'Gallery', view: 'gallery' },
@@ -135,14 +136,14 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1">
             {navItems.map((item) => {
               const isActive = currentView === item.view;
               return (
                 <button
                   key={item.view}
                   onClick={() => handleNavClick(item.view)}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
+                  className={`px-2 xl:px-2.5 py-1.5 rounded-md text-[11px] xl:text-xs font-medium tracking-wide transition-all ${
                     isActive
                       ? 'bg-academic-700/80 text-white shadow-sm font-semibold'
                       : 'text-slate-200 hover:text-white hover:bg-navy-800/80'

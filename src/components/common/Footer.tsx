@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs">
               {[
                 { label: 'About Us', view: 'about' as PageView },
-                { label: 'Faculty & Staff (42)', view: 'academics' as PageView },
+                { label: 'Our Faculty (42 Staff)', view: 'faculty' as PageView },
                 { label: 'Academics & Pedagogy', view: 'academics' as PageView },
                 { label: 'Campus Facilities', view: 'facilities' as PageView },
                 { label: 'Sports & Student Life', view: 'activities' as PageView },

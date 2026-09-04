@@ -16,6 +16,7 @@ import { AdmissionsPage } from './pages/AdmissionsPage';
 import { NoticesPage } from './pages/NoticesPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { FacultyPage } from './pages/FacultyPage';
 
 import { GraduationCap } from 'lucide-react';
 import { FacebookIcon } from './components/common/FacebookIcon';
@@ -31,6 +32,8 @@ const SchoolAppContent: React.FC = () => {
         return <AboutPage />;
       case 'academics':
         return <AcademicsPage />;
+      case 'faculty':
+        return <FacultyPage />;
       case 'facilities':
         return <FacilitiesPage />;
       case 'activities':
