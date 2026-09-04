@@ -10,7 +10,7 @@ const getOrigins = () => {
     process.env.ALLOWED_ORIGINS.split(',').forEach(o => list.push(o.trim().replace(/\/$/, '')));
   }
   if (list.length === 0) {
-    list.push('http://localhost:5173', 'https://aps795.github.io');
+    list.push('http://localhost:5173', 'https://aps795.github.io', 'https://ngwis.vercel.app');
   }
   return list;
 };
