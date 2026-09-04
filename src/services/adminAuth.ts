@@ -35,6 +35,7 @@ const SALT = 'ngwis_sec_2016_salt';
 const MASTER_OTP_HASH = '601ba473e6d22ef1492b429d20c5d5f2a1b9bbf5cbef6c74ad698b6aa50085a6'; // Salted hash for 201608
 
 // Authorized Salted Hashes (No plain text passwords!)
+const HASH_NGWI = '0ad557e2526686ecefbc9298d079a3df18ff5df3ed195922285e61681ddcfa57'; // Salted hash for admin@ngwi123
 const HASH_ADMIN = '631afac10b4ff7946bab2ed5fb404dfcab211aa4cc1cd34af06587d21234c56c';
 const HASH_IT = '21dc3b7f5ca0ee8098951bd2eecb348bc9b763e29c6e9b11299016f4049e1279';
 
@@ -83,8 +84,24 @@ export async function authenticateCredentials(
   let verifiedUser: AdminUser | null = null;
   let destination = '';
 
-  // 1. Check School Administration
+  // 1. Check Primary School Administration (ngwimail@gmail.com)
   if (
+    (cleanId === 'ngwimail@gmail.com' || cleanId === 'ngwi' || cleanId === 'ngwimail') &&
+    passHash === HASH_NGWI
+  ) {
+    verifiedUser = {
+      id: 'adm-000',
+      email: 'ngwimail@gmail.com',
+      name: 'School Administration & Principal Desk',
+      role: 'SCHOOL_ADMIN',
+      department: 'Executive Leadership & Administration',
+      loginTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+    };
+    destination = 'ngwimail@gmail.com';
+  }
+
+  // 2. Check Institutional Administration (admin@newglobalwisdom.edu.in)
+  else if (
     (cleanId === 'admin@newglobalwisdom.edu.in' ||
       cleanId === 'admin' ||
       cleanId === 'administration@newglobalwisdom.edu.in' ||

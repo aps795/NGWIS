@@ -1,6 +1,14 @@
 {
   "adminUsers": [
     {
+      "id": "adm_super",
+      "email": "ngwimail@gmail.com",
+      "name": "Principal & School Administration",
+      "role": "admin",
+      "department": "Executive Leadership & Administration",
+      "passwordHash": "$2b$10$WAZbALIXoD8bwlyKyBL.aeLSfxUlA8SF1elE/EQs4ISbhFz7UuPKO"
+    },
+    {
       "id": "adm_1",
       "email": "admin@newglobalwisdom.edu.in",
       "name": "School Administration",

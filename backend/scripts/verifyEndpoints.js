@@ -51,8 +51,8 @@ async function runTests() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'admin@newglobalwisdom.edu.in',
-        password: 'Admin@NGWIS2016'
+        email: 'ngwimail@gmail.com',
+        password: 'admin@ngwi123'
       })
     });
     const loginJson = await loginRes.json();

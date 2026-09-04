@@ -265,7 +265,7 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ initialError }) 
                   type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder="admin@newglobalwisdom.edu.in"
+                  placeholder="ngwimail@gmail.com"
                   disabled={isLocked || isLoading}
                   className="w-full pl-10 pr-4 py-2.5 bg-navy-900 border border-navy-700 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent transition-all placeholder:text-slate-500 disabled:opacity-50"
                   autoComplete="username"
