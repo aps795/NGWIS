@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { Quote, Sparkles, Settings, CheckCircle2 } from 'lucide-react';
+import { Quote, Sparkles, CheckCircle2 } from 'lucide-react';
 import founderPhoto from '../../assets/rajnikant-singh.jpg';
 import schoolLogo from '../../assets/logo.jpg';
 
 export const PrincipalMessage: React.FC = () => {
-  const { settings, setCurrentView } = useSchoolData();
+  const { settings } = useSchoolData();
 
   return (
     <section className="py-16 sm:py-24 bg-gradient-to-b from-slate-50 via-slate-100/70 to-slate-50 relative">
@@ -43,18 +43,6 @@ export const PrincipalMessage: React.FC = () => {
                 New Global Wisdom International School <br />
                 Bhujehuan, Sauna, Ghazipur
               </p>
-
-              {/* Admin quick customize button */}
-              <div className="mt-6 pt-4 border-t border-navy-800 w-full">
-                <button
-                  onClick={() => setCurrentView('admin')}
-                  className="text-[11px] text-slate-300 hover:text-gold-300 transition-colors inline-flex items-center gap-1.5"
-                  title="Edit leadership details in Admin CMS"
-                >
-                  <Settings className="w-3 h-3 text-gold-400" />
-                  <span>Update from Admin CMS</span>
-                </button>
-              </div>
             </div>
 
             {/* Right Message Content */}

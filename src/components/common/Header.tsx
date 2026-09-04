@@ -5,7 +5,6 @@ import {
   X,
   GraduationCap,
   MapPin,
-  Shield,
   ChevronRight,
   Sparkles
 } from 'lucide-react';
@@ -85,15 +84,6 @@ export const Header: React.FC = () => {
             >
               <FacebookIcon className="w-3.5 h-3.5 text-blue-400" />
             </a>
-            <span className="text-navy-700">|</span>
-            <button
-              onClick={() => handleNavClick('admin')}
-              className="hover:text-gold-300 transition-colors flex items-center gap-1 font-medium text-slate-300"
-              title="School Administration Portal"
-            >
-              <Shield className="w-3.5 h-3.5 text-gold-400" />
-              <span>Admin Portal</span>
-            </button>
           </div>
         </div>
       </div>
@@ -236,14 +226,6 @@ export const Header: React.FC = () => {
                 <YouTubeIcon className="w-4 h-4" />
                 <span>Official YouTube Channel</span>
               </a>
-
-              <button
-                onClick={() => handleNavClick('admin')}
-                className="w-full bg-navy-900 hover:bg-navy-800 text-slate-300 hover:text-white text-xs font-semibold py-2.5 px-4 rounded-lg flex items-center justify-center space-x-2 border border-navy-700"
-              >
-                <Shield className="w-4 h-4 text-gold-400" />
-                <span>Administration & IT Portal</span>
-              </button>
             </div>
           </div>
         </div>

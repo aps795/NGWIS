@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
-import { Quote, ChevronLeft, ChevronRight, UserCheck, Shield, PlusCircle } from 'lucide-react';
+import { Quote, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
 
 export const TestimonialsSection: React.FC = () => {
-  const { testimonials, setCurrentView } = useSchoolData();
+  const { testimonials } = useSchoolData();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNext = () => {
@@ -76,21 +76,6 @@ export const TestimonialsSection: React.FC = () => {
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
-          </div>
-
-          {/* Admin Note Badge */}
-          <div className="mt-6 bg-gold-50/70 border border-gold-200 rounded-xl p-3 text-xs text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span className="flex items-center gap-1.5 text-slate-700">
-              <Shield className="w-4 h-4 text-gold-600 flex-shrink-0" />
-              <span>School Administrators can add, edit, or publish verified parent reviews directly from the Admin CMS.</span>
-            </span>
-            <button
-              onClick={() => setCurrentView('admin')}
-              className="text-xs font-bold text-navy-900 hover:text-gold-700 underline flex items-center gap-1 flex-shrink-0"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              Manage Testimonials
-            </button>
           </div>
         </div>
       </div>

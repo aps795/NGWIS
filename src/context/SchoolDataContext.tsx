@@ -20,6 +20,7 @@ import {
   initialTestimonials,
   initialEnquiries
 } from '../data/initialData';
+import { validateSessionToken } from '../services/adminAuth';
 
 export type PageView =
   | 'home'
@@ -32,6 +33,7 @@ export type PageView =
   | 'notices'
   | 'contact'
   | 'admin'
+  | 'admin-login'
   | 'faculty';
 
 interface SchoolDataContextType {
@@ -81,27 +83,60 @@ const STORAGE_PREFIX = 'ngwis_school_v7_';
 export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setCurrentViewRaw] = useState<PageView>('home');
 
-  // Handle URL hash sync
+  // Handle URL navigation and route protection
   const setCurrentView = (view: PageView) => {
+    if (view === 'admin') {
+      const active = validateSessionToken();
+      if (!active) {
+        // Redirect unauthorized user to admin-login
+        setCurrentViewRaw('admin-login');
+        window.location.hash = 'admin-login';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+    }
     setCurrentViewRaw(view);
     window.location.hash = view;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash.replace('#', '') as PageView;
+    const handleRoute = () => {
+      // 1. Check pathname (e.g. /admin, /admin-login)
+      const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+      let detectedView: PageView | null = null;
+      if (path.endsWith('/admin-login') || path === 'admin-login') {
+        detectedView = 'admin-login';
+      } else if (path.endsWith('/admin') || path === 'admin') {
+        detectedView = 'admin';
+      }
+
+      // 2. Check hash (e.g. #admin-login, #admin, #gallery, etc.)
+      const hash = window.location.hash.replace('#', '').toLowerCase() as PageView;
       const validViews: PageView[] = [
         'home', 'about', 'academics', 'facilities', 'activities',
-        'gallery', 'admissions', 'notices', 'contact', 'admin', 'faculty'
+        'gallery', 'admissions', 'notices', 'contact', 'admin', 'admin-login', 'faculty'
       ];
-      if (validViews.includes(hash)) {
-        setCurrentViewRaw(hash);
+
+      const targetView = detectedView || (validViews.includes(hash) ? hash : null);
+
+      if (targetView) {
+        if (targetView === 'admin') {
+          const active = validateSessionToken();
+          if (!active) {
+            // Protected route: Redirect to admin-login if not authenticated
+            setCurrentViewRaw('admin-login');
+            window.location.hash = 'admin-login';
+            return;
+          }
+        }
+        setCurrentViewRaw(targetView);
       }
     };
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
+
+    handleRoute();
+    window.addEventListener('hashchange', handleRoute);
+    return () => window.removeEventListener('hashchange', handleRoute);
   }, []);
 
   // Settings

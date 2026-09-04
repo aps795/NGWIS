@@ -4,8 +4,7 @@ import {
   MapPin,
   Clock,
   ChevronRight,
-  GraduationCap,
-  Shield
+  GraduationCap
 } from 'lucide-react';
 import { FacebookIcon } from './FacebookIcon';
 import { YouTubeIcon } from './YouTubeIcon';
@@ -130,7 +129,6 @@ export const Footer: React.FC = () => {
                 { label: 'School Events Calendar', view: 'home' as PageView },
                 { label: 'Admission Enquiry Form', view: 'admissions' as PageView },
                 { label: 'Contact & Location Guide', view: 'contact' as PageView },
-                { label: 'School Admin Dashboard', view: 'admin' as PageView },
               ].map((link, idx) => (
                 <li key={idx}>
                   <button
@@ -196,16 +194,8 @@ export const Footer: React.FC = () => {
 
           <div className="flex items-center space-x-4 text-[11px]">
             <span className="text-slate-400">
-              Bhujehuan, Sauna, Ghazipur, Uttar Pradesh
+              Bhujehuan, Sauna, Ghazipur, Uttar Pradesh – 233307
             </span>
-            <button
-              onClick={() => handleNav('admin')}
-              className="text-gold-400 hover:text-gold-300 font-medium flex items-center gap-1 hover:underline transition-colors"
-              title="Restricted access for School IT Department and Senior Administration"
-            >
-              <Shield className="w-3 h-3 text-gold-400" />
-              <span>Administration & IT Portal</span>
-            </button>
           </div>
         </div>
       </div>

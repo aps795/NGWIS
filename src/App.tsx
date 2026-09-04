@@ -16,6 +16,7 @@ import { AdmissionsPage } from './pages/AdmissionsPage';
 import { NoticesPage } from './pages/NoticesPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminLoginPage } from './pages/AdminLoginPage';
 import { FacultyPage } from './pages/FacultyPage';
 
 import { GraduationCap } from 'lucide-react';
@@ -48,10 +49,20 @@ const SchoolAppContent: React.FC = () => {
         return <ContactPage />;
       case 'admin':
         return <AdminDashboard />;
+      case 'admin-login':
+        return <AdminLoginPage />;
       default:
         return <HomePage />;
     }
   };
+
+  if (currentView === 'admin-login') {
+    return (
+      <div className="min-h-screen bg-slate-900 font-sans antialiased">
+        <AdminLoginPage />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans antialiased">

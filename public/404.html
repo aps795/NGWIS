@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>New Global Wisdom International School</title>
+    <script>
+      (function() {
+        var pathSegments = window.location.pathname.split('/').filter(Boolean);
+        var repoName = 'NGWIS';
+        var target = (pathSegments.length > 0 && pathSegments[0] === repoName)
+          ? pathSegments.slice(1).join('/')
+          : pathSegments.join('/');
+        
+        var search = window.location.search || '';
+        var hash = target ? '#' + target : '';
+        var basePath = (pathSegments.length > 0 && pathSegments[0] === repoName) ? '/' + repoName + '/' : '/';
+        window.location.replace(basePath + (hash ? hash : '') + search);
+      })();
+    </script>
+  </head>
+  <body style="background-color: #0b2545; color: white; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+    <div style="text-align: center;">
+      <h2>Redirecting to New Global Wisdom International School...</h2>
+    </div>
+  </body>
+</html>

@@ -21,7 +21,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import type { NoticeCategory, EnquiryStatus } from '../types/school';
-import { AdminLoginGate, type AdminUser } from '../components/admin/AdminLoginGate';
+import { validateSessionToken, destroySession, type AdminUser } from '../services/adminAuth';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -49,25 +49,24 @@ export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'enquiries' | 'notices' | 'events' | 'gallery' | 'testimonials' | 'settings'>('enquiries');
 
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(() => {
-    try {
-      const session = sessionStorage.getItem('ngwis_admin_auth_session');
-      if (session) return JSON.parse(session);
-      const remembered = localStorage.getItem('ngwis_admin_auth_remembered');
-      if (remembered) return JSON.parse(remembered);
-      return null;
-    } catch {
-      return null;
-    }
+    const session = validateSessionToken();
+    return session ? session.user : null;
   });
 
-  const handleLogout = () => {
-    try {
-      sessionStorage.removeItem('ngwis_admin_auth_session');
-      localStorage.removeItem('ngwis_admin_auth_remembered');
-    } catch {
-      // ignore
+  // Verify authentication on mount and redirect if unauthenticated
+  React.useEffect(() => {
+    const session = validateSessionToken();
+    if (!session) {
+      setCurrentView('admin-login');
+    } else {
+      setCurrentUser(session.user);
     }
+  }, [setCurrentView]);
+
+  const handleLogout = () => {
+    destroySession();
     setCurrentUser(null);
+    setCurrentView('admin-login');
   };
 
   // Enquiries search & filter
@@ -193,10 +192,10 @@ export const AdminDashboard: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <AdminLoginGate
-        onLoginSuccess={(user) => setCurrentUser(user)}
-        onReturnHome={() => setCurrentView('home')}
-      />
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4 text-white">
+        <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-xs font-semibold text-slate-300">Verifying administrator authorization...</p>
+      </div>
     );
   }
 
