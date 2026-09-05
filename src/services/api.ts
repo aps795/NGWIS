@@ -1,37 +1,41 @@
 /**
  * NGWIS Client API Service
- * Connects to the backend REST API if VITE_API_BASE_URL is provided,
- * otherwise transparently falls back to local storage and offline services.
+ * Connects to the backend REST API (/api/*), persists data,
+ * and triggers administrative email dispatches.
  */
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
-
-export const isBackendConfigured = (): boolean => {
-  return Boolean(API_BASE_URL);
-};
 
 export interface ApiResponse<T = any> {
   success: boolean;
   message?: string;
   error?: string;
   data?: T;
+  trackingId?: string;
   [key: string]: any;
 }
 
-// Helper fetch wrapper with timeout
-async function apiFetch<T = any>(
+const getApiBaseUrl = (): string => {
+  let url = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/$/, '');
+  if (url.includes('aps795s-projects.vercel.app')) return '';
+  if (url.endsWith('/api')) url = url.slice(0, -4);
+  return url;
+};
+
+// Helper fetch wrapper with timeout and automatic same-origin fallback
+export async function apiFetch<T = any>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  if (!API_BASE_URL) {
-    return { success: false, error: 'No backend API configured.' };
-  }
+  const base = getApiBaseUrl();
+  const normalizedEndpoint = endpoint.startsWith('/api')
+    ? endpoint
+    : `/api${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const primaryUrl = base ? `${base}${normalizedEndpoint}` : normalizedEndpoint;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 12000);
 
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const res = await fetch(primaryUrl, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +47,25 @@ async function apiFetch<T = any>(
     const json = await res.json();
     return json;
   } catch (err: any) {
-    console.warn(`[NGWIS API Warning] ${endpoint}:`, err.message || err);
+    console.warn(`[NGWIS API Warning] ${primaryUrl} failed:`, err.message || err);
+
+    // If external primary URL failed, retry same-origin relative URL
+    if (base && primaryUrl !== normalizedEndpoint) {
+      try {
+        const fallbackRes = await fetch(normalizedEndpoint, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+          }
+        });
+        const fallbackJson = await fallbackRes.json();
+        return fallbackJson;
+      } catch (fallbackErr: any) {
+        return { success: false, error: fallbackErr.message || 'Network error' };
+      }
+    }
+
     return {
       success: false,
       error: err.name === 'AbortError' ? 'Server timeout' : (err.message || 'Network error')
@@ -53,7 +75,7 @@ async function apiFetch<T = any>(
   }
 }
 
-// 1. Submit Admission Enquiry
+// 1. Submit Admission Enquiry -> Saves in DB and emails newglobalwisdominternationalsc@gmail.com
 export async function apiSubmitEnquiry(enquiry: {
   studentName: string;
   parentName: string;
@@ -81,30 +103,4 @@ export async function apiSubmitContact(contact: {
     method: 'POST',
     body: JSON.stringify(contact)
   });
-}
-
-// 3. Admin Authentication Step 1 (Login)
-export async function apiAdminLogin(email: string, password: string) {
-  return apiFetch('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify({ email, password })
-  });
-}
-
-// 4. Admin Authentication Step 2 (Verify 2FA)
-export async function apiAdminVerify2FA(tempSessionId: string, code: string) {
-  return apiFetch('/auth/verify-2fa', {
-    method: 'POST',
-    body: JSON.stringify({ tempSessionId, code })
-  });
-}
-
-// 5. Fetch Notices
-export async function apiFetchNotices() {
-  return apiFetch('/notices');
-}
-
-// 6. Fetch Events
-export async function apiFetchEvents() {
-  return apiFetch('/events');
 }

@@ -1,4 +1,5 @@
 import { db } from '../storage/dataStore.js';
+import { sendNewEnquiryNotificationEmail } from '../services/emailService.js';
 
 export const createEnquiry = async (req, res, next) => {
   try {
@@ -30,6 +31,11 @@ export const createEnquiry = async (req, res, next) => {
     };
 
     const saved = db.addEnquiry(newEnquiry);
+
+    // Asynchronously dispatch notification email with full details to newglobalwisdominternationalsc@gmail.com
+    sendNewEnquiryNotificationEmail(saved).catch((err) => {
+      console.error('[Enquiry Email Notification Error]:', err);
+    });
 
     return res.status(201).json({
       success: true,

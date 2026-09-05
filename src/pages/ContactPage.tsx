@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSchoolData } from '../context/SchoolDataContext';
 import { SectionHeading } from '../components/common/SectionHeading';
+import { apiSubmitEnquiry } from '../services/api';
 import {
   MapPin,
   Clock,
@@ -30,16 +31,24 @@ export const ContactPage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
 
+    const enquiryPayload = {
+      studentName: `General Enquiry: ${formData.subject || 'Campus Visit'}`,
+      parentName: formData.name,
+      classApplying: 'General Contact',
+      mobile: formData.phone,
+      email: formData.email,
+      message: formData.message
+    };
+
     // Save into SchoolDataContext as contact enquiry
     setTimeout(() => {
-      addEnquiry({
-        studentName: `General Enquiry: ${formData.subject || 'Campus Visit'}`,
-        parentName: formData.name,
-        classApplying: 'General Contact',
-        mobile: formData.phone,
-        email: formData.email,
-        message: formData.message
+      addEnquiry(enquiryPayload);
+
+      // Dispatch to backend API to send email notification to newglobalwisdominternationalsc@gmail.com
+      apiSubmitEnquiry(enquiryPayload).catch((err) => {
+        console.warn('[ContactPage] API enquiry dispatch error:', err);
       });
+
       setSubmitting(false);
       setSubmitted(true);
       setFormData({ name: '', phone: '', email: '', subject: '', message: '' });

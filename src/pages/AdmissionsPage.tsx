@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSchoolData } from '../context/SchoolDataContext';
 import { SectionHeading } from '../components/common/SectionHeading';
+import { apiSubmitEnquiry } from '../services/api';
 import {
   CheckCircle2,
   FileText,
@@ -102,6 +103,12 @@ export const AdmissionsPage: React.FC = () => {
     try {
       const generatedId = addEnquiry(formData);
       setSuccessRef(generatedId);
+
+      // Submit to backend API to save and dispatch notification email to newglobalwisdominternationalsc@gmail.com
+      apiSubmitEnquiry(formData).catch((err) => {
+        console.warn('[AdmissionsPage] API enquiry dispatch error:', err);
+      });
+
       setFormData({
         studentName: '',
         parentName: '',
