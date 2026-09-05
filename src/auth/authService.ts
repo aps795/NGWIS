@@ -44,11 +44,76 @@ export interface ResendOtpResult {
 
 const STORAGE_KEY = 'ngwis_admin_session';
 
-// Support both standard env variable names, or default to relative path for proxy/serverless
+/**
+ * Normalizes the API base URL.
+ * Automatically ignores broken/private Vercel preview deployment URLs
+ * and prevents double-pathing (e.g. /api/api).
+ */
 const getApiBaseUrl = (): string => {
-  const url = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '';
-  return url.replace(/\/$/, '');
+  let url = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').trim();
+  url = url.replace(/\/$/, '');
+
+  // Ignore preview deployments that have Vercel SSO/authentication protection enabled
+  if (url.includes('aps795s-projects.vercel.app')) {
+    return '';
+  }
+
+  // Strip trailing /api if user specified it so ${apiUrl}/api/... does not become /api/api/...
+  if (url.endsWith('/api')) {
+    url = url.slice(0, -4);
+  }
+
+  return url;
 };
+
+/**
+ * Resilient API POST helper.
+ * Attempts configured API URL and automatically falls back to same-origin relative
+ * path (/api/...) if the external backend returns CORS or network failure.
+ */
+async function apiPost(endpoint: string, body: any): Promise<{ ok: boolean; status: number; data: any }> {
+  const base = getApiBaseUrl();
+  const primaryUrl = base ? `${base}${endpoint}` : endpoint;
+
+  try {
+    const res = await fetch(primaryUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    const text = await res.text();
+    let data: any = {};
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(`Invalid non-JSON response received from ${primaryUrl}`);
+    }
+
+    return { ok: res.ok, status: res.status, data };
+  } catch (primaryErr) {
+    // If an external URL failed (e.g. CORS block, sleeping Render dyno, or network glitch),
+    // automatically fallback to the local same-origin endpoint if we weren't already using it
+    if (base && primaryUrl !== endpoint) {
+      console.warn(`[AuthService] Primary endpoint (${primaryUrl}) failed. Falling back to same-origin ${endpoint}...`);
+      try {
+        const fallbackRes = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        const fallbackText = await fallbackRes.text();
+        const fallbackData = JSON.parse(fallbackText);
+        return { ok: fallbackRes.ok, status: fallbackRes.status, data: fallbackData };
+      } catch (fallbackErr) {
+        console.error('[AuthService Fallback Error]:', fallbackErr);
+        throw fallbackErr;
+      }
+    }
+    throw primaryErr;
+  }
+}
 
 /**
  * Retrieve current active session from sessionStorage.
@@ -81,19 +146,10 @@ export async function login(emailInput: string, passwordInput: string): Promise<
     };
   }
 
-  const apiUrl = getApiBaseUrl();
-  const targetUrl = apiUrl ? `${apiUrl}/api/admin/login` : '/api/admin/login';
-
   try {
-    const response = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+    const { ok, data } = await apiPost('/api/admin/login', { email, password });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
+    if (!ok || !data.success) {
       return {
         success: false,
         error: data.error || 'Authentication failed. Please verify your credentials.'
@@ -151,19 +207,10 @@ export async function verifyOtp(tempSessionId: string, otpInput: string): Promis
     };
   }
 
-  const apiUrl = getApiBaseUrl();
-  const targetUrl = apiUrl ? `${apiUrl}/api/admin/verify-otp` : '/api/admin/verify-otp';
-
   try {
-    const response = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tempSessionId, otp })
-    });
+    const { ok, data } = await apiPost('/api/admin/verify-otp', { tempSessionId, otp });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
+    if (!ok || !data.success) {
       return {
         success: false,
         error: data.error || 'Invalid verification code. Please try again.'
@@ -198,19 +245,10 @@ export async function resendOtp(tempSessionId: string): Promise<ResendOtpResult>
     return { success: false, error: 'Session expired. Please sign in again.' };
   }
 
-  const apiUrl = getApiBaseUrl();
-  const targetUrl = apiUrl ? `${apiUrl}/api/admin/resend-otp` : '/api/admin/resend-otp';
-
   try {
-    const response = await fetch(targetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tempSessionId })
-    });
+    const { ok, data } = await apiPost('/api/admin/resend-otp', { tempSessionId });
 
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
+    if (!ok || !data.success) {
       return {
         success: false,
         error: data.error || 'Failed to resend code.',
@@ -238,8 +276,8 @@ export async function resendOtp(tempSessionId: string): Promise<ResendOtpResult>
  */
 export function logout(): void {
   try {
-    const apiUrl = getApiBaseUrl();
-    const targetUrl = apiUrl ? `${apiUrl}/api/admin/logout` : '/api/admin/logout';
+    const base = getApiBaseUrl();
+    const targetUrl = base ? `${base}/api/admin/logout` : '/api/admin/logout';
     fetch(targetUrl, { method: 'POST' }).catch(() => {});
   } catch {
     // ignore
