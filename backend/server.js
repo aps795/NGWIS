@@ -42,6 +42,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes Mounting
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', authRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/events', eventRoutes);

@@ -2,11 +2,11 @@
   "adminUsers": [
     {
       "id": "adm_super",
-      "email": "ngwimail@gmail.com",
+      "email": "newglobalwisdominternationalsc@gmail.com",
       "name": "Principal & School Administration",
       "role": "admin",
       "department": "Executive Leadership & Administration",
-      "passwordHash": "$2b$10$WAZbALIXoD8bwlyKyBL.aeLSfxUlA8SF1elE/EQs4ISbhFz7UuPKO"
+      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
     },
     {
       "id": "adm_1",
@@ -14,7 +14,7 @@
       "name": "School Administration",
       "role": "admin",
       "department": "Senior Administration & Leadership",
-      "passwordHash": "$2a$10$7zB3cT7w6L3c6hL8H4W1yuxP0E8mN0V9iO5jD7K3F2s1A0Q9W8e.e"
+      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
     },
     {
       "id": "it_1",
@@ -22,7 +22,7 @@
       "name": "IT Department Administrator",
       "role": "it_admin",
       "department": "School IT & Infrastructure",
-      "passwordHash": "$2a$10$7zB3cT7w6L3c6hL8H4W1yuxP0E8mN0V9iO5jD7K3F2s1A0Q9W8e.e"
+      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
     }
   ],
   "notices": [

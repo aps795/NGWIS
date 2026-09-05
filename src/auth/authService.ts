@@ -2,9 +2,9 @@
  * NGWIS Authentication Service
  * 
  * SECURITY COMPLIANCE:
- * - NO admin passwords, password hashes, or secrets are stored in this file.
- * - Communicates with the backend server via VITE_API_URL or VITE_API_BASE_URL.
- * - The backend is responsible for all credential and password verification.
+ * - NO passwords, password hashes, OTP codes, or secrets are stored in this file.
+ * - Communicates with backend endpoints (/api/admin/* and /api/auth/*).
+ * - All credential validation and OTP generation occur strictly server-side.
  */
 
 export interface UserSession {
@@ -16,9 +16,35 @@ export interface UserSession {
   token: string;
 }
 
+export interface LoginResult {
+  success: boolean;
+  otpRequired?: boolean;
+  tempSessionId?: string;
+  email?: string;
+  expiresIn?: number;
+  resendCooldown?: number;
+  session?: UserSession;
+  error?: string;
+}
+
+export interface VerifyOtpResult {
+  success: boolean;
+  session?: UserSession;
+  error?: string;
+}
+
+export interface ResendOtpResult {
+  success: boolean;
+  message?: string;
+  expiresIn?: number;
+  resendCooldown?: number;
+  retryAfter?: number;
+  error?: string;
+}
+
 const STORAGE_KEY = 'ngwis_admin_session';
 
-// Support both standard env variable names
+// Support both standard env variable names, or default to relative path for proxy/serverless
 const getApiBaseUrl = (): string => {
   const url = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '';
   return url.replace(/\/$/, '');
@@ -41,51 +67,52 @@ export function getCurrentSession(): UserSession | null {
 }
 
 /**
- * Perform login request.
- * When backend API is available, calls POST ${API_URL}/api/auth/admin/login.
- * In local frontend-only mock development mode (no backend configured),
- * creates a mock development session without storing any credentials in the bundle.
+ * Step 1: Submit Admin Email & Password.
+ * Backend verifies credentials and dispatches 6-digit OTP to admin Gmail.
  */
-export async function login(
-  emailInput: string,
-  passwordInput: string,
-  captchaResponse: string
-): Promise<{ success: boolean; session?: UserSession; error?: string }> {
+export async function login(emailInput: string, passwordInput: string): Promise<LoginResult> {
   const email = emailInput.trim();
   const password = passwordInput.trim();
 
   if (!email || !password) {
-    return { success: false, error: 'Please enter both your Admin ID / Email and Password.' };
-  }
-
-  if (!captchaResponse || captchaResponse.trim() === '') {
-    return { success: false, error: 'Please complete the verification challenge.' };
+    return {
+      success: false,
+      error: 'Please enter both your Admin User ID / Email and Password.'
+    };
   }
 
   const apiUrl = getApiBaseUrl();
+  const targetUrl = apiUrl ? `${apiUrl}/api/admin/login` : '/api/admin/login';
 
-  // 1. Backend Integration Mode
-  if (apiUrl) {
-    try {
-      const response = await fetch(`${apiUrl}/api/auth/admin/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          password,
-          captcha: captchaResponse
-        })
-      });
+  try {
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok || !data.success) {
-        return {
-          success: false,
-          error: data.error || 'Authentication failed. Please verify your credentials.'
-        };
-      }
+    if (!response.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || 'Authentication failed. Please verify your credentials.'
+      };
+    }
 
+    if (data.step === 'otp_required' || data.step === '2fa_required') {
+      return {
+        success: true,
+        otpRequired: true,
+        tempSessionId: data.tempSessionId,
+        email: data.email || email,
+        expiresIn: data.expiresIn || 300,
+        resendCooldown: data.resendCooldown || 60
+      };
+    }
+
+    // Direct session fallback if 2FA disabled on server
+    if (data.token) {
       const session: UserSession = {
         id: data.user?.id || 'admin-user',
         email: data.user?.email || email,
@@ -94,50 +121,130 @@ export async function login(
         department: data.user?.department || 'School Administration',
         token: data.token
       };
-
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
       return { success: true, session };
-    } catch (err: any) {
-      console.error('[AuthService Error]:', err);
-      return {
-        success: false,
-        error: 'Unable to connect to administration authentication server. Please check network.'
-      };
     }
-  }
 
-  // 2. Frontend Development Mode (Backend not yet attached)
-  // SECURITY: No passwords or password hashes are hardcoded here.
-  // Requires properly formatted institutional email.
-  const isValidFormat = email.includes('@') && email.length >= 5 && password.length >= 6;
-  if (!isValidFormat) {
     return {
       success: false,
-      error: 'Invalid credentials. Password must be at least 6 characters.'
+      error: 'Unexpected response from administration server.'
+    };
+  } catch (err) {
+    console.error('[AuthService Error]:', err);
+    return {
+      success: false,
+      error: 'Unable to connect to administration authentication server. Please check your network or try again.'
     };
   }
-
-  const devSession: UserSession = {
-    id: 'admin_dev_' + Date.now(),
-    email: email,
-    name: email.split('@')[0].toUpperCase() + ' Administration',
-    role: 'ADMIN',
-    department: 'School Administration Desk',
-    token: 'dev_token_' + Math.random().toString(36).substring(2)
-  };
-
-  sessionStorage.setItem(STORAGE_KEY, JSON.stringify(devSession));
-  return { success: true, session: devSession };
 }
 
 /**
- * Terminate active session and clear storage.
+ * Step 2: Verify 6-digit OTP code received in email.
+ */
+export async function verifyOtp(tempSessionId: string, otpInput: string): Promise<VerifyOtpResult> {
+  const otp = otpInput.trim();
+
+  if (!tempSessionId || !otp || otp.length !== 6) {
+    return {
+      success: false,
+      error: 'Please enter the complete 6-digit verification code.'
+    };
+  }
+
+  const apiUrl = getApiBaseUrl();
+  const targetUrl = apiUrl ? `${apiUrl}/api/admin/verify-otp` : '/api/admin/verify-otp';
+
+  try {
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tempSessionId, otp })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || 'Invalid verification code. Please try again.'
+      };
+    }
+
+    const session: UserSession = {
+      id: data.user?.id || 'adm-user',
+      email: data.user?.email || '',
+      name: data.user?.name || 'Administrator',
+      role: data.user?.role || 'ADMIN',
+      department: data.user?.department || 'School Administration',
+      token: data.token
+    };
+
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    return { success: true, session };
+  } catch (err) {
+    console.error('[AuthService verifyOtp Error]:', err);
+    return {
+      success: false,
+      error: 'Server verification failed. Please check network connection.'
+    };
+  }
+}
+
+/**
+ * Resend 6-digit verification code with server cooldown enforcement.
+ */
+export async function resendOtp(tempSessionId: string): Promise<ResendOtpResult> {
+  if (!tempSessionId) {
+    return { success: false, error: 'Session expired. Please sign in again.' };
+  }
+
+  const apiUrl = getApiBaseUrl();
+  const targetUrl = apiUrl ? `${apiUrl}/api/admin/resend-otp` : '/api/admin/resend-otp';
+
+  try {
+    const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tempSessionId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return {
+        success: false,
+        error: data.error || 'Failed to resend code.',
+        retryAfter: data.retryAfter
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message,
+      expiresIn: data.expiresIn || 300,
+      resendCooldown: data.resendCooldown || 60
+    };
+  } catch (err) {
+    console.error('[AuthService resendOtp Error]:', err);
+    return {
+      success: false,
+      error: 'Network error while requesting new verification code.'
+    };
+  }
+}
+
+/**
+ * Terminate active administrator session.
  */
 export function logout(): void {
   try {
-    sessionStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(STORAGE_KEY);
+    const apiUrl = getApiBaseUrl();
+    const targetUrl = apiUrl ? `${apiUrl}/api/admin/logout` : '/api/admin/logout';
+    fetch(targetUrl, { method: 'POST' }).catch(() => {});
   } catch {
     // ignore
+  } finally {
+    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
   }
 }
