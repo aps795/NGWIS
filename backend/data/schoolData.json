@@ -81,6 +81,32 @@
   ],
   "enquiries": [
     {
+      "id": "ENQ-334408",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T15:22:41.430Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-290787",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T15:19:11.757Z",
+      "adminNotes": ""
+    },
+    {
       "id": "ENQ-957659",
       "studentName": "Aarav Sharma",
       "parentName": "Ramesh Sharma",

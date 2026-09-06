@@ -33,6 +33,13 @@ import {
   createEventApi,
   deleteEventApi
 } from '../services/apiService';
+import {
+  getAllIndexedDbGallery,
+  saveGalleryItemIndexedDb,
+  deleteGalleryItemIndexedDb,
+  saveAllGalleryIndexedDb,
+  clearGalleryIndexedDb
+} from '../utils/indexedDbStore';
 
 export type PageView =
   | 'home'
@@ -366,7 +373,31 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [selectedGalleryImage, setSelectedGalleryImage] = useState<GalleryItem | null>(null);
   const [activeNoticeModal, setActiveNoticeModal] = useState<Notice | null>(null);
 
-  // Sync to localStorage
+  // Load persisted photos from IndexedDB on startup (overcoming localStorage 5MB limit)
+  useEffect(() => {
+    let isMounted = true;
+    getAllIndexedDbGallery().then((indexedItems) => {
+      if (!isMounted || !indexedItems || indexedItems.length === 0) return;
+      setGallery((prev) => {
+        const itemMap = new Map(prev.map(item => [item.id, item]));
+        for (const item of indexedItems) {
+          itemMap.set(item.id, item);
+        }
+        const merged = Array.from(itemMap.values());
+        const mergedIds = new Set(merged.map(item => item.id));
+        const missingInitial = initialGallery.filter(item => !mergedIds.has(item.id));
+        return [...missingInitial, ...merged];
+      });
+    }).catch((err) => {
+      console.warn('[SchoolDataContext] IndexedDB load notice:', err);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Sync to localStorage & IndexedDB
   useEffect(() => {
     localStorage.setItem(`${STORAGE_PREFIX}settings`, JSON.stringify(settings));
   }, [settings]);
@@ -383,8 +414,12 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       localStorage.setItem(`${STORAGE_PREFIX}gallery`, JSON.stringify(gallery));
     } catch (err) {
-      console.warn('Unable to persist gallery to localStorage quota:', err);
+      console.warn('LocalStorage gallery quota notice (IndexedDB handling persistence):', err);
     }
+    // Always persist to IndexedDB asynchronously (no quota constraints)
+    saveAllGalleryIndexedDb(gallery).catch((err) => {
+      console.warn('[SchoolDataContext] IndexedDB save error:', err);
+    });
   }, [gallery]);
 
   useEffect(() => {
@@ -417,9 +452,16 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           setGallery((prev) => {
             const serverIds = new Set(normalizedServer.map((g) => g.id));
             const unsyncedLocal = prev.filter(
-              (p) => !serverIds.has(p.id) && p.id.startsWith('gal-')
+              (p) => !serverIds.has(p.id) && (
+                p.id.startsWith('gal-') ||
+                p.imageUrl.startsWith('data:') ||
+                p.imageUrl.startsWith('blob:') ||
+                p.imageUrl.includes('googleusercontent.com')
+              )
             );
-            return [...unsyncedLocal, ...normalizedServer];
+            const combined = [...unsyncedLocal, ...normalizedServer];
+            saveAllGalleryIndexedDb(combined).catch(console.warn);
+            return combined;
           });
         }
 
@@ -562,12 +604,14 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       id: tempId
     };
     setGallery((prev) => [newItem, ...prev]);
+    saveGalleryItemIndexedDb(newItem).catch(console.warn);
 
     createGalleryItemApi(itemData).then((saved) => {
       if (saved && saved.id) {
         setGallery((prev) =>
           prev.map((item) => (item.id === tempId ? saved : item))
         );
+        saveGalleryItemIndexedDb(saved).catch(console.warn);
       }
     }).catch((err) => {
       console.warn('[SchoolDataContext] Server gallery sync warning:', err);
@@ -576,6 +620,7 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteGalleryItem = (id: string) => {
     setGallery((prev) => prev.filter((g) => g.id !== id));
+    deleteGalleryItemIndexedDb(id).catch(console.warn);
     deleteGalleryItemApi(id).catch((err) => {
       console.warn('[SchoolDataContext] Server gallery delete warning:', err);
     });
@@ -642,6 +687,7 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.removeItem(`${STORAGE_PREFIX}gallery`);
     localStorage.removeItem(`${STORAGE_PREFIX}testimonials`);
     localStorage.removeItem(`${STORAGE_PREFIX}enquiries`);
+    clearGalleryIndexedDb().catch(console.warn);
     setSettings(initialSchoolSettings);
     setNotices(initialNotices);
     setEvents(initialEvents);

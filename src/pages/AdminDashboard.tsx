@@ -43,6 +43,8 @@ import {
 import {
   convertGoogleDriveUrl,
   isGoogleDriveUrl,
+  isGoogleDriveFolder,
+  checkSocialWebpageUrl,
   compressImageFile,
   resolveImageUrl
 } from '../utils/imageHelpers';
@@ -138,6 +140,9 @@ export const AdminDashboard: React.FC = () => {
   const [galleryDriveDetected, setGalleryDriveDetected] = useState(false);
   const [galleryRawInputUrl, setGalleryRawInputUrl] = useState('');
   const [galleryImageLoadFailed, setGalleryImageLoadFailed] = useState(false);
+  const [gallerySocialWarning, setGallerySocialWarning] = useState<string | null>(null);
+  const [galleryFolderWarning, setGalleryFolderWarning] = useState<string | null>(null);
+  const [gallerySuccessToast, setGallerySuccessToast] = useState<{ title: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [galleryForm, setGalleryForm] = useState({
     title: '',
@@ -160,6 +165,8 @@ export const AdminDashboard: React.FC = () => {
     setGalleryDriveDetected(false);
     setGalleryRawInputUrl('');
     setGalleryImageLoadFailed(false);
+    setGallerySocialWarning(null);
+    setGalleryFolderWarning(null);
     setShowGalleryModal(true);
   };
 
@@ -173,8 +180,10 @@ export const AdminDashboard: React.FC = () => {
     setGalleryUploadError(null);
     setGallerySelectedFileName(file.name);
     setGalleryImageLoadFailed(false);
+    setGallerySocialWarning(null);
+    setGalleryFolderWarning(null);
     try {
-      const compressedBase64 = await compressImageFile(file, 1400, 0.82);
+      const compressedBase64 = await compressImageFile(file, 1080, 0.75);
       setGalleryForm(prev => ({
         ...prev,
         imageUrl: compressedBase64,
@@ -191,11 +200,32 @@ export const AdminDashboard: React.FC = () => {
     setGalleryRawInputUrl(rawVal);
     setGalleryUploadError(null);
     setGalleryImageLoadFailed(false);
+    setGallerySocialWarning(null);
+
     if (!rawVal.trim()) {
+      setGalleryDriveDetected(false);
+      setGalleryFolderWarning(null);
+      setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+
+    if (isGoogleDriveFolder(rawVal)) {
+      setGalleryFolderWarning('Google Drive folder link detected! Please open the specific photo in the folder and copy that photo\'s share link instead.');
+      setGalleryDriveDetected(false);
+      setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    } else {
+      setGalleryFolderWarning(null);
+    }
+
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setGallerySocialWarning(`${socialCheck.platform} link entered. Google Drive links must be from drive.google.com.`);
       setGalleryDriveDetected(false);
       setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
       return;
     }
+
     const isDrive = isGoogleDriveUrl(rawVal);
     const converted = convertGoogleDriveUrl(rawVal);
     setGalleryDriveDetected(isDrive);
@@ -206,15 +236,42 @@ export const AdminDashboard: React.FC = () => {
     setGalleryRawInputUrl(rawVal);
     setGalleryUploadError(null);
     setGalleryImageLoadFailed(false);
+    setGalleryFolderWarning(null);
+
     if (!rawVal.trim()) {
       setGalleryDriveDetected(false);
+      setGallerySocialWarning(null);
       setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
       return;
     }
+
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setGallerySocialWarning(
+        `Social media page link detected (${socialCheck.platform})! Links like instagram.com/p/... or profile URLs are full webpages and cannot be rendered directly as photo images. To publish this photo: 1) Save or screenshot the photo from ${socialCheck.platform} to your device and use the "Device / Phone" tab, OR 2) Right-click the photo on the web, choose "Copy Image Address", and paste the direct image link here.`
+      );
+      setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+      setGalleryDriveDetected(false);
+      return;
+    } else {
+      setGallerySocialWarning(null);
+    }
+
     const isDrive = isGoogleDriveUrl(rawVal);
     const converted = convertGoogleDriveUrl(rawVal);
     setGalleryDriveDetected(isDrive);
     setGalleryForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleSaveGalleryPhoto = () => {
+    if (!galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading) return;
+    addGalleryItem(galleryForm);
+    const savedTitle = galleryForm.title.trim();
+    setShowGalleryModal(false);
+    setGallerySuccessToast({ title: savedTitle });
+    setTimeout(() => {
+      setGallerySuccessToast(null);
+    }, 8000);
   };
 
   // New Testimonial form state
@@ -768,23 +825,61 @@ export const AdminDashboard: React.FC = () => {
         {/* ================= TAB 4: PHOTO GALLERY ================= */}
         {activeTab === 'gallery' && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-academic space-y-6">
+            {gallerySuccessToast && (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <div>
+                    <p className="font-bold text-xs sm:text-sm">Photo published successfully to Public Gallery!</p>
+                    <p className="text-[11px] text-emerald-700">"{gallerySuccessToast.title}" is now live and visible to all website visitors.</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentView('gallery')}
+                    className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow flex items-center gap-1.5 transition-colors"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>View in Public Gallery &rarr;</span>
+                  </button>
+                  <button
+                    onClick={() => setGallerySuccessToast(null)}
+                    className="p-1 text-emerald-600 hover:text-emerald-950 rounded-lg"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>
                 <h3 className="font-serif text-xl font-bold text-navy-900">
                   Photo Gallery Manager
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Manage official photographs displayed on the website gallery.
+                  Manage official photographs displayed on the public website gallery.
                 </p>
               </div>
 
-              <button
-                onClick={handleOpenGalleryModal}
-                className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors self-start sm:self-auto"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Photo to Gallery</span>
-              </button>
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <button
+                  onClick={() => setCurrentView('gallery')}
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors border border-slate-200"
+                  title="View live public gallery"
+                >
+                  <Eye className="w-4 h-4 text-navy-800" />
+                  <span>Public Gallery</span>
+                </button>
+
+                <button
+                  onClick={handleOpenGalleryModal}
+                  className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Photo to Gallery</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -1391,6 +1486,25 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               )}
 
+              {/* Folder Warning */}
+              {galleryFolderWarning && (
+                <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl text-xs font-medium">
+                  <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <span>{galleryFolderWarning}</span>
+                </div>
+              )}
+
+              {/* Social Media Link Warning */}
+              {gallerySocialWarning && (
+                <div className="flex items-start gap-2.5 p-3 bg-indigo-50 border border-indigo-200 text-indigo-950 rounded-xl text-xs">
+                  <AlertCircle className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-indigo-900">Social Media Webpage Detected</p>
+                    <p className="text-[11px] text-indigo-800 leading-relaxed">{gallerySocialWarning}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Error Message */}
               {galleryUploadError && (
                 <div className="flex items-center gap-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold">
@@ -1430,11 +1544,19 @@ export const AdminDashboard: React.FC = () => {
                         <AlertCircle className="w-7 h-7 text-rose-500 mb-1" />
                         <p className="font-bold text-rose-700 text-xs">Preview could not be loaded</p>
                         <p className="text-[10px] text-slate-500 mt-1 max-w-xs">
-                          If using Google Drive, ensure the file sharing is set to "Anyone with the link can view".
+                          {galleryUploadMode === 'drive'
+                            ? 'Ensure the Google Drive sharing permission is set to "Anyone with the link can view".'
+                            : 'This URL cannot be accessed directly by browser as an image file.'}
                         </p>
                       </div>
                     )}
                   </div>
+                  {!galleryImageLoadFailed && (
+                    <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-700 font-medium">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                      <span>Image loaded and verified ready for publication.</span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -1462,20 +1584,16 @@ export const AdminDashboard: React.FC = () => {
               </button>
               <button
                 type="button"
-                disabled={!galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading}
-                onClick={() => {
-                  if (!galleryForm.title.trim() || !galleryForm.imageUrl) return;
-                  addGalleryItem(galleryForm);
-                  setShowGalleryModal(false);
-                }}
+                disabled={!galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading || galleryImageLoadFailed}
+                onClick={handleSaveGalleryPhoto}
                 className={`px-5 py-2.5 text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 ${
-                  !galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading
+                  !galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading || galleryImageLoadFailed
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     : 'bg-navy-900 hover:bg-navy-800 text-gold-300'
                 }`}
               >
                 <Check className="w-3.5 h-3.5" />
-                <span>Save Photo to Gallery</span>
+                <span>Publish to Public Gallery</span>
               </button>
             </div>
           </div>

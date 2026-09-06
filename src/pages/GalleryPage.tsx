@@ -75,6 +75,14 @@ export const GalleryPage: React.FC = () => {
                 loading="lazy"
                 onError={(e) => {
                   const target = e.currentTarget;
+                  // If Googleusercontent CDN link failed, attempt direct Google Drive uc export
+                  if (target.src.includes('lh3.googleusercontent.com/d/')) {
+                    const match = target.src.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                      target.src = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                      return;
+                    }
+                  }
                   if (!target.src.includes('campus-building')) {
                     target.src = resolveImageUrl('/campus-building.jpg');
                   }
