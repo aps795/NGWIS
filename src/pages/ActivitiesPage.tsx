@@ -5,6 +5,7 @@ import {
   Trophy,
   Award
 } from 'lucide-react';
+import { resolveImageUrl } from '../utils/imageHelpers';
 
 export const ActivitiesPage: React.FC = () => {
   const { activities } = useSchoolData();
@@ -83,7 +84,7 @@ export const ActivitiesPage: React.FC = () => {
               <div>
                 <div className="relative h-56 overflow-hidden">
                   <img
-                    src={item.imageUrl}
+                    src={resolveImageUrl(item.imageUrl)}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

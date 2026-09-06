@@ -12,6 +12,7 @@ import {
   Sparkles,
   ArrowRight
 } from 'lucide-react';
+import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const FacilitiesPreview: React.FC = () => {
   const { facilities, setCurrentView } = useSchoolData();
@@ -63,7 +64,7 @@ export const FacilitiesPreview: React.FC = () => {
                   {/* Photo with Overlay & Icon Badge */}
                   <div className="relative h-44 overflow-hidden">
                     <img
-                      src={facility.imageUrl}
+                      src={resolveImageUrl(facility.imageUrl)}
                       alt={facility.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

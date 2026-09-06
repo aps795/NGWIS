@@ -2,6 +2,7 @@ import React from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
 import { ArrowRight, Flame } from 'lucide-react';
+import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const ActivitiesPreview: React.FC = () => {
   const { activities, setCurrentView } = useSchoolData();
@@ -36,7 +37,7 @@ export const ActivitiesPreview: React.FC = () => {
             >
               {/* Background Image */}
               <img
-                src={activity.imageUrl}
+                src={resolveImageUrl(activity.imageUrl)}
                 alt={activity.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               />

@@ -336,7 +336,12 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (!saved) return initialGallery;
     try {
       const parsed: GalleryItem[] = JSON.parse(saved);
-      const filtered = parsed.filter(item => !item.imageUrl.includes('unsplash.com'));
+      const filtered = parsed
+        .filter(item => !item.imageUrl.includes('unsplash.com'))
+        .map(item => ({
+          ...item,
+          imageUrl: item.imageUrl && item.imageUrl.startsWith('./') ? item.imageUrl.replace(/^\.\//, '/') : item.imageUrl
+        }));
       const existingIds = new Set(filtered.map(item => item.id));
       const missing = initialGallery.filter(item => !existingIds.has(item.id));
       return [...missing, ...filtered];
@@ -405,12 +410,16 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         if (!isMounted) return;
 
         if (serverGallery && Array.isArray(serverGallery) && serverGallery.length > 0) {
+          const normalizedServer = serverGallery.map(g => ({
+            ...g,
+            imageUrl: g.imageUrl && g.imageUrl.startsWith('./') ? g.imageUrl.replace(/^\.\//, '/') : g.imageUrl
+          }));
           setGallery((prev) => {
-            const serverIds = new Set(serverGallery.map((g) => g.id));
+            const serverIds = new Set(normalizedServer.map((g) => g.id));
             const unsyncedLocal = prev.filter(
               (p) => !serverIds.has(p.id) && p.id.startsWith('gal-')
             );
-            return [...unsyncedLocal, ...serverGallery];
+            return [...unsyncedLocal, ...normalizedServer];
           });
         }
 

@@ -253,77 +253,84 @@ export const initialGallery: GalleryItem[] = [
     id: 'gal-01',
     title: 'School Campus Building & Main Entrance',
     category: 'Campus',
-    imageUrl: './campus-building.jpg',
+    imageUrl: '/campus-building.jpg',
     caption: 'Official building facade and illuminated frontage of New Global Wisdom International School in Bhujehuan, Sauna, Ghazipur.'
+  },
+  {
+    id: 'gal-founder-01',
+    title: 'Hon. Mr. Rajnikant Singh — Managing Director & Founder',
+    category: 'Campus',
+    imageUrl: '/rajnikant-singh.jpg',
+    caption: 'Honorable Managing Director & Founder Mr. Rajnikant Singh guiding the vision, values, and academic excellence of New Global Wisdom International School.'
   },
   {
     id: 'gal-insta-01',
     title: 'Holi Celebrations — Festival of Colors & Joy',
     category: 'Celebrations',
-    imageUrl: './gallery/holi1_1.jpg',
+    imageUrl: '/gallery/holi1_1.jpg',
     caption: 'Students and teachers at New Global Wisdom International School celebrating Holi with flower petals, gulal, and joyful cultural camaraderie.'
   },
   {
     id: 'gal-insta-02',
     title: 'Holi Festivities & Creative Harmony',
     category: 'Celebrations',
-    imageUrl: './gallery/holi2_1.jpg',
+    imageUrl: '/gallery/holi2_1.jpg',
     caption: 'Joyous festive moments, laughter, and enthusiastic celebrations during the annual school Holi gathering.'
   },
   {
     id: 'gal-insta-03',
     title: 'Dussehra Utsav — Student Cultural Presentation',
     category: 'Celebrations',
-    imageUrl: './gallery/dussehra_1.jpg',
+    imageUrl: '/gallery/dussehra_1.jpg',
     caption: 'Students celebrating Vijayadashami / Dussehra at New Global Wisdom International School with traditional attire, artistic displays, and festive cheer.'
   },
   {
     id: 'gal-dussehra-staff-01',
     title: 'Dussehra Celebrations — Faculty & Staff with Student Performers',
     category: 'Celebrations',
-    imageUrl: './gallery/dussehra_staff_1.jpg',
+    imageUrl: '/gallery/dussehra_staff_1.jpg',
     caption: 'Teaching faculty and administrative staff of New Global Wisdom International School celebrating Vijayadashami (Dussehra) with students dressed in traditional mythological attire.'
   },
   {
     id: 'gal-dussehra-staff-02',
     title: 'Vijayadashami & Navratri Utsav — Teachers & Cultural Presentation',
     category: 'Celebrations',
-    imageUrl: './gallery/dussehra_staff_2.jpg',
+    imageUrl: '/gallery/dussehra_staff_2.jpg',
     caption: 'Educators and students commemorating the auspicious occasion of Vijayadashami and Navratri with festive cheer, traditional dresses, and cultural presentations.'
   },
   {
     id: 'gal-children-dandiya',
     title: 'Student Cultural Dandiya & Festive Celebration',
     category: 'Celebrations',
-    imageUrl: './school-children.jpg',
+    imageUrl: '/school-children.jpg',
     caption: 'Students of New Global Wisdom International School dressed in vibrant traditional attire performing folk dance and celebrating cultural harmony.'
   },
   {
     id: 'gal-insta-summercamp',
     title: 'Summer Camp 2024 — Joyful Learning & Fun',
     category: 'Activities',
-    imageUrl: './gallery/post_c7_1.jpg',
+    imageUrl: '/gallery/post_c7_1.jpg',
     caption: 'Glimpse of Summer Camp 2024 at New Global Wisdom International School where students enthusiastically participated in creative workshops and educational games.'
   },
   {
     id: 'gal-insta-quotewriting',
     title: 'Quote Writing Activity — Class 7 Creative Minds',
     category: 'Activities',
-    imageUrl: './gallery/post_da_1.jpg',
+    imageUrl: '/gallery/post_da_1.jpg',
     caption: 'Class 7 students presenting inspiring quote writing posters and thoughts, showcasing their creativity and expressive language skills.'
   },
   {
     id: 'gal-insta-educationaltour',
     title: 'Educational Excursion — Gorakhpur & Kushinagar Heritage Tour',
     category: 'Events',
-    imageUrl: './gallery/post_dc_1.jpg',
+    imageUrl: '/gallery/post_dc_1.jpg',
     caption: 'Students of New Global Wisdom International School on an educational excursion exploring historical landmarks and cultural heritage in Gorakhpur and Kushinagar.'
   },
   {
     id: 'gal-insta-cbse',
     title: 'CBSE Board Examination Results & Academic Pride',
     category: 'Events',
-    imageUrl: './gallery/post_c6_1.jpg',
+    imageUrl: '/gallery/post_c6_1.jpg',
     caption: 'Celebrating the outstanding academic achievements and excellent performance of New Global Wisdom International School students in CBSE Board Examinations.'
   }
 ];

@@ -226,10 +226,14 @@ class DataStore {
   getGallery(categoryFilter) {
     const data = this.getData();
     const galleryList = Array.isArray(data.gallery) ? data.gallery : [];
+    const normalized = galleryList.map(item => ({
+      ...item,
+      imageUrl: item.imageUrl && item.imageUrl.startsWith('./') ? item.imageUrl.replace(/^\.\//, '/') : item.imageUrl
+    }));
     if (!categoryFilter || categoryFilter === 'All') {
-      return galleryList;
+      return normalized;
     }
-    return galleryList.filter(item => item.category === categoryFilter);
+    return normalized.filter(item => item.category === categoryFilter);
   }
 
   addGalleryItem(item) {

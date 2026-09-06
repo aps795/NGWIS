@@ -3,6 +3,7 @@ import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
 import { Calendar, Clock, MapPin, ArrowRight, X } from 'lucide-react';
 import type { SchoolEvent } from '../../types/school';
+import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const EventsPreview: React.FC = () => {
   const { events } = useSchoolData();
@@ -27,7 +28,7 @@ export const EventsPreview: React.FC = () => {
                 {/* Event Image */}
                 <div className="relative h-44 overflow-hidden">
                   <img
-                    src={evt.imageUrl}
+                    src={resolveImageUrl(evt.imageUrl)}
                     alt={evt.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -107,7 +108,7 @@ export const EventsPreview: React.FC = () => {
           >
             <div className="relative h-48 sm:h-56">
               <img
-                src={selectedEvent.imageUrl}
+                src={resolveImageUrl(selectedEvent.imageUrl)}
                 alt={selectedEvent.title}
                 className="w-full h-full object-cover"
               />

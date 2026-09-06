@@ -43,7 +43,8 @@ import {
 import {
   convertGoogleDriveUrl,
   isGoogleDriveUrl,
-  compressImageFile
+  compressImageFile,
+  resolveImageUrl
 } from '../utils/imageHelpers';
 
 export const AdminDashboard: React.FC = () => {
@@ -789,7 +790,17 @@ export const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {gallery.map((g) => (
                 <div key={g.id} className="relative rounded-2xl overflow-hidden border border-slate-200 group">
-                  <img src={g.imageUrl} alt={g.title} className="w-full h-32 object-cover" />
+                  <img
+                    src={resolveImageUrl(g.imageUrl)}
+                    alt={g.title}
+                    className="w-full h-32 object-cover"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (!target.src.includes('campus-building')) {
+                        target.src = resolveImageUrl('/campus-building.jpg');
+                      }
+                    }}
+                  />
                   <div className="p-2.5 bg-white">
                     <span className="text-[9px] uppercase font-bold text-gold-700 block">{g.category}</span>
                     <p className="text-xs font-bold text-navy-900 truncate">{g.title}</p>
@@ -1408,7 +1419,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="relative w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center border border-slate-300">
                     <img
-                      src={galleryForm.imageUrl}
+                      src={resolveImageUrl(galleryForm.imageUrl)}
                       alt="Preview"
                       className="w-full h-full object-cover"
                       onLoad={() => setGalleryImageLoadFailed(false)}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSchoolData } from '../context/SchoolDataContext';
 import { Camera, Maximize2 } from 'lucide-react';
 import type { GalleryCategory } from '../types/school';
+import { resolveImageUrl } from '../utils/imageHelpers';
 
 export const GalleryPage: React.FC = () => {
   const { gallery, setSelectedGalleryImage } = useSchoolData();
@@ -68,10 +69,16 @@ export const GalleryPage: React.FC = () => {
               className="relative group rounded-2xl overflow-hidden shadow-academic border border-slate-200 cursor-pointer bg-slate-100 aspect-video sm:aspect-square"
             >
               <img
-                src={item.imageUrl}
+                src={resolveImageUrl(item.imageUrl)}
                 alt={item.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('campus-building')) {
+                    target.src = resolveImageUrl('/campus-building.jpg');
+                  }
+                }}
               />
 
               {/* Hover Dark Overlay */}

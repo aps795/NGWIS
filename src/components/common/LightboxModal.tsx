@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const LightboxModal: React.FC = () => {
   const { selectedGalleryImage, setSelectedGalleryImage, gallery } = useSchoolData();
@@ -80,9 +81,15 @@ export const LightboxModal: React.FC = () => {
       >
         <div className="relative rounded-xl overflow-hidden shadow-2xl bg-black/40 border border-white/10">
           <img
-            src={selectedGalleryImage.imageUrl}
+            src={resolveImageUrl(selectedGalleryImage.imageUrl)}
             alt={selectedGalleryImage.title}
             className="max-h-[72vh] w-auto object-contain mx-auto transition-all"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes('campus-building')) {
+                target.src = resolveImageUrl('/campus-building.jpg');
+              }
+            }}
           />
         </div>
 

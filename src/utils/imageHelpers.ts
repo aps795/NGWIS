@@ -2,6 +2,23 @@
  * Helper utilities for handling image uploads from device and Google Drive URLs
  */
 
+export function resolveImageUrl(url: string | undefined | null): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('blob:')
+  ) {
+    return trimmed;
+  }
+  // Remove leading './' or '/'
+  const cleanPath = trimmed.replace(/^\.?\//, '');
+  const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '');
+  return `${base}/${cleanPath}`;
+}
+
 export function convertGoogleDriveUrl(url: string): string {
   if (!url) return '';
   const trimmed = url.trim();
