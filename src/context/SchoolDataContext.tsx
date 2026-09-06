@@ -299,7 +299,11 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, [events]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}gallery`, JSON.stringify(gallery));
+    try {
+      localStorage.setItem(`${STORAGE_PREFIX}gallery`, JSON.stringify(gallery));
+    } catch (err) {
+      console.warn('Unable to persist gallery to localStorage quota:', err);
+    }
   }, [gallery]);
 
   useEffect(() => {

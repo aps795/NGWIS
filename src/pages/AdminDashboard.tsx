@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useSchoolData } from '../context/SchoolDataContext';
 import {
   Shield,
@@ -24,7 +24,13 @@ import {
   Mail,
   MapPin,
   X,
-  MessageCircle
+  MessageCircle,
+  UploadCloud,
+  Link as LinkIcon,
+  HardDrive,
+  Check,
+  AlertCircle,
+  FileUp
 } from 'lucide-react';
 import type { NoticeCategory, EnquiryStatus, AdmissionEnquiry } from '../types/school';
 import { useAuth } from '../auth/AuthContext';
@@ -34,6 +40,11 @@ import {
   printEnquiriesReportPDF,
   downloadEnquiriesReportDoc
 } from '../utils/enquiryDocuments';
+import {
+  convertGoogleDriveUrl,
+  isGoogleDriveUrl,
+  compressImageFile
+} from '../utils/imageHelpers';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -119,12 +130,91 @@ export const AdminDashboard: React.FC = () => {
 
   // New Gallery form state
   const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [galleryUploadMode, setGalleryUploadMode] = useState<'device' | 'drive' | 'url'>('device');
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const [galleryUploadError, setGalleryUploadError] = useState<string | null>(null);
+  const [gallerySelectedFileName, setGallerySelectedFileName] = useState<string | null>(null);
+  const [galleryDriveDetected, setGalleryDriveDetected] = useState(false);
+  const [galleryRawInputUrl, setGalleryRawInputUrl] = useState('');
+  const [galleryImageLoadFailed, setGalleryImageLoadFailed] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [galleryForm, setGalleryForm] = useState({
     title: '',
     category: 'Campus' as any,
     caption: '',
     imageUrl: ''
   });
+
+  const handleOpenGalleryModal = () => {
+    setGalleryForm({
+      title: '',
+      category: 'Campus',
+      caption: '',
+      imageUrl: ''
+    });
+    setGalleryUploadMode('device');
+    setGalleryUploading(false);
+    setGalleryUploadError(null);
+    setGallerySelectedFileName(null);
+    setGalleryDriveDetected(false);
+    setGalleryRawInputUrl('');
+    setGalleryImageLoadFailed(false);
+    setShowGalleryModal(true);
+  };
+
+  const handleGalleryDeviceUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setGalleryUploadError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+    setGalleryUploading(true);
+    setGalleryUploadError(null);
+    setGallerySelectedFileName(file.name);
+    setGalleryImageLoadFailed(false);
+    try {
+      const compressedBase64 = await compressImageFile(file, 1400, 0.82);
+      setGalleryForm(prev => ({
+        ...prev,
+        imageUrl: compressedBase64,
+        title: prev.title || file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ')
+      }));
+    } catch (err: any) {
+      setGalleryUploadError(err.message || 'Error processing photo.');
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const handleGalleryDriveUrlInput = (rawVal: string) => {
+    setGalleryRawInputUrl(rawVal);
+    setGalleryUploadError(null);
+    setGalleryImageLoadFailed(false);
+    if (!rawVal.trim()) {
+      setGalleryDriveDetected(false);
+      setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setGalleryDriveDetected(isDrive);
+    setGalleryForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleGalleryWebUrlInput = (rawVal: string) => {
+    setGalleryRawInputUrl(rawVal);
+    setGalleryUploadError(null);
+    setGalleryImageLoadFailed(false);
+    if (!rawVal.trim()) {
+      setGalleryDriveDetected(false);
+      setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setGalleryDriveDetected(isDrive);
+    setGalleryForm(prev => ({ ...prev, imageUrl: converted }));
+  };
 
   // New Testimonial form state
   const [showTestimonialModal, setShowTestimonialModal] = useState(false);
@@ -688,7 +778,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <button
-                onClick={() => setShowGalleryModal(true)}
+                onClick={handleOpenGalleryModal}
                 className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
@@ -1078,26 +1168,50 @@ export const AdminDashboard: React.FC = () => {
 
       {/* New Gallery Photo Modal */}
       {showGalleryModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 className="font-serif font-bold text-lg text-navy-900">Add Photo to Gallery</h3>
-            <div className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-5 border border-slate-100 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Title</label>
+                <h3 className="font-serif font-bold text-lg text-navy-950 flex items-center gap-2">
+                  <UploadCloud className="w-5 h-5 text-gold-600" />
+                  <span>Add Photo to Gallery</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Upload from your phone/PC, Google Drive link, or direct image URL.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowGalleryModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              {/* Photo Title */}
+              <div>
+                <label className="block font-bold text-navy-900 mb-1">
+                  Photo Title <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={galleryForm.title}
                   onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
-                  placeholder="e.g. Class 4 Science Model"
-                  className="w-full px-3 py-2 border rounded-xl"
+                  placeholder="e.g. Annual Science Exhibition 2026"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-slate-800"
                 />
               </div>
+
+              {/* Category */}
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Category</label>
+                <label className="block font-bold text-navy-900 mb-1">
+                  Category <span className="text-rose-500">*</span>
+                </label>
                 <select
                   value={galleryForm.category}
                   onChange={(e) => setGalleryForm({ ...galleryForm, category: e.target.value as any })}
-                  className="w-full px-3 py-2 border rounded-xl bg-white"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl bg-white focus:ring-2 focus:ring-navy-900 focus:outline-none text-slate-800 font-medium"
                 >
                   <option value="Campus">Campus</option>
                   <option value="Classrooms">Classrooms</option>
@@ -1109,44 +1223,248 @@ export const AdminDashboard: React.FC = () => {
                   <option value="Infrastructure">Infrastructure</option>
                 </select>
               </div>
+
+              {/* Upload Source Selector */}
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Image URL</label>
-                <input
-                  type="url"
-                  value={galleryForm.imageUrl}
-                  onChange={(e) => setGalleryForm({ ...galleryForm, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-2 border rounded-xl"
-                />
+                <label className="block font-bold text-navy-900 mb-1.5">
+                  Select Photo Source <span className="text-rose-500">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryUploadMode('device');
+                      setGalleryUploadError(null);
+                    }}
+                    className={`py-2 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-all ${
+                      galleryUploadMode === 'device'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200/80 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <UploadCloud className="w-3.5 h-3.5 text-navy-800" />
+                    <span>Device / Phone</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryUploadMode('drive');
+                      setGalleryUploadError(null);
+                    }}
+                    className={`py-2 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-all ${
+                      galleryUploadMode === 'drive'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200/80 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <HardDrive className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Google Drive</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryUploadMode('url');
+                      setGalleryUploadError(null);
+                    }}
+                    className={`py-2 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-all ${
+                      galleryUploadMode === 'url'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200/80 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <LinkIcon className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Web Link (URL)</span>
+                  </button>
+                </div>
               </div>
+
+              {/* Option 1: Device File Upload */}
+              {galleryUploadMode === 'device' && (
+                <div className="space-y-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleGalleryDeviceUpload(file);
+                    }}
+                  />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleGalleryDeviceUpload(file);
+                    }}
+                    className="border-2 border-dashed border-slate-300 hover:border-navy-900 bg-slate-50/80 hover:bg-slate-50 rounded-2xl p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center group"
+                  >
+                    <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-2.5 shadow-sm group-hover:scale-105 transition-transform text-navy-900">
+                      <FileUp className="w-6 h-6 text-navy-900" />
+                    </div>
+                    <p className="font-bold text-slate-800 text-xs">
+                      {gallerySelectedFileName ? 'Click to choose a different photo' : 'Choose photo from mobile or computer'}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Supports JPG, PNG, WEBP &bull; Auto-optimized for web
+                    </p>
+                    {gallerySelectedFileName && (
+                      <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-semibold">
+                        <Check className="w-3 h-3" />
+                        <span>Selected: {gallerySelectedFileName}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {galleryUploading && (
+                    <div className="flex items-center justify-center gap-2 p-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-semibold animate-pulse">
+                      <span>Compressing & optimizing photo for web...</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Option 2: Google Drive Link */}
+              {galleryUploadMode === 'drive' && (
+                <div className="space-y-2">
+                  <label className="block font-semibold text-slate-700">
+                    Paste Google Drive Share Link
+                  </label>
+                  <input
+                    type="url"
+                    value={galleryRawInputUrl}
+                    onChange={(e) => handleGalleryDriveUrlInput(e.target.value)}
+                    placeholder="https://drive.google.com/file/d/1A2B3C.../view?usp=sharing"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-slate-800 font-mono text-[11px]"
+                  />
+                  {galleryDriveDetected && (
+                    <div className="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-[11px] font-medium">
+                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>Google Drive link recognized! Converted to high-res embed link.</span>
+                    </div>
+                  )}
+                  <div className="p-2.5 bg-amber-50/70 border border-amber-200/80 rounded-xl text-[11px] text-amber-900 space-y-1">
+                    <p className="font-bold flex items-center gap-1">
+                      <span>💡 How to copy from Google Drive:</span>
+                    </p>
+                    <ol className="list-decimal list-inside text-[10.5px] text-amber-800 space-y-0.5 ml-1">
+                      <li>In Google Drive, right click the photo &rarr; click <strong>Share</strong>.</li>
+                      <li>Under General access, choose <strong>"Anyone with the link can view"</strong>.</li>
+                      <li>Click <strong>"Copy link"</strong> and paste it into the box above.</li>
+                    </ol>
+                  </div>
+                </div>
+              )}
+
+              {/* Option 3: Direct Web Image URL */}
+              {galleryUploadMode === 'url' && (
+                <div className="space-y-2">
+                  <label className="block font-semibold text-slate-700">
+                    Paste Image URL
+                  </label>
+                  <input
+                    type="url"
+                    value={galleryRawInputUrl}
+                    onChange={(e) => handleGalleryWebUrlInput(e.target.value)}
+                    placeholder="https://images.unsplash.com/... or any public image URL"
+                    className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-slate-800 text-[11px]"
+                  />
+                  {galleryDriveDetected && (
+                    <div className="flex items-center gap-2 p-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-[11px] font-medium">
+                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>Google Drive link detected & converted for direct display.</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Error Message */}
+              {galleryUploadError && (
+                <div className="flex items-center gap-2 p-2.5 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs font-semibold">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>{galleryUploadError}</span>
+                </div>
+              )}
+
+              {/* Live Preview Box */}
+              {galleryForm.imageUrl && (
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-slate-700">Image Preview:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGalleryForm(prev => ({ ...prev, imageUrl: '' }));
+                        setGallerySelectedFileName(null);
+                        setGalleryRawInputUrl('');
+                        setGalleryDriveDetected(false);
+                      }}
+                      className="text-rose-600 hover:underline font-semibold"
+                    >
+                      Remove Photo
+                    </button>
+                  </div>
+                  <div className="relative w-full h-40 bg-slate-200 rounded-xl overflow-hidden flex items-center justify-center border border-slate-300">
+                    <img
+                      src={galleryForm.imageUrl}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                      onLoad={() => setGalleryImageLoadFailed(false)}
+                      onError={() => setGalleryImageLoadFailed(true)}
+                    />
+                    {galleryImageLoadFailed && (
+                      <div className="absolute inset-0 bg-white/95 p-4 flex flex-col items-center justify-center text-center">
+                        <AlertCircle className="w-7 h-7 text-rose-500 mb-1" />
+                        <p className="font-bold text-rose-700 text-xs">Preview could not be loaded</p>
+                        <p className="text-[10px] text-slate-500 mt-1 max-w-xs">
+                          If using Google Drive, ensure the file sharing is set to "Anyone with the link can view".
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Caption */}
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Caption</label>
+                <label className="block font-bold text-navy-900 mb-1">Caption (Optional)</label>
                 <input
                   type="text"
                   value={galleryForm.caption}
                   onChange={(e) => setGalleryForm({ ...galleryForm, caption: e.target.value })}
                   placeholder="Brief descriptive caption..."
-                  className="w-full px-3 py-2 border rounded-xl"
+                  className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-navy-900 focus:outline-none text-slate-800"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
               <button
+                type="button"
                 onClick={() => setShowGalleryModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
+                type="button"
+                disabled={!galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading}
                 onClick={() => {
-                  if (!galleryForm.title || !galleryForm.imageUrl) return;
+                  if (!galleryForm.title.trim() || !galleryForm.imageUrl) return;
                   addGalleryItem(galleryForm);
                   setShowGalleryModal(false);
                 }}
-                className="bg-navy-900 text-gold-300 px-4 py-2 text-xs font-bold rounded-lg"
+                className={`px-5 py-2.5 text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 ${
+                  !galleryForm.title.trim() || !galleryForm.imageUrl || galleryUploading
+                    ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                    : 'bg-navy-900 hover:bg-navy-800 text-gold-300'
+                }`}
               >
-                Save Photo
+                <Check className="w-3.5 h-3.5" />
+                <span>Save Photo to Gallery</span>
               </button>
             </div>
           </div>
