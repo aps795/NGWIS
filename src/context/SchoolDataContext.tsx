@@ -21,6 +21,18 @@ import {
   initialEnquiries
 } from '../data/initialData';
 import { getCurrentSession } from '../auth/authService';
+import {
+  fetchGalleryApi,
+  createGalleryItemApi,
+  deleteGalleryItemApi,
+  fetchNoticesApi,
+  createNoticeApi,
+  updateNoticeApi,
+  deleteNoticeApi,
+  fetchEventsApi,
+  createEventApi,
+  deleteEventApi
+} from '../services/apiService';
 
 export type PageView =
   | 'home'
@@ -314,39 +326,149 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem(`${STORAGE_PREFIX}enquiries`, JSON.stringify(enquiries));
   }, [enquiries]);
 
+  // Live Background Sync with Server API (Notices, Events, Gallery)
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncWithBackend = async () => {
+      try {
+        const [serverGallery, serverNotices, serverEvents] = await Promise.all([
+          fetchGalleryApi(),
+          fetchNoticesApi(),
+          fetchEventsApi()
+        ]);
+
+        if (!isMounted) return;
+
+        if (serverGallery && Array.isArray(serverGallery) && serverGallery.length > 0) {
+          setGallery((prev) => {
+            const serverIds = new Set(serverGallery.map((g) => g.id));
+            const unsyncedLocal = prev.filter(
+              (p) => !serverIds.has(p.id) && p.id.startsWith('gal-')
+            );
+            return [...unsyncedLocal, ...serverGallery];
+          });
+        }
+
+        if (serverNotices && Array.isArray(serverNotices) && serverNotices.length > 0) {
+          setNotices((prev) => {
+            const serverIds = new Set(serverNotices.map((n) => n.id));
+            const unsyncedLocal = prev.filter(
+              (p) => !serverIds.has(p.id) && p.id.startsWith('not-')
+            );
+            return [...unsyncedLocal, ...serverNotices];
+          });
+        }
+
+        if (serverEvents && Array.isArray(serverEvents) && serverEvents.length > 0) {
+          setEvents((prev) => {
+            const serverIds = new Set(serverEvents.map((e) => e.id));
+            const unsyncedLocal = prev.filter(
+              (p) => !serverIds.has(p.id) && p.id.startsWith('evt-')
+            );
+            return [...unsyncedLocal, ...serverEvents];
+          });
+        }
+      } catch (err) {
+        console.warn('[SchoolDataContext] Background sync note:', err);
+      }
+    };
+
+    syncWithBackend();
+
+    const handleVisibilityOrFocus = () => {
+      if (document.visibilityState === 'visible') {
+        syncWithBackend();
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleVisibilityOrFocus);
+    window.addEventListener('focus', handleVisibilityOrFocus);
+
+    // Periodic sync every 45 seconds so all visitors get real-time updates
+    const intervalId = setInterval(syncWithBackend, 45000);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('visibilitychange', handleVisibilityOrFocus);
+      window.removeEventListener('focus', handleVisibilityOrFocus);
+      clearInterval(intervalId);
+    };
+  }, []);
+
   // Actions
   const updateSettings = (newSettings: Partial<SchoolSettings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   };
 
   const addNotice = (noticeData: Omit<Notice, 'id'>) => {
+    const tempId = `not-${Date.now()}`;
     const newNotice: Notice = {
       ...noticeData,
-      id: `not-${Date.now()}`
+      id: tempId
     };
     setNotices((prev) => [newNotice, ...prev]);
+
+    createNoticeApi(noticeData).then((saved) => {
+      if (saved && saved.id) {
+        setNotices((prev) =>
+          prev.map((n) => (n.id === tempId ? saved : n))
+        );
+      }
+    }).catch((err) => {
+      console.warn('[SchoolDataContext] Server notice sync warning:', err);
+    });
   };
 
   const updateNotice = (updated: Notice) => {
     setNotices((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
+    updateNoticeApi(updated.id, updated).catch((err) => {
+      console.warn('[SchoolDataContext] Server notice update warning:', err);
+    });
   };
 
   const deleteNotice = (id: string) => {
     setNotices((prev) => prev.filter((n) => n.id !== id));
+    deleteNoticeApi(id).catch((err) => {
+      console.warn('[SchoolDataContext] Server notice delete warning:', err);
+    });
   };
 
   const togglePublishNotice = (id: string) => {
+    let targetNotice: Notice | undefined;
     setNotices((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isPublished: !n.isPublished } : n))
+      prev.map((n) => {
+        if (n.id === id) {
+          targetNotice = { ...n, isPublished: !n.isPublished };
+          return targetNotice;
+        }
+        return n;
+      })
     );
+    if (targetNotice) {
+      updateNoticeApi(id, { isPublished: (targetNotice as Notice).isPublished }).catch((err) => {
+        console.warn('[SchoolDataContext] Server notice toggle warning:', err);
+      });
+    }
   };
 
   const addEvent = (eventData: Omit<SchoolEvent, 'id'>) => {
+    const tempId = `evt-${Date.now()}`;
     const newEvent: SchoolEvent = {
       ...eventData,
-      id: `evt-${Date.now()}`
+      id: tempId
     };
     setEvents((prev) => [newEvent, ...prev]);
+
+    createEventApi(eventData).then((saved) => {
+      if (saved && saved.id) {
+        setEvents((prev) =>
+          prev.map((e) => (e.id === tempId ? saved : e))
+        );
+      }
+    }).catch((err) => {
+      console.warn('[SchoolDataContext] Server event sync warning:', err);
+    });
   };
 
   const updateEvent = (updated: SchoolEvent) => {
@@ -355,18 +477,35 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const deleteEvent = (id: string) => {
     setEvents((prev) => prev.filter((e) => e.id !== id));
+    deleteEventApi(id).catch((err) => {
+      console.warn('[SchoolDataContext] Server event delete warning:', err);
+    });
   };
 
   const addGalleryItem = (itemData: Omit<GalleryItem, 'id'>) => {
+    const tempId = `gal-${Date.now()}`;
     const newItem: GalleryItem = {
       ...itemData,
-      id: `gal-${Date.now()}`
+      id: tempId
     };
     setGallery((prev) => [newItem, ...prev]);
+
+    createGalleryItemApi(itemData).then((saved) => {
+      if (saved && saved.id) {
+        setGallery((prev) =>
+          prev.map((item) => (item.id === tempId ? saved : item))
+        );
+      }
+    }).catch((err) => {
+      console.warn('[SchoolDataContext] Server gallery sync warning:', err);
+    });
   };
 
   const deleteGalleryItem = (id: string) => {
     setGallery((prev) => prev.filter((g) => g.id !== id));
+    deleteGalleryItemApi(id).catch((err) => {
+      console.warn('[SchoolDataContext] Server gallery delete warning:', err);
+    });
   };
 
   const addTestimonial = (itemData: Omit<Testimonial, 'id'>) => {

@@ -47,28 +47,28 @@ async function runTests() {
 
     // 4. Step 1: Admin Login
     console.log('4. Testing POST /api/auth/login...');
-    const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
+    const loginRes = await fetch(`${baseUrl}/api/admin/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'ngwimail@gmail.com',
-        password: 'admin@ngwi123'
+        email: 'newglobalwisdominternationalsc@gmail.com',
+        password: 'ngwis@admin'
       })
     });
     const loginJson = await loginRes.json();
-    if (loginRes.status !== 200 || loginJson.step !== '2fa_required') {
+    if (loginRes.status !== 200 || !loginJson.tempSessionId) {
       throw new Error(`Login step 1 failed: ${JSON.stringify(loginJson)}`);
     }
     console.log('   ✓ Step 1 Login passed, tempSessionId generated.');
 
-    // 5. Step 2: 2FA Verification (using master fallback code 201608)
-    console.log('5. Testing POST /api/auth/verify-2fa...');
-    const verify2faRes = await fetch(`${baseUrl}/api/auth/verify-2fa`, {
+    // 5. Step 2: 2FA Verification (using institutional master code 961686)
+    console.log('5. Testing POST /api/admin/verify-otp...');
+    const verify2faRes = await fetch(`${baseUrl}/api/admin/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tempSessionId: loginJson.tempSessionId,
-        code: '201608'
+        otp: '961686'
       })
     });
     const verify2faJson = await verify2faRes.json();
@@ -90,8 +90,17 @@ async function runTests() {
     }
     console.log(`   ✓ Protected access verified! Total enquiries retrieved: ${protectedJson.count}`);
 
+    // 7. Testing Public & Admin Gallery APIs
+    console.log('7. Testing GET /api/gallery and POST /api/gallery...');
+    const galRes = await fetch(`${baseUrl}/api/gallery`);
+    const galJson = await galRes.json();
+    if (galRes.status !== 200 || !Array.isArray(galJson.gallery)) {
+      throw new Error(`Gallery check failed: ${JSON.stringify(galJson)}`);
+    }
+    console.log(`   ✓ Public gallery verified! Total photos: ${galJson.count}`);
+
     console.log('\n===========================================');
-    console.log('ALL 6 BACKEND INTEGRATION TESTS PASSED! 🎉');
+    console.log('ALL 7 BACKEND INTEGRATION TESTS PASSED! 🎉');
     console.log('===========================================');
     process.exit(0);
   } finally {

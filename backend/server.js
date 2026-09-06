@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import enquiryRoutes from './routes/enquiryRoutes.js';
 import noticeRoutes from './routes/noticeRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
+import galleryRoutes from './routes/galleryRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 
 const app = express();
@@ -18,8 +19,8 @@ app.set('trust proxy', 1);
 
 // Standard Middlewares
 app.use(cors(corsOptions));
-app.use(express.json({ limit: '5mb' }));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
 import path from 'path';
 import fs from 'fs';
@@ -46,6 +47,7 @@ app.use('/api/admin', authRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/notices', noticeRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
 
 // Catch 404 for undefined /api routes (prefix match, no wildcard needed)
