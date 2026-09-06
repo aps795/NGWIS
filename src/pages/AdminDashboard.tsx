@@ -294,6 +294,8 @@ export const AdminDashboard: React.FC = () => {
     emailPlaceholder: settings.emailPlaceholder,
     officeHours: settings.officeHours,
     facebookUrl: settings.facebookUrl,
+    instagramUrl: settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw==',
+    youtubeUrl: settings.youtubeUrl || 'https://www.youtube.com/@newglobalwisdominternation2959',
     showStatistics: settings.showStatistics
   });
   const [settingsSaved, setSettingsSaved] = useState(false);
@@ -346,6 +348,8 @@ export const AdminDashboard: React.FC = () => {
       emailPlaceholder: tempSettings.emailPlaceholder,
       officeHours: tempSettings.officeHours,
       facebookUrl: tempSettings.facebookUrl,
+      instagramUrl: tempSettings.instagramUrl,
+      youtubeUrl: tempSettings.youtubeUrl,
       showStatistics: tempSettings.showStatistics
     });
     setSettingsSaved(true);
@@ -997,6 +1001,33 @@ export const AdminDashboard: React.FC = () => {
                     type="url"
                     value={tempSettings.facebookUrl}
                     onChange={(e) => setTempSettings({ ...tempSettings, facebookUrl: e.target.value })}
+                    placeholder="https://www.facebook.com/..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-navy-900 uppercase tracking-wider mb-1.5">
+                    Official Instagram URL
+                  </label>
+                  <input
+                    type="url"
+                    value={tempSettings.instagramUrl}
+                    onChange={(e) => setTempSettings({ ...tempSettings, instagramUrl: e.target.value })}
+                    placeholder="https://www.instagram.com/newglobalwisdom..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-navy-900 uppercase tracking-wider mb-1.5">
+                    Official YouTube Channel URL
+                  </label>
+                  <input
+                    type="url"
+                    value={tempSettings.youtubeUrl}
+                    onChange={(e) => setTempSettings({ ...tempSettings, youtubeUrl: e.target.value })}
+                    placeholder="https://www.youtube.com/@..."
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500"
                   />
                 </div>

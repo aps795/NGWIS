@@ -11,6 +11,7 @@ import {
 import schoolLogo from '../../assets/logo.jpg';
 import { FacebookIcon } from './FacebookIcon';
 import { YouTubeIcon } from './YouTubeIcon';
+import { InstagramIcon } from './InstagramIcon';
 
 export const Header: React.FC = () => {
   const { currentView, setCurrentView, settings } = useSchoolData();
@@ -83,6 +84,15 @@ export const Header: React.FC = () => {
               title="Official Facebook Page"
             >
               <FacebookIcon className="w-3.5 h-3.5 text-blue-400" />
+            </a>
+            <a
+              href={settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw=='}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-pink-600/30 transition-colors"
+              title="Official Instagram Profile (@newglobalwisdom)"
+            >
+              <InstagramIcon className="w-3.5 h-3.5 text-pink-400" />
             </a>
           </div>
         </div>
@@ -225,6 +235,16 @@ export const Header: React.FC = () => {
               >
                 <YouTubeIcon className="w-4 h-4" />
                 <span>Official YouTube Channel</span>
+              </a>
+
+              <a
+                href={settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw=='}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 hover:opacity-95 text-white font-semibold py-2.5 px-4 rounded-lg text-center flex items-center justify-center space-x-2 text-xs shadow-md transition-opacity"
+              >
+                <InstagramIcon className="w-4 h-4" />
+                <span>Official Instagram Profile</span>
               </a>
             </div>
           </div>

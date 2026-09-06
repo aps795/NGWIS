@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { FacebookIcon } from '../components/common/FacebookIcon';
 import { YouTubeIcon } from '../components/common/YouTubeIcon';
+import { InstagramIcon } from '../components/common/InstagramIcon';
 
 export const ContactPage: React.FC = () => {
   const { settings, addEnquiry } = useSchoolData();
@@ -149,6 +150,26 @@ export const ContactPage: React.FC = () => {
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                   <p className="text-[11px] text-slate-500 mt-0.5">Watch school event videos, celebrations & student presentations</p>
+                </div>
+              </div>
+
+              {/* Instagram Profile */}
+              <div className="flex items-start space-x-3.5 text-xs sm:text-sm text-slate-700 pt-2 border-t border-slate-200/80">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center flex-shrink-0 shadow">
+                  <InstagramIcon className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-navy-900">Official Instagram Profile</h4>
+                  <a
+                    href={settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw=='}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-0.5 text-pink-600 hover:text-pink-700 font-semibold flex items-center gap-1"
+                  >
+                    @newglobalwisdom
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Follow for daily stories, student activities, event reels & photo highlights</p>
                 </div>
               </div>
             </div>

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { FacebookIcon } from './FacebookIcon';
 import { YouTubeIcon } from './YouTubeIcon';
+import { InstagramIcon } from './InstagramIcon';
 import schoolLogo from '../../assets/logo.jpg';
 
 export const Footer: React.FC = () => {
@@ -83,6 +84,16 @@ export const Footer: React.FC = () => {
                   title="Official Facebook Page"
                 >
                   <FacebookIcon className="w-4 h-4" />
+                </a>
+
+                <a
+                  href={settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw=='}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-lg bg-navy-900 hover:bg-gradient-to-tr hover:from-amber-500 hover:via-rose-500 hover:to-purple-600 text-slate-300 hover:text-white flex items-center justify-center transition-all border border-navy-800 hover:border-pink-500 shadow-sm"
+                  title="Official Instagram Profile (@newglobalwisdom)"
+                >
+                  <InstagramIcon className="w-4 h-4 text-pink-400 hover:text-white transition-colors" />
                 </a>
               </div>
             </div>

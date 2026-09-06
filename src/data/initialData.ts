@@ -19,7 +19,7 @@ export const initialSchoolSettings: SchoolSettings = {
   officeHours: 'Monday – Saturday: 8:00 AM – 2:00 PM (Office Timings)',
   facebookUrl: 'https://www.facebook.com/NewGlobalWisdom',
   youtubeUrl: 'https://www.youtube.com/@newglobalwisdominternation2959',
-  instagramUrl: 'https://www.instagram.com/newglobalwisdom/',
+  instagramUrl: 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw==',
   principalTitle: 'Managing Director & Founder',
   principalName: 'Hon. Mr. Rajnikant Singh',
   principalPhotoUrl: './rajnikant-singh.jpg',

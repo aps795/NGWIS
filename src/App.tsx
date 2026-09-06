@@ -23,6 +23,7 @@ import { FacultyPage } from './pages/FacultyPage';
 
 import { GraduationCap } from 'lucide-react';
 import { FacebookIcon } from './components/common/FacebookIcon';
+import { InstagramIcon } from './components/common/InstagramIcon';
 
 const SchoolAppContent: React.FC = () => {
   const { currentView, setCurrentView, settings } = useSchoolData();
@@ -93,16 +94,29 @@ const SchoolAppContent: React.FC = () => {
       {/* Floating Bottom Action CTA (Mobile/Desktop) - Only on public pages */}
       {currentView !== 'admissions' && (
         <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-2.5">
-          {/* Official Facebook Quick Trigger */}
-          <a
-            href={settings.facebookUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all border border-white/20"
-            title="Visit Official Facebook Page"
-          >
-            <FacebookIcon className="w-5 h-5" />
-          </a>
+          <div className="flex items-center gap-2">
+            {/* Official Instagram Quick Trigger */}
+            <a
+              href={settings.instagramUrl || 'https://www.instagram.com/newglobalwisdom?stkn=MXZmdG8xd2l6NzJlaw=='}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 hover:opacity-95 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all border border-white/20"
+              title="Visit Official Instagram Profile (@newglobalwisdom)"
+            >
+              <InstagramIcon className="w-5 h-5 text-white" />
+            </a>
+
+            {/* Official Facebook Quick Trigger */}
+            <a
+              href={settings.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-all border border-white/20"
+              title="Visit Official Facebook Page"
+            >
+              <FacebookIcon className="w-5 h-5" />
+            </a>
+          </div>
 
           {/* Floating Admission Enquiry CTA */}
           <button
