@@ -61,6 +61,7 @@ app.use('/api', (req, res) => {
 // Serve static frontend assets if built (Render full-stack web service mode)
 if (fs.existsSync(distPath)) {
   app.use(express.static(distPath));
+  app.use('/admin/assets', express.static(path.join(distPath, 'assets')));
   app.use((req, res) => {
     res.sendFile(path.join(distPath, 'index.html'));
   });

@@ -127,7 +127,7 @@ async function apiPost(endpoint: string, body: any): Promise<{ ok: boolean; stat
  */
 export function getCurrentSession(): UserSession | null {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY);
+    const raw = sessionStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const session = JSON.parse(raw);
     if (!session || !session.token) return null;
@@ -235,7 +235,10 @@ export async function verifyOtp(tempSessionId: string, otpInput: string): Promis
       token: data.token
     };
 
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    } catch {}
     return { success: true, session };
   } catch (err) {
     console.error('[AuthService verifyOtp Error]:', err);

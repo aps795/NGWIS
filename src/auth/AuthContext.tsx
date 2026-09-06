@@ -34,22 +34,26 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserSession | null>(null);
-  const [pendingOtp, setPendingOtp] = useState<PendingOtpState | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Restore authenticated session on mount / page refresh
-  useEffect(() => {
+  const [user, setUser] = useState<UserSession | null>(() => {
     try {
-      const existing = getCurrentSession();
-      if (existing) {
-        setUser(existing);
-      }
+      return getCurrentSession();
     } catch {
-      // ignore
-    } finally {
-      setIsLoading(false);
+      return null;
     }
+  });
+  const [pendingOtp, setPendingOtp] = useState<PendingOtpState | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Re-verify or sync session on storage events across tabs
+  useEffect(() => {
+    const handleStorage = () => {
+      try {
+        const current = getCurrentSession();
+        setUser(current);
+      } catch {}
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   /**

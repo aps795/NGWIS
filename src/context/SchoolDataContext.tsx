@@ -92,8 +92,72 @@ const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undef
 
 const STORAGE_PREFIX = 'ngwis_school_v7_';
 
+const getInitialView = (): PageView => {
+  try {
+    const rawPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+    const rawHash = window.location.hash.toLowerCase().replace(/^#\/?/, '');
+
+    const isLegacyAdmin =
+      rawPath === '/admin' ||
+      rawHash === 'admin' ||
+      rawHash === 'admin#admin' ||
+      rawHash === '/admin';
+
+    if (isLegacyAdmin) {
+      const session = getCurrentSession();
+      return session ? 'admin-dashboard' : 'admin-login';
+    }
+
+    const isAdminLogin =
+      rawPath === '/admin/login' ||
+      rawPath === '/admin-login' ||
+      rawHash === 'admin/login' ||
+      rawHash === 'admin-login' ||
+      rawHash === '/admin/login';
+
+    if (isAdminLogin) {
+      const session = getCurrentSession();
+      return session ? 'admin-dashboard' : 'admin-login';
+    }
+
+    const isAdminDashboard =
+      rawPath === '/admin/dashboard' ||
+      rawPath === '/admin-dashboard' ||
+      rawHash === 'admin/dashboard' ||
+      rawHash === 'admin-dashboard' ||
+      rawHash === '/admin/dashboard';
+
+    if (isAdminDashboard) {
+      const session = getCurrentSession();
+      return session ? 'admin-dashboard' : 'admin-login';
+    }
+
+    const validPublicViews: PageView[] = [
+      'about',
+      'academics',
+      'faculty',
+      'facilities',
+      'activities',
+      'gallery',
+      'admissions',
+      'notices',
+      'contact'
+    ];
+
+    const pathView = rawPath.replace(/^\//, '') as PageView;
+    const hashView = rawHash.replace(/^\//, '') as PageView;
+
+    if (validPublicViews.includes(pathView)) return pathView;
+    if (validPublicViews.includes(hashView)) return hashView;
+
+    return 'home';
+  } catch {
+    return 'home';
+  }
+};
+
 export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentView, setCurrentViewRaw] = useState<PageView>('home');
+  const [currentView, setCurrentViewRaw] = useState<PageView>(getInitialView);
 
   // Handle URL navigation and route protection
   const setCurrentView = (view: PageView) => {
