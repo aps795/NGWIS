@@ -18,10 +18,22 @@ import {
   Image,
   Home,
   LogOut,
-  UserCheck
+  UserCheck,
+  Printer,
+  Phone,
+  Mail,
+  MapPin,
+  X,
+  MessageCircle
 } from 'lucide-react';
-import type { NoticeCategory, EnquiryStatus } from '../types/school';
+import type { NoticeCategory, EnquiryStatus, AdmissionEnquiry } from '../types/school';
 import { useAuth } from '../auth/AuthContext';
+import {
+  printEnquiryPDF,
+  downloadEnquiryDoc,
+  printEnquiriesReportPDF,
+  downloadEnquiriesReportDoc
+} from '../utils/enquiryDocuments';
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -71,6 +83,9 @@ export const AdminDashboard: React.FC = () => {
   // Enquiries search & filter
   const [enquirySearch, setEnquirySearch] = useState('');
   const [enquiryStatusFilter, setEnquiryStatusFilter] = useState<string>('All');
+  const [selectedEnquiry, setSelectedEnquiry] = useState<AdmissionEnquiry | null>(null);
+  const [editingAdminNotes, setEditingAdminNotes] = useState<string>('');
+  const [notesSavedAlert, setNotesSavedAlert] = useState(false);
 
   // New Notice form state
   const [showNoticeModal, setShowNoticeModal] = useState(false);
@@ -301,13 +316,37 @@ export const AdminDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <button
-                onClick={handleExportCSV}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors self-start sm:self-auto"
-              >
-                <Download className="w-4 h-4" />
-                <span>Export Enquiries to CSV</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => printEnquiriesReportPDF(filteredEnquiries, enquiryStatusFilter, settings.schoolName)}
+                  className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-3.5 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-all"
+                  title="Print or Save official PDF Report of current enquiries"
+                >
+                  <Printer className="w-4 h-4 text-gold-400" />
+                  <span>Export / Print PDF</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => downloadEnquiriesReportDoc(filteredEnquiries, enquiryStatusFilter, settings.schoolName)}
+                  className="bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-all"
+                  title="Download enquiries ledger as Microsoft Word (.doc) document"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Download Word (.doc)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleExportCSV}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-all"
+                  title="Export enquiries in CSV format"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Export CSV</span>
+                </button>
+              </div>
             </div>
 
             {/* Filter Bar */}
@@ -352,25 +391,62 @@ export const AdminDashboard: React.FC = () => {
                     <th className="py-3 px-3">Contact Mobile</th>
                     <th className="py-3 px-3">Submitted At</th>
                     <th className="py-3 px-3">Status</th>
+                    <th className="py-3 px-3 min-w-[170px]">Parent Query / Remarks</th>
                     <th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {filteredEnquiries.map((enq) => (
-                    <tr key={enq.id} className="hover:bg-slate-50/80 transition-colors">
-                      <td className="py-3 px-3 font-mono font-bold text-navy-900">{enq.id}</td>
-                      <td className="py-3 px-3 font-semibold text-slate-900">{enq.studentName}</td>
-                      <td className="py-3 px-3">{enq.parentName}</td>
-                      <td className="py-3 px-3">
+                    <tr
+                      key={enq.id}
+                      className="hover:bg-amber-50/40 transition-colors group cursor-pointer"
+                      onClick={(e) => {
+                        if ((e.target as HTMLElement).closest('button, select, a')) return;
+                        setSelectedEnquiry(enq);
+                        setEditingAdminNotes(enq.adminNotes || '');
+                        setNotesSavedAlert(false);
+                      }}
+                    >
+                      <td className="py-3 px-3 font-mono font-bold text-navy-900 whitespace-nowrap">
+                        <span className="bg-slate-100 group-hover:bg-gold-100 px-2 py-1 rounded text-navy-950 transition-colors">
+                          {enq.id}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-bold text-slate-900 whitespace-nowrap">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedEnquiry(enq);
+                            setEditingAdminNotes(enq.adminNotes || '');
+                            setNotesSavedAlert(false);
+                          }}
+                          className="hover:text-amber-700 hover:underline font-bold text-left"
+                        >
+                          {enq.studentName}
+                        </button>
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap">{enq.parentName}</td>
+                      <td className="py-3 px-3 whitespace-nowrap">
                         <span className="bg-academic-50 text-academic-700 font-semibold px-2 py-0.5 rounded border border-academic-100">
                           {enq.classApplying}
                         </span>
                       </td>
-                      <td className="py-3 px-3 font-mono font-medium">{enq.mobile}</td>
-                      <td className="py-3 px-3 text-slate-500">{enq.submittedAt}</td>
-                      <td className="py-3 px-3">
+                      <td className="py-3 px-3 font-mono font-medium whitespace-nowrap">
+                        <a
+                          href={`tel:${enq.mobile}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-navy-900 hover:text-amber-600 hover:underline inline-flex items-center gap-1"
+                          title="Click to call parent"
+                        >
+                          <Phone className="w-3 h-3 text-emerald-600" />
+                          <span>{enq.mobile}</span>
+                        </a>
+                      </td>
+                      <td className="py-3 px-3 text-slate-500 whitespace-nowrap">{enq.submittedAt}</td>
+                      <td className="py-3 px-3 whitespace-nowrap">
                         <select
                           value={enq.status}
+                          onClick={(e) => e.stopPropagation()}
                           onChange={(e) => updateEnquiryStatus(enq.id, e.target.value as EnquiryStatus)}
                           className={`px-2 py-1 rounded-md text-[11px] font-bold border ${
                             enq.status === 'New'
@@ -391,18 +467,75 @@ export const AdminDashboard: React.FC = () => {
                           <option value="Archived">Archived</option>
                         </select>
                       </td>
-                      <td className="py-3 px-3 text-right">
-                        <button
-                          onClick={() => {
-                            if (window.confirm(`Delete enquiry ${enq.id}?`)) {
-                              deleteEnquiry(enq.id);
-                            }
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
-                          title="Delete enquiry"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                      <td className="py-3 px-3 max-w-[240px]">
+                        {enq.message ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedEnquiry(enq);
+                              setEditingAdminNotes(enq.adminNotes || '');
+                              setNotesSavedAlert(false);
+                            }}
+                            className="text-left group/msg flex items-start gap-1.5 text-slate-700 hover:text-navy-950 w-full"
+                            title="Click to view complete query information"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                            <span className="truncate group-hover/msg:underline text-xs">{enq.message}</span>
+                          </button>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">General Admission Enquiry</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-3 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* View Full Query Details */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedEnquiry(enq);
+                              setEditingAdminNotes(enq.adminNotes || '');
+                              setNotesSavedAlert(false);
+                            }}
+                            className="p-1.5 text-slate-600 hover:text-navy-900 rounded-lg hover:bg-slate-200 transition-colors"
+                            title="View Full Query Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+
+                          {/* Print / Save as PDF */}
+                          <button
+                            type="button"
+                            onClick={() => printEnquiryPDF(enq, settings.schoolName)}
+                            className="p-1.5 text-slate-600 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                            title="Print / Save Enquiry as PDF"
+                          >
+                            <Printer className="w-4 h-4 text-rose-600" />
+                          </button>
+
+                          {/* Download as DOC / Word */}
+                          <button
+                            type="button"
+                            onClick={() => downloadEnquiryDoc(enq, settings.schoolName)}
+                            className="p-1.5 text-slate-600 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                            title="Download Enquiry as Word (.doc)"
+                          >
+                            <FileText className="w-4 h-4 text-blue-600" />
+                          </button>
+
+                          {/* Delete */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`Delete enquiry ${enq.id}?`)) {
+                                deleteEnquiry(enq.id);
+                              }
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors"
+                            title="Delete enquiry"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -1077,6 +1210,220 @@ export const AdminDashboard: React.FC = () => {
                 className="bg-navy-900 text-gold-300 px-4 py-2 text-xs font-bold rounded-lg"
               >
                 Add Testimonial
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ================= MODAL: ADMISSION ENQUIRY FULL DETAILS & QUERY ================= */}
+      {selectedEnquiry && (
+        <div
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn"
+          onClick={() => setSelectedEnquiry(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative my-auto space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gold-50 border border-gold-300 text-gold-600 flex items-center justify-center flex-shrink-0">
+                  <GraduationCap className="w-6 h-6 text-navy-950" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-xs font-bold bg-navy-950 text-gold-300 px-2.5 py-0.5 rounded-md">
+                      {selectedEnquiry.id}
+                    </span>
+                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
+                      selectedEnquiry.status === 'New'
+                        ? 'bg-amber-50 text-amber-800 border-amber-300'
+                        : selectedEnquiry.status === 'Contacted'
+                        ? 'bg-blue-50 text-blue-800 border-blue-300'
+                        : selectedEnquiry.status === 'Interaction Scheduled'
+                        ? 'bg-purple-50 text-purple-800 border-purple-300'
+                        : selectedEnquiry.status === 'Enrolled'
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        : 'bg-slate-100 text-slate-600 border-slate-300'
+                    }`}>
+                      {selectedEnquiry.status}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-navy-900 mt-1">
+                    {selectedEnquiry.studentName}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Applying for <strong className="text-navy-900">{selectedEnquiry.classApplying}</strong> &bull; Submitted {selectedEnquiry.submittedAt}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEnquiry(null)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Contact & Details Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Parent & Contact */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Parent / Guardian Details
+                </span>
+                <div className="font-bold text-sm text-navy-900">
+                  {selectedEnquiry.parentName}
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <a
+                    href={`tel:${selectedEnquiry.mobile}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call {selectedEnquiry.mobile}</span>
+                  </a>
+                  <a
+                    href={`https://wa.me/91${selectedEnquiry.mobile.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold text-xs transition-colors"
+                    title="Send WhatsApp Message"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Address & Email */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  Location &amp; Communication
+                </span>
+                <div className="flex items-start gap-1.5 text-slate-700">
+                  <MapPin className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" />
+                  <span>{selectedEnquiry.address || 'Address / Locality not specified'}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-slate-700">
+                  <Mail className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" />
+                  {selectedEnquiry.email ? (
+                    <a href={`mailto:${selectedEnquiry.email}`} className="text-blue-600 hover:underline">
+                      {selectedEnquiry.email}
+                    </a>
+                  ) : (
+                    <span className="text-slate-400 italic">No email provided</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Parent Query & Questions Message Box */}
+            <div className="p-5 rounded-2xl bg-amber-500/10 border-2 border-amber-500/30 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-amber-600" />
+                  Parent's Enquiry / Query Details
+                </span>
+                <span className="text-[10px] text-amber-800 font-semibold">Online Submission</span>
+              </div>
+              <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed font-serif pt-1">
+                {selectedEnquiry.message ? `"${selectedEnquiry.message}"` : (
+                  <span className="text-slate-500 italic">
+                    No specific written query was entered by the parent. (General admission inquiry submitted for {selectedEnquiry.classApplying}).
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {/* Status & Administrative Notes */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <label className="text-xs font-bold text-navy-900 uppercase tracking-wider">
+                  Update Processing Status
+                </label>
+                <select
+                  value={selectedEnquiry.status}
+                  onChange={(e) => {
+                    const newStatus = e.target.value as EnquiryStatus;
+                    updateEnquiryStatus(selectedEnquiry.id, newStatus, editingAdminNotes);
+                    setSelectedEnquiry({ ...selectedEnquiry, status: newStatus });
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-bold bg-white text-navy-900"
+                >
+                  <option value="New">New</option>
+                  <option value="Contacted">Contacted</option>
+                  <option value="Interaction Scheduled">Interaction Scheduled</option>
+                  <option value="Enrolled">Enrolled</option>
+                  <option value="Archived">Archived</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                  Internal Administrative Notes (Follow-up record, interaction dates, fee discussion):
+                </label>
+                <textarea
+                  rows={2}
+                  value={editingAdminNotes}
+                  onChange={(e) => setEditingAdminNotes(e.target.value)}
+                  placeholder="Add internal notes regarding this parent or child..."
+                  className="w-full px-3 py-2 border rounded-xl text-xs bg-white text-slate-800 resize-none focus:outline-none focus:ring-2 focus:ring-gold-500"
+                />
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[11px] text-emerald-600 font-medium">
+                    {notesSavedAlert ? '✓ Notes saved successfully.' : ''}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateEnquiryStatus(selectedEnquiry.id, selectedEnquiry.status, editingAdminNotes);
+                      setSelectedEnquiry({ ...selectedEnquiry, adminNotes: editingAdminNotes });
+                      setNotesSavedAlert(true);
+                      setTimeout(() => setNotesSavedAlert(false), 3000);
+                    }}
+                    className="px-3 py-1 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold transition-colors"
+                  >
+                    Save Notes
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Document Export Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => printEnquiryPDF(selectedEnquiry, settings.schoolName)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-navy-950 hover:bg-navy-900 text-gold-300 font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                  title="Print or Save Enquiry as PDF"
+                >
+                  <Printer className="w-4 h-4 text-gold-400" />
+                  <span>Print / Save PDF</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => downloadEnquiryDoc(selectedEnquiry, settings.schoolName)}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                  title="Download as editable Word document"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Download Word (.doc)</span>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedEnquiry(null)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+              >
+                Close
               </button>
             </div>
           </div>
