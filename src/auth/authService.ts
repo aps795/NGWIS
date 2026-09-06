@@ -24,6 +24,9 @@ export interface LoginResult {
   expiresIn?: number;
   resendCooldown?: number;
   session?: UserSession;
+  isSimulated?: boolean;
+  masterCode?: string;
+  message?: string;
   error?: string;
 }
 
@@ -39,6 +42,9 @@ export interface ResendOtpResult {
   expiresIn?: number;
   resendCooldown?: number;
   retryAfter?: number;
+  tempSessionId?: string;
+  isSimulated?: boolean;
+  masterCode?: string;
   error?: string;
 }
 
@@ -163,7 +169,10 @@ export async function login(emailInput: string, passwordInput: string): Promise<
         tempSessionId: data.tempSessionId,
         email: data.email || email,
         expiresIn: data.expiresIn || 300,
-        resendCooldown: data.resendCooldown || 60
+        resendCooldown: data.resendCooldown || 60,
+        isSimulated: Boolean(data.isSimulated),
+        masterCode: data.masterCode,
+        message: data.message
       };
     }
 
@@ -260,7 +269,10 @@ export async function resendOtp(tempSessionId: string): Promise<ResendOtpResult>
       success: true,
       message: data.message,
       expiresIn: data.expiresIn || 300,
-      resendCooldown: data.resendCooldown || 60
+      resendCooldown: data.resendCooldown || 60,
+      tempSessionId: data.tempSessionId || tempSessionId,
+      isSimulated: Boolean(data.isSimulated),
+      masterCode: data.masterCode
     };
   } catch (err) {
     console.error('[AuthService resendOtp Error]:', err);

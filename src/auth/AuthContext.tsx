@@ -13,6 +13,9 @@ export interface PendingOtpState {
   email: string;
   expiresIn: number;
   resendCooldown: number;
+  isSimulated?: boolean;
+  masterCode?: string;
+  message?: string;
 }
 
 interface AuthContextType {
@@ -62,7 +65,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           tempSessionId: res.tempSessionId,
           email: res.email || email,
           expiresIn: res.expiresIn || 300,
-          resendCooldown: res.resendCooldown || 60
+          resendCooldown: res.resendCooldown || 60,
+          isSimulated: res.isSimulated,
+          masterCode: res.masterCode,
+          message: res.message
         });
         return { success: true, otpRequired: true };
       }
@@ -117,8 +123,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (res.success) {
         setPendingOtp((prev) => prev ? {
           ...prev,
+          tempSessionId: res.tempSessionId || prev.tempSessionId,
           expiresIn: res.expiresIn || 300,
-          resendCooldown: res.resendCooldown || 60
+          resendCooldown: res.resendCooldown || 60,
+          isSimulated: res.isSimulated !== undefined ? res.isSimulated : prev.isSimulated,
+          masterCode: res.masterCode || prev.masterCode,
+          message: res.message || prev.message
         } : null);
         return { success: true };
       }

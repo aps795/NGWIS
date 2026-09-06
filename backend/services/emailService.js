@@ -9,20 +9,38 @@ let transporter = null;
 function getTransporter() {
   if (transporter) return transporter;
 
-  if (config.smtpHost && config.smtpUser && config.smtpAppPassword) {
-    transporter = nodemailer.createTransport({
-      host: config.smtpHost,
-      port: config.smtpPort,
-      secure: config.smtpPort === 465, // true for 465, false for 587
-      auth: {
-        user: config.smtpUser,
-        pass: config.smtpAppPassword
-      },
-      tls: {
-        rejectUnauthorized: false
+  const user = config.smtpUser;
+  const pass = config.smtpAppPassword;
+
+  if (user && pass) {
+    try {
+      if (user.endsWith('@gmail.com') || (config.smtpHost && config.smtpHost.includes('gmail'))) {
+        transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user,
+            pass
+          }
+        });
+      } else {
+        transporter = nodemailer.createTransport({
+          host: config.smtpHost || 'smtp.gmail.com',
+          port: config.smtpPort || 465,
+          secure: config.smtpPort === 465,
+          auth: {
+            user,
+            pass
+          },
+          tls: {
+            rejectUnauthorized: false
+          }
+        });
       }
-    });
-    return transporter;
+      return transporter;
+    } catch (err) {
+      console.error('[Email Service] Error initializing Nodemailer transporter:', err);
+      return null;
+    }
   }
 
   return null;
