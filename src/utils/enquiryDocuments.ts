@@ -2,7 +2,7 @@ import type { AdmissionEnquiry } from '../types/school';
 
 const SCHOOL_NAME = 'New Global Wisdom International School';
 const SCHOOL_ADDRESS = 'Bhujehuan, Sauna, Saidpur, Ghazipur, Uttar Pradesh – 233307';
-const SCHOOL_CONTACT = 'Phone: +91 9616861239, +91 7081081119 | Email: info@newglobalwisdom.edu.in';
+const SCHOOL_CONTACT = 'Phone: +91 9616861239, +91 7081081119 | Email: newglobalwisdominternationalsc@gmail.com';
 
 /**
  * Generates and prints an official single Enquiry Slip as PDF

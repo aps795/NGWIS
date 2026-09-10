@@ -75,7 +75,7 @@ export async function apiFetch<T = any>(
   }
 }
 
-// 1. Submit Admission Enquiry -> Saves in DB and notifies school administration
+// 1. Submit Admission Enquiry -> Saves in DB and emails newglobalwisdominternationalsc@gmail.com
 export async function apiSubmitEnquiry(enquiry: {
   studentName: string;
   parentName: string;

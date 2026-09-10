@@ -79,7 +79,99 @@
       "imageUrl": "assets/summer-camp-2024.jpg"
     }
   ],
-  "enquiries": [],
+  "enquiries": [
+    {
+      "id": "ENQ-801064",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T15:39:39.607Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-334408",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T15:22:41.430Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-290787",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T15:19:11.757Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-957659",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T14:09:41.780Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-201041",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T13:50:45.406Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-497871",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T13:43:30.378Z",
+      "adminNotes": ""
+    },
+    {
+      "id": "ENQ-143253",
+      "studentName": "Aarav Sharma",
+      "parentName": "Ramesh Sharma",
+      "classApplying": "Class 6",
+      "mobile": "9876543210",
+      "email": "ramesh@example.com",
+      "address": "",
+      "message": "Looking for admission for academic session 2025-26",
+      "status": "New",
+      "submittedAt": "2026-09-06T13:43:09.526Z",
+      "adminNotes": ""
+    }
+  ],
   "contactMessages": [],
   "gallery": [
     {

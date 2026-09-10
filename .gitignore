@@ -12,16 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Environment variables & secrets
-.env
-.env.*
-*.env
-backend/.env
-
-# Local database runtime files
-backend/data/schoolData.json
-backend/data/*.local.json
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -12,5 +12,7 @@ services:
         value: production
       - key: JWT_SECRET
         generateValue: true
+      - key: MASTER_2FA_CODE
+        value: "201608"
       - key: ALLOWED_ORIGINS
         value: "http://localhost:5173,https://aps795.github.io"

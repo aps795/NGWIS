@@ -1,17 +1,5 @@
-import bcrypt from 'bcryptjs';
+import app from '../server.js';
 import http from 'http';
-
-const TEST_EMAIL = 'admin@test-local.school';
-const TEST_PASSWORD = 'TestAdminSecurityPassword!2026';
-const TEST_MASTER_2FA = '882244';
-
-process.env.NODE_ENV = 'test';
-process.env.ADMIN_EMAIL = TEST_EMAIL;
-process.env.ADMIN_PASSWORD_HASH = bcrypt.hashSync(TEST_PASSWORD, 10);
-process.env.MASTER_2FA_CODE = TEST_MASTER_2FA;
-process.env.JWT_SECRET = 'test_jwt_secret_for_automated_verification_2026';
-
-const { default: app } = await import('../server.js');
 
 const PORT = 5555;
 let server;
@@ -57,7 +45,7 @@ async function runTests() {
     const failLogin = await request('/api/admin/login', {
       method: 'POST',
       body: {
-        email: TEST_EMAIL,
+        email: 'newglobalwisdominternationalsc@gmail.com',
         password: 'wrong_password_123'
       }
     });
@@ -67,8 +55,8 @@ async function runTests() {
     const validLogin = await request('/api/admin/login', {
       method: 'POST',
       body: {
-        email: TEST_EMAIL,
-        password: TEST_PASSWORD
+        email: 'newglobalwisdominternationalsc@gmail.com',
+        password: 'ngwis@admin'
       }
     });
     const t3Pass = validLogin.status === 200 && validLogin.data?.step === 'otp_required' && Boolean(validLogin.data?.tempSessionId);
@@ -96,8 +84,8 @@ async function runTests() {
     const freshLogin = await request('/api/admin/login', {
       method: 'POST',
       body: {
-        email: TEST_EMAIL,
-        password: TEST_PASSWORD
+        email: 'newglobalwisdominternationalsc@gmail.com',
+        password: 'ngwis@admin'
       }
     });
     const freshSessionId = freshLogin.data?.tempSessionId;
