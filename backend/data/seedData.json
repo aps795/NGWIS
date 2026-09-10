@@ -2,27 +2,11 @@
   "adminUsers": [
     {
       "id": "adm_super",
-      "email": "newglobalwisdominternationalsc@gmail.com",
-      "name": "Principal & School Administration",
-      "role": "admin",
-      "department": "Executive Leadership & Administration",
-      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
-    },
-    {
-      "id": "adm_1",
       "email": "admin@newglobalwisdom.edu.in",
       "name": "School Administration",
       "role": "admin",
       "department": "Senior Administration & Leadership",
-      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
-    },
-    {
-      "id": "it_1",
-      "email": "it@newglobalwisdom.edu.in",
-      "name": "IT Department Administrator",
-      "role": "it_admin",
-      "department": "School IT & Infrastructure",
-      "passwordHash": "$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9."
+      "passwordHash": ""
     }
   ],
   "notices": [

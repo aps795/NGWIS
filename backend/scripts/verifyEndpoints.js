@@ -1,4 +1,16 @@
-import app from '../server.js';
+import bcrypt from 'bcryptjs';
+
+const TEST_EMAIL = 'admin@test-local.school';
+const TEST_PASSWORD = 'TestAdminSecurityPassword!2026';
+const TEST_MASTER_2FA = '882244';
+
+process.env.NODE_ENV = 'test';
+process.env.ADMIN_EMAIL = TEST_EMAIL;
+process.env.ADMIN_PASSWORD_HASH = bcrypt.hashSync(TEST_PASSWORD, 10);
+process.env.MASTER_2FA_CODE = TEST_MASTER_2FA;
+process.env.JWT_SECRET = 'test_jwt_secret_for_automated_verification_2026';
+
+const { default: app } = await import('../server.js');
 
 async function runTests() {
   const PORT = 5055;
@@ -51,8 +63,8 @@ async function runTests() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: 'newglobalwisdominternationalsc@gmail.com',
-        password: 'ngwis@admin'
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD
       })
     });
     const loginJson = await loginRes.json();
@@ -61,14 +73,14 @@ async function runTests() {
     }
     console.log('   ✓ Step 1 Login passed, tempSessionId generated.');
 
-    // 5. Step 2: 2FA Verification (using institutional master code 961686)
+    // 5. Step 2: 2FA Verification (using test-scoped master code)
     console.log('5. Testing POST /api/admin/verify-otp...');
     const verify2faRes = await fetch(`${baseUrl}/api/admin/verify-otp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tempSessionId: loginJson.tempSessionId,
-        otp: '961686'
+        otp: TEST_MASTER_2FA
       })
     });
     const verify2faJson = await verify2faRes.json();

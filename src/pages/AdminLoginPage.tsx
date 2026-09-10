@@ -37,7 +37,7 @@ export const AdminLoginPage: React.FC = () => {
   }, [isAuthenticated, setCurrentView]);
 
   // --- Step 1: Login Form State ---
-  const [email, setEmail] = useState('newglobalwisdominternationalsc@gmail.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -313,7 +313,7 @@ export const AdminLoginPage: React.FC = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="newglobalwisdominternationalsc@gmail.com"
+                    placeholder="admin@newglobalwisdom.edu.in"
                     disabled={isSubmittingLogin}
                     required
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all placeholder:text-slate-500 disabled:opacity-50"
@@ -405,32 +405,6 @@ export const AdminLoginPage: React.FC = () => {
                 {pendingOtp?.email || email}
               </p>
             </div>
-
-            {/* Simulated / Setup Mode Emergency Helper Banner */}
-            {pendingOtp?.isSimulated && (
-              <div className="mb-5 p-3.5 rounded-xl bg-amber-500/15 border border-amber-500/35 text-amber-200 text-xs animate-fadeIn">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="font-semibold text-amber-300 flex items-center gap-1.5">
-                    <Shield className="w-4 h-4 text-amber-400" />
-                    Emergency Master Passcode
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const code = (pendingOtp.masterCode || '961686').slice(0, 6);
-                      setOtpDigits(code.split(''));
-                      setOtpError(null);
-                    }}
-                    className="px-2.5 py-1 rounded bg-amber-500/25 hover:bg-amber-500/40 text-amber-300 text-[10px] font-bold border border-amber-500/40 uppercase tracking-wider transition-colors"
-                  >
-                    Auto Fill
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  SMTP is running in setup mode. Enter master passcode: <strong className="text-amber-300 font-mono tracking-widest font-bold text-xs">{pendingOtp.masterCode || '961686'}</strong>
-                </p>
-              </div>
-            )}
 
             {/* Error Notification */}
             {otpError && (
@@ -526,21 +500,6 @@ export const AdminLoginPage: React.FC = () => {
                     <span>Resend Code</span>
                   </button>
                 )}
-
-                <div className="mt-3.5 pt-3 border-t border-slate-800/60 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-                  <span>Delayed in email? Use Master Code:</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOtpDigits(['9', '6', '1', '6', '8', '6']);
-                      setOtpError(null);
-                    }}
-                    className="font-mono text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer px-1 py-0.5 rounded hover:bg-amber-500/10 transition-colors"
-                    title="Click to auto-fill master security passcode"
-                  >
-                    961686
-                  </button>
-                </div>
               </div>
 
               {/* Back to Login Action */}

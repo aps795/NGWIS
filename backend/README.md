@@ -53,7 +53,7 @@ Copy `.env.example` to `.env` or set these keys in Render / Vercel:
 | `NODE_ENV` | `production` | Environment mode (`development` / `production`) |
 | `JWT_SECRET` | `your_strong_random_secret_string` | Secret key used to sign and verify JWT session tokens |
 | `JWT_EXPIRES_IN` | `2h` | Session token lifespan (e.g., `2h`, `1d`) |
-| `MASTER_2FA_CODE` | `201608` | Emergency institutional fallback 2FA code |
+| `MASTER_2FA_CODE` | `your_optional_master_code` | Optional emergency institutional fallback 2FA code (must be 6+ digits) |
 | `OTP_EXPIRY_SECONDS`| `300` | Expiration window for generated OTPs (in seconds) |
 | `ALLOWED_ORIGINS` | `http://localhost:5173,https://aps795.github.io` | Comma-separated list of allowed frontend origins |
 
@@ -101,7 +101,8 @@ Copy `.env.example` to `.env` or set these keys in Render / Vercel:
    ```env
    NODE_ENV = production
    JWT_SECRET = your_generated_secret_key
-   MASTER_2FA_CODE = 201608
+   ADMIN_EMAIL = admin@your-school-domain.edu.in
+   ADMIN_PASSWORD_HASH = your_generated_bcrypt_hash
    ALLOWED_ORIGINS = https://aps795.github.io,http://localhost:5173
    ```
 7. Click **Create Web Service**.
@@ -120,7 +121,8 @@ Copy `.env.example` to `.env` or set these keys in Render / Vercel:
    ```env
    NODE_ENV = production
    JWT_SECRET = your_generated_secret_key
-   MASTER_2FA_CODE = 201608
+   ADMIN_EMAIL = admin@your-school-domain.edu.in
+   ADMIN_PASSWORD_HASH = your_generated_bcrypt_hash
    ALLOWED_ORIGINS = https://aps795.github.io
    ```
 5. Click **Deploy**.

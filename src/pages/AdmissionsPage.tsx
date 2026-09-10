@@ -104,7 +104,7 @@ export const AdmissionsPage: React.FC = () => {
       const generatedId = addEnquiry(formData);
       setSuccessRef(generatedId);
 
-      // Submit to backend API to save and dispatch notification email to newglobalwisdominternationalsc@gmail.com
+      // Submit to backend API to save and dispatch notification email to school administration
       apiSubmitEnquiry(formData).catch((err) => {
         console.warn('[AdmissionsPage] API enquiry dispatch error:', err);
       });

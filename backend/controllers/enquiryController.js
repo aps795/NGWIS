@@ -32,7 +32,7 @@ export const createEnquiry = async (req, res, next) => {
 
     const saved = db.addEnquiry(newEnquiry);
 
-    // Asynchronously dispatch notification email with full details to newglobalwisdominternationalsc@gmail.com
+    // Asynchronously dispatch notification email with full details to configured administrative email
     sendNewEnquiryNotificationEmail(saved).catch((err) => {
       console.error('[Enquiry Email Notification Error]:', err);
     });

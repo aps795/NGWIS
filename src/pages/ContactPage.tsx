@@ -45,7 +45,7 @@ export const ContactPage: React.FC = () => {
     setTimeout(() => {
       addEnquiry(enquiryPayload);
 
-      // Dispatch to backend API to send email notification to newglobalwisdominternationalsc@gmail.com
+      // Dispatch to backend API to send email notification to school administration
       apiSubmitEnquiry(enquiryPayload).catch((err) => {
         console.warn('[ContactPage] API enquiry dispatch error:', err);
       });

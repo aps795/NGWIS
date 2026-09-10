@@ -1,5 +1,11 @@
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Ephemeral cryptographic fallback for local development only
+const defaultDevSecret = crypto.randomBytes(32).toString('hex');
 
 const getOrigins = () => {
   const list = [];
@@ -16,20 +22,19 @@ const getOrigins = () => {
 };
 
 export const config = {
-  port: process.env.PORT || 5000,
+  port: parseInt(process.env.PORT || '5000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
-  jwtSecret: process.env.JWT_SECRET || 'ngwis_default_dev_jwt_secret_change_in_prod_2026',
+  jwtSecret: process.env.JWT_SECRET || (isProduction ? '' : defaultDevSecret),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2h',
-  master2faCode: (process.env.MASTER_2FA_CODE || '961686').trim(),
-  emergencyCodes: ['961686', '201626'],
+  master2faCode: process.env.MASTER_2FA_CODE ? process.env.MASTER_2FA_CODE.trim() : '',
   otpExpirySeconds: parseInt(process.env.OTP_EXPIRY_SECONDS || '300', 10),
-  adminEmail: (process.env.ADMIN_EMAIL || 'newglobalwisdominternationalsc@gmail.com').toLowerCase().trim(),
-  adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || '$2b$10$90HMClHgMN8/VgKNr3mX/.bLFYi0YLPjyGpYNdb6U/OGHXXu2.r9.',
+  adminEmail: (process.env.ADMIN_EMAIL || 'admin@newglobalwisdom.edu.in').toLowerCase().trim(),
+  adminPasswordHash: process.env.ADMIN_PASSWORD_HASH ? process.env.ADMIN_PASSWORD_HASH.trim() : '',
   smtpHost: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
   smtpPort: parseInt(process.env.SMTP_PORT || '465', 10),
-  smtpUser: (process.env.SMTP_USER || process.env.EMAIL_USER || 'newglobalwisdominternationalsc@gmail.com').toLowerCase().trim(),
+  smtpUser: (process.env.SMTP_USER || process.env.EMAIL_USER || '').toLowerCase().trim(),
   smtpAppPassword: (process.env.SMTP_APP_PASSWORD || process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || process.env.EMAIL_PASS || '').trim(),
-  sessionSecret: process.env.SESSION_SECRET || 'ngwis_session_secret_2026',
+  sessionSecret: process.env.SESSION_SECRET || (isProduction ? '' : defaultDevSecret),
   frontendUrl: process.env.FRONTEND_URL || '',
   allowedOrigins: getOrigins(),
 };

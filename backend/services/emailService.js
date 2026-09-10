@@ -182,14 +182,14 @@ If you did not initiate this login, please ignore this email.
 
 /**
  * Sends full details of a new online admission enquiry to the school administration email.
- * Target email: newglobalwisdominternationalsc@gmail.com
+ * Configured via ADMIN_EMAIL in environment variables.
  * 
  * @param {object} enquiry The admission enquiry record
  * @returns {Promise<{ success: boolean; messageId?: string; simulated?: boolean; error?: string }>}
  */
 export async function sendNewEnquiryNotificationEmail(enquiry) {
   const mailTransporter = getTransporter();
-  const adminEmail = config.adminEmail || 'newglobalwisdominternationalsc@gmail.com';
+  const adminEmail = config.adminEmail || 'admin@newglobalwisdom.edu.in';
 
   const formattedDate = enquiry.submittedAt
     ? new Date(enquiry.submittedAt).toLocaleString('en-IN', {
