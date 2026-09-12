@@ -14,18 +14,19 @@ import { facultyList } from '../data/facultyData';
 import { useSchoolData } from '../context/SchoolDataContext';
 
 export const FacultyPage: React.FC = () => {
-  const { setCurrentView } = useSchoolData();
+  const { setCurrentView, faculty } = useSchoolData();
+  const currentFaculty = faculty && faculty.length > 0 ? faculty : facultyList;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'senior' | 'teaching' | 'science_math' | 'languages' | 'parent_teacher'>('all');
 
-  // Senior leadership list: numbers 1, 2, 3, 4, 5, 6, 7, 8, 11, 22
+  // Senior leadership list
   const seniorLeaders = useMemo(() => {
-    return facultyList.filter(f => f.isSeniorLeadership);
-  }, []);
+    return currentFaculty.filter(f => f.isSeniorLeadership);
+  }, [currentFaculty]);
 
   // Filtered members in strict S.No. (kram) order
   const filteredList = useMemo(() => {
-    let list = [...facultyList].sort((a, b) => a.id - b.id);
+    let list = [...currentFaculty].sort((a, b) => a.id - b.id);
 
     // Category filter
     if (activeTab === 'senior') {
@@ -66,7 +67,7 @@ export const FacultyPage: React.FC = () => {
     }
 
     return list;
-  }, [activeTab, searchQuery]);
+  }, [currentFaculty, activeTab, searchQuery]);
 
   return (
     <div className="w-full bg-white">
@@ -78,8 +79,9 @@ export const FacultyPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-gold-500/20 text-gold-300 border border-gold-500/40 mb-3.5 shadow-sm">
             <Users className="w-3.5 h-3.5 text-gold-400" />
-            Official School Record &bull; Total Staff Strength: 42
+            Official School Record &bull; Total Staff Strength: {currentFaculty.length}
           </span>
+
           <h1 className="font-crest text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
             Our Faculty & Academic Staff
           </h1>
@@ -139,7 +141,7 @@ export const FacultyPage: React.FC = () => {
 
             <div className="flex items-center gap-2">
               <span className="px-3.5 py-1.5 rounded-xl bg-gold-100 text-navy-950 text-xs font-bold border border-gold-300 shadow-sm">
-                10 Highlighted Leaders
+                {seniorLeaders.length} Highlighted Leaders
               </span>
             </div>
           </div>
@@ -281,11 +283,11 @@ export const FacultyPage: React.FC = () => {
           {/* Results Summary */}
           <div className="flex items-center justify-between text-xs text-slate-500 mb-6 pb-2 border-b border-slate-100">
             <span>
-              Showing <strong>{filteredList.length}</strong> of <strong>{facultyList.length}</strong> faculty members (sorted strictly by S.No.)
+              Showing <strong>{filteredList.length}</strong> of <strong>{currentFaculty.length}</strong> faculty members (sorted strictly by S.No.)
               {searchQuery && ` matching "${searchQuery}"`}
             </span>
             <span className="hidden sm:inline text-gold-700 font-semibold">
-              S.No. 1 to 42 Sequential Order
+              S.No. 1 to {currentFaculty.length} Sequential Order
             </span>
           </div>
 
@@ -367,7 +369,7 @@ export const FacultyPage: React.FC = () => {
                 onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
                 className="mt-3 text-xs font-bold text-gold-600 hover:underline inline-flex items-center gap-1"
               >
-                <span>Reset search & view all 42 staff</span>
+                <span>Reset search & view all {currentFaculty.length} staff</span>
                 <ArrowRight className="w-3 h-3" />
               </button>
             </div>
@@ -377,7 +379,7 @@ export const FacultyPage: React.FC = () => {
           <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
             <div className="flex items-center space-x-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              <span>Certified under Official School Staff Records &bull; Total Staff Strength: 42</span>
+              <span>Certified under Official School Staff Records &bull; Total Staff Strength: {currentFaculty.length}</span>
             </div>
             <span className="font-semibold text-navy-950">New Global Wisdom International School &bull; Estd. 2016</span>
           </div>

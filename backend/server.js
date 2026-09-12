@@ -11,6 +11,7 @@ import noticeRoutes from './routes/noticeRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import galleryRoutes from './routes/galleryRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
+import facultyRoutes from './routes/facultyRoutes.js';
 
 const app = express();
 
@@ -49,6 +50,8 @@ app.use('/api/notices', noticeRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/faculty', facultyRoutes);
+
 
 // Catch 404 for undefined /api routes (prefix match, no wildcard needed)
 app.use('/api', (req, res) => {

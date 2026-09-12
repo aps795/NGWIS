@@ -30,10 +30,12 @@ import {
   HardDrive,
   Check,
   AlertCircle,
-  FileUp
+  FileUp,
+  Users
 } from 'lucide-react';
 import type { NoticeCategory, EnquiryStatus, AdmissionEnquiry } from '../types/school';
 import { useAuth } from '../auth/AuthContext';
+import { FacultyManager } from '../components/admin/FacultyManager';
 import {
   printEnquiryPDF,
   downloadEnquiryDoc,
@@ -48,6 +50,7 @@ import {
   compressImageFile,
   resolveImageUrl
 } from '../utils/imageHelpers';
+
 
 export const AdminDashboard: React.FC = () => {
   const {
@@ -66,6 +69,7 @@ export const AdminDashboard: React.FC = () => {
     gallery,
     addGalleryItem,
     deleteGalleryItem,
+    faculty,
     testimonials,
     addTestimonial,
     resetToDefaults,
@@ -73,7 +77,8 @@ export const AdminDashboard: React.FC = () => {
   } = useSchoolData();
 
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'enquiries' | 'notices' | 'events' | 'gallery' | 'testimonials' | 'settings'>('enquiries');
+  const [activeTab, setActiveTab] = useState<'enquiries' | 'notices' | 'events' | 'gallery' | 'faculty' | 'testimonials' | 'settings'>('enquiries');
+
 
   const currentUser = user || {
     id: 'adm-user',
@@ -433,7 +438,9 @@ export const AdminDashboard: React.FC = () => {
             { id: 'notices', label: `Notices & Circulars (${notices.length})`, icon: FileText },
             { id: 'events', label: `Events & Calendar (${events.length})`, icon: Calendar },
             { id: 'gallery', label: `Photo Gallery (${gallery.length})`, icon: Image },
+            { id: 'faculty', label: `Faculty & Staff (${faculty.length})`, icon: Users },
             { id: 'testimonials', label: `Testimonials (${testimonials.length})`, icon: MessageSquare },
+
             { id: 'settings', label: 'School Info & Content', icon: Settings },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -920,8 +927,12 @@ export const AdminDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* ================= TAB: FACULTY & STAFF DIRECTORY ================= */}
+        {activeTab === 'faculty' && <FacultyManager />}
+
         {/* ================= TAB 5: TESTIMONIALS ================= */}
         {activeTab === 'testimonials' && (
+
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-academic space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
               <div>

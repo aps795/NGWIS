@@ -8,19 +8,22 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { facultyList } from '../../data/facultyData';
+import { useSchoolData } from '../../context/SchoolDataContext';
 
 export const FacultySection: React.FC = () => {
+  const { faculty } = useSchoolData();
+  const currentFaculty = faculty && faculty.length > 0 ? faculty : facultyList;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'senior' | 'teaching' | 'science_math' | 'languages' | 'parent_teacher'>('all');
 
-  // Senior leadership list: numbers 1, 2, 3, 4, 5, 6, 7, 8, 11, 22
+  // Senior leadership list
   const seniorLeaders = useMemo(() => {
-    return facultyList.filter(f => f.isSeniorLeadership);
-  }, []);
+    return currentFaculty.filter(f => f.isSeniorLeadership);
+  }, [currentFaculty]);
 
-  // Filtered members for the full list / search in strict S.No. order (1 to 42)
+  // Filtered members for the full list / search in strict S.No. order
   const filteredList = useMemo(() => {
-    let list = [...facultyList].sort((a, b) => a.id - b.id);
+    let list = [...currentFaculty].sort((a, b) => a.id - b.id);
 
     // Category filter
     if (activeTab === 'senior') {
@@ -61,7 +64,7 @@ export const FacultySection: React.FC = () => {
     }
 
     return list;
-  }, [activeTab, searchQuery]);
+  }, [currentFaculty, activeTab, searchQuery]);
 
   return (
     <section id="faculty-section" className="py-16 sm:py-24 bg-slate-50 relative overflow-hidden border-t border-slate-200">
@@ -74,7 +77,7 @@ export const FacultySection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold tracking-wider uppercase bg-gold-500/15 text-gold-800 border border-gold-400/40 mb-3 shadow-sm">
             <Users className="w-3.5 h-3.5 text-gold-600" />
-            Official School Record &bull; Total Staff Strength: 42
+            Official School Record &bull; Total Staff Strength: {currentFaculty.length}
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-900 leading-tight">
             Our Faculty & Academic Staff
@@ -85,7 +88,7 @@ export const FacultySection: React.FC = () => {
             <div className="h-[2px] w-12 bg-gold-500 rounded-full" />
           </div>
           <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-            The foundation of <strong>New Global Wisdom International School</strong> is our 42-member dedicated team of pedagogical leaders, subject specialists, and educators committed to holistic child development.
+            The foundation of <strong>New Global Wisdom International School</strong> is our {currentFaculty.length}-member dedicated team of pedagogical leaders, subject specialists, and educators committed to holistic child development.
           </p>
         </div>
 
@@ -108,7 +111,7 @@ export const FacultySection: React.FC = () => {
               </div>
             </div>
             <span className="px-3 py-1 rounded-full bg-navy-950 text-gold-300 text-xs font-bold shadow-sm">
-              10 Key Staff
+              {seniorLeaders.length} Key Staff
             </span>
           </div>
 
@@ -220,7 +223,7 @@ export const FacultySection: React.FC = () => {
           {/* Results Summary */}
           <div className="flex items-center justify-between text-xs text-slate-500 mb-6">
             <span>
-              Showing <strong>{filteredList.length}</strong> of <strong>{facultyList.length}</strong> staff members
+              Showing <strong>{filteredList.length}</strong> of <strong>{currentFaculty.length}</strong> staff members
               {searchQuery && ` matching "${searchQuery}"`}
             </span>
             <span className="hidden sm:inline text-gold-700 font-medium">
@@ -305,7 +308,7 @@ export const FacultySection: React.FC = () => {
                 onClick={() => { setSearchQuery(''); setActiveTab('all'); }}
                 className="mt-2 text-xs font-semibold text-gold-600 hover:underline"
               >
-                Reset search & show all 42 staff
+                Reset search & show all {currentFaculty.length} staff
               </button>
             </div>
           )}

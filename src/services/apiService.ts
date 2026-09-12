@@ -1,5 +1,6 @@
-import type { Notice, SchoolEvent, GalleryItem } from '../types/school';
+import type { Notice, SchoolEvent, GalleryItem, FacultyMember } from '../types/school';
 import { getCurrentSession } from '../auth/authService';
+
 
 const getApiBaseUrl = (): string => {
   let url = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').trim();
@@ -222,3 +223,86 @@ export async function deleteEventApi(id: string, token?: string): Promise<boolea
     return false;
   }
 }
+
+// ==================== FACULTY API ====================
+
+export async function fetchFacultyApi(): Promise<FacultyMember[] | null> {
+  const base = getApiBaseUrl();
+  const url = base ? `${base}/api/faculty` : '/api/faculty';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.success && Array.isArray(data.faculty)) {
+      return data.faculty;
+    }
+    return null;
+  } catch (err) {
+    console.warn('[ApiService] Failed to fetch faculty from server:', err);
+    return null;
+  }
+}
+
+export async function createFacultyApi(
+  member: Omit<FacultyMember, 'id'> & { id?: number },
+  token?: string
+): Promise<FacultyMember | null> {
+  const base = getApiBaseUrl();
+  const url = base ? `${base}/api/faculty` : '/api/faculty';
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: getHeaders(token),
+      body: JSON.stringify(member)
+    });
+    const data = await res.json();
+    if (data.success && data.member) {
+      return data.member;
+    }
+    return null;
+  } catch (err) {
+    console.warn('[ApiService] Failed to create faculty member on server:', err);
+    return null;
+  }
+}
+
+export async function updateFacultyApi(
+  id: number,
+  updates: Partial<FacultyMember>,
+  token?: string
+): Promise<FacultyMember | null> {
+  const base = getApiBaseUrl();
+  const url = base ? `${base}/api/faculty/${id}` : `/api/faculty/${id}`;
+  try {
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: getHeaders(token),
+      body: JSON.stringify(updates)
+    });
+    const data = await res.json();
+    if (data.success && data.member) {
+      return data.member;
+    }
+    return null;
+  } catch (err) {
+    console.warn('[ApiService] Failed to update faculty member on server:', err);
+    return null;
+  }
+}
+
+export async function deleteFacultyApi(id: number, token?: string): Promise<boolean> {
+  const base = getApiBaseUrl();
+  const url = base ? `${base}/api/faculty/${id}` : `/api/faculty/${id}`;
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: getHeaders(token)
+    });
+    const data = await res.json();
+    return Boolean(data.success);
+  } catch (err) {
+    console.warn('[ApiService] Failed to delete faculty member from server:', err);
+    return false;
+  }
+}
+

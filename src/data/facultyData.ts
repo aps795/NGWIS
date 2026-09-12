@@ -8,15 +8,9 @@ import atulImg from '../assets/faculty/atul-singh.jpg';
 import manojImg from '../assets/faculty/manoj-kumar.jpg';
 import pankajImg from '../assets/faculty/pankaj-dubey.jpg';
 
-export interface FacultyMember {
-  id: number;
-  name: string;
-  designation: string;
-  departmentOrSubject: string;
-  isSeniorLeadership: boolean; // Top 10 senior leadership in official school records (S.No. 1 to 10)
-  roleCategory: 'leadership' | 'hod' | 'coordinator' | 'teacher' | 'parent_teacher';
-  photoUrl?: string;
-}
+import type { FacultyMember, FacultyRoleCategory } from '../types/school';
+export type { FacultyMember, FacultyRoleCategory };
+
 
 // Complete 42 staff members in strict Serial Number (S.No. / Kram) order 1 to 42
 export const facultyList: FacultyMember[] = [

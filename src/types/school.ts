@@ -121,3 +121,16 @@ export interface SchoolSettings {
   admissionsOpen: boolean;
   admissionNote: string;
 }
+
+export type FacultyRoleCategory = 'leadership' | 'hod' | 'coordinator' | 'teacher' | 'parent_teacher';
+
+export interface FacultyMember {
+  id: number;
+  name: string;
+  designation: string;
+  departmentOrSubject: string;
+  isSeniorLeadership: boolean;
+  roleCategory: FacultyRoleCategory;
+  photoUrl?: string;
+}
+

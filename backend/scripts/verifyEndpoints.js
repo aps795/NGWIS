@@ -99,8 +99,70 @@ async function runTests() {
     }
     console.log(`   ✓ Public gallery verified! Total photos: ${galJson.count}`);
 
+    // 8. Testing Faculty APIs (GET, POST, PUT, DELETE)
+    console.log('8. Testing Faculty APIs (GET, POST, PUT, DELETE)...');
+    const facRes = await fetch(`${baseUrl}/api/faculty`);
+    const facJson = await facRes.json();
+    if (facRes.status !== 200 || !Array.isArray(facJson.faculty)) {
+      throw new Error(`Faculty fetch failed: ${JSON.stringify(facJson)}`);
+    }
+    console.log(`   ✓ Public faculty verified! Total members: ${facJson.count}`);
+
+    // Create test faculty member
+    const createFacRes = await fetch(`${baseUrl}/api/faculty`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${verify2faJson.token}`
+      },
+      body: JSON.stringify({
+        name: 'Test IT Faculty',
+        designation: 'Instructor – Computer Lab',
+        departmentOrSubject: 'Computer Applications & ICT',
+        isSeniorLeadership: false,
+        roleCategory: 'teacher',
+        photoUrl: ''
+      })
+    });
+    const createFacJson = await createFacRes.json();
+    if (createFacRes.status !== 201 || !createFacJson.member) {
+      throw new Error(`Faculty creation failed: ${JSON.stringify(createFacJson)}`);
+    }
+    const testFacId = createFacJson.member.id;
+    console.log(`   ✓ Faculty created with S.No. / ID: ${testFacId}`);
+
+    // Update test faculty member
+    const updateFacRes = await fetch(`${baseUrl}/api/faculty/${testFacId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${verify2faJson.token}`
+      },
+      body: JSON.stringify({
+        designation: 'Senior Instructor – ICT'
+      })
+    });
+    const updateFacJson = await updateFacRes.json();
+    if (updateFacRes.status !== 200 || updateFacJson.member.designation !== 'Senior Instructor – ICT') {
+      throw new Error(`Faculty update failed: ${JSON.stringify(updateFacJson)}`);
+    }
+    console.log(`   ✓ Faculty updated successfully!`);
+
+    // Delete test faculty member
+    const deleteFacRes = await fetch(`${baseUrl}/api/faculty/${testFacId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${verify2faJson.token}`
+      }
+    });
+    const deleteFacJson = await deleteFacRes.json();
+    if (deleteFacRes.status !== 200) {
+      throw new Error(`Faculty delete failed: ${JSON.stringify(deleteFacJson)}`);
+    }
+    console.log(`   ✓ Faculty deleted successfully!`);
+
     console.log('\n===========================================');
-    console.log('ALL 7 BACKEND INTEGRATION TESTS PASSED! 🎉');
+    console.log('ALL 8 BACKEND INTEGRATION TESTS PASSED! 🎉');
     console.log('===========================================');
     process.exit(0);
   } finally {

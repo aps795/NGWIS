@@ -68,6 +68,7 @@ class DataStore {
         const content = fs.readFileSync(this._dbPath, 'utf-8');
         const parsed = JSON.parse(content);
         if (!parsed.gallery) parsed.gallery = [];
+        if (!parsed.faculty) parsed.faculty = [];
         this._memoryData = parsed;
         return parsed;
       }
@@ -83,6 +84,7 @@ class DataStore {
       try {
         const seed = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
         if (!seed.gallery) seed.gallery = [];
+        if (!seed.faculty) seed.faculty = [];
         this._memoryData = seed;
         return seed;
       } catch {}
@@ -93,6 +95,7 @@ class DataStore {
       notices: [],
       events: [],
       gallery: [],
+      faculty: [],
       enquiries: [],
       contactMessages: []
     };
@@ -269,6 +272,46 @@ class DataStore {
     const data = this.getData();
     return Array.isArray(data.contactMessages) ? data.contactMessages : [];
   }
+
+  // --- Faculty Queries ---
+  getFaculty() {
+    const data = this.getData();
+    const list = Array.isArray(data.faculty) ? data.faculty : [];
+    return [...list].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
+  }
+
+  addFaculty(member) {
+    const data = this.getData();
+    if (!Array.isArray(data.faculty)) data.faculty = [];
+    data.faculty.push(member);
+    this.saveData(data);
+    return member;
+  }
+
+  updateFaculty(id, updates) {
+    const data = this.getData();
+    if (!Array.isArray(data.faculty)) return null;
+    const numId = Number(id);
+    const index = data.faculty.findIndex(f => Number(f.id) === numId);
+    if (index === -1) return null;
+    data.faculty[index] = { ...data.faculty[index], ...updates };
+    this.saveData(data);
+    return data.faculty[index];
+  }
+
+  deleteFaculty(id) {
+    const data = this.getData();
+    if (!Array.isArray(data.faculty)) return false;
+    const numId = Number(id);
+    const prevLen = data.faculty.length;
+    data.faculty = data.faculty.filter(f => Number(f.id) !== numId);
+    if (data.faculty.length !== prevLen) {
+      this.saveData(data);
+      return true;
+    }
+    return false;
+  }
 }
 
 export const db = new DataStore();
+

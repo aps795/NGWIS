@@ -8,7 +8,8 @@ import type {
   GalleryItem,
   Testimonial,
   AdmissionEnquiry,
-  EnquiryStatus
+  EnquiryStatus,
+  FacultyMember
 } from '../types/school';
 import {
   initialSchoolSettings,
@@ -20,6 +21,7 @@ import {
   initialTestimonials,
   initialEnquiries
 } from '../data/initialData';
+import { facultyList } from '../data/facultyData';
 import { getCurrentSession } from '../auth/authService';
 import {
   fetchGalleryApi,
@@ -31,8 +33,13 @@ import {
   deleteNoticeApi,
   fetchEventsApi,
   createEventApi,
-  deleteEventApi
+  deleteEventApi,
+  fetchFacultyApi,
+  createFacultyApi,
+  updateFacultyApi,
+  deleteFacultyApi
 } from '../services/apiService';
+
 import {
   getAllIndexedDbGallery,
   saveGalleryItemIndexedDb,
@@ -88,6 +95,11 @@ interface SchoolDataContextType {
   }) => string;
   updateEnquiryStatus: (id: string, status: EnquiryStatus, adminNotes?: string) => void;
   deleteEnquiry: (id: string) => void;
+  faculty: FacultyMember[];
+  addFacultyMember: (member: Omit<FacultyMember, 'id'> & { id?: number }) => void;
+  updateFacultyMember: (member: FacultyMember) => void;
+  deleteFacultyMember: (id: number) => void;
+  reorderFaculty: (newList: FacultyMember[]) => void;
   selectedGalleryImage: GalleryItem | null;
   setSelectedGalleryImage: (item: GalleryItem | null) => void;
   activeNoticeModal: Notice | null;
@@ -369,6 +381,21 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : initialEnquiries;
   });
 
+  // Faculty
+  const [faculty, setFaculty] = useState<FacultyMember[]>(() => {
+    const saved = localStorage.getItem(`${STORAGE_PREFIX}faculty`);
+    if (!saved) return facultyList;
+    try {
+      const parsed: FacultyMember[] = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+      return facultyList;
+    } catch {
+      return facultyList;
+    }
+  });
+
   // Modals
   const [selectedGalleryImage, setSelectedGalleryImage] = useState<GalleryItem | null>(null);
   const [activeNoticeModal, setActiveNoticeModal] = useState<Notice | null>(null);
@@ -430,16 +457,26 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.setItem(`${STORAGE_PREFIX}enquiries`, JSON.stringify(enquiries));
   }, [enquiries]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(`${STORAGE_PREFIX}faculty`, JSON.stringify(faculty));
+    } catch (err) {
+      console.warn('LocalStorage faculty quota notice:', err);
+    }
+  }, [faculty]);
+
+
   // Live Background Sync with Server API (Notices, Events, Gallery)
   useEffect(() => {
     let isMounted = true;
 
     const syncWithBackend = async () => {
       try {
-        const [serverGallery, serverNotices, serverEvents] = await Promise.all([
+        const [serverGallery, serverNotices, serverEvents, serverFaculty] = await Promise.all([
           fetchGalleryApi(),
           fetchNoticesApi(),
-          fetchEventsApi()
+          fetchEventsApi(),
+          fetchFacultyApi()
         ]);
 
         if (!isMounted) return;
@@ -483,6 +520,10 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             );
             return [...unsyncedLocal, ...serverEvents];
           });
+        }
+
+        if (serverFaculty && Array.isArray(serverFaculty) && serverFaculty.length > 0) {
+          setFaculty(serverFaculty);
         }
       } catch (err) {
         console.warn('[SchoolDataContext] Background sync note:', err);
@@ -680,6 +721,49 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setEnquiries((prev) => prev.filter((e) => e.id !== id));
   };
 
+  const addFacultyMember = (memberData: Omit<FacultyMember, 'id'> & { id?: number }) => {
+    let assignedId = memberData.id;
+    setFaculty((prev) => {
+      if (!assignedId || isNaN(assignedId)) {
+        const maxId = prev.reduce((max, f) => Math.max(max, Number(f.id) || 0), 0);
+        assignedId = maxId + 1;
+      }
+      const newMember: FacultyMember = {
+        ...memberData,
+        id: assignedId
+      };
+      return [...prev, newMember].sort((a, b) => a.id - b.id);
+    });
+
+    createFacultyApi({ ...memberData, id: assignedId }).catch((err) => {
+      console.warn('[SchoolDataContext] Server faculty create warning:', err);
+    });
+  };
+
+  const updateFacultyMember = (updated: FacultyMember) => {
+    setFaculty((prev) =>
+      prev
+        .map((f) => (Number(f.id) === Number(updated.id) ? updated : f))
+        .sort((a, b) => a.id - b.id)
+    );
+
+    updateFacultyApi(updated.id, updated).catch((err) => {
+      console.warn('[SchoolDataContext] Server faculty update warning:', err);
+    });
+  };
+
+  const deleteFacultyMember = (id: number) => {
+    setFaculty((prev) => prev.filter((f) => Number(f.id) !== Number(id)));
+
+    deleteFacultyApi(id).catch((err) => {
+      console.warn('[SchoolDataContext] Server faculty delete warning:', err);
+    });
+  };
+
+  const reorderFaculty = (newList: FacultyMember[]) => {
+    setFaculty(newList);
+  };
+
   const resetToDefaults = () => {
     localStorage.removeItem(`${STORAGE_PREFIX}settings`);
     localStorage.removeItem(`${STORAGE_PREFIX}notices`);
@@ -687,6 +771,7 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     localStorage.removeItem(`${STORAGE_PREFIX}gallery`);
     localStorage.removeItem(`${STORAGE_PREFIX}testimonials`);
     localStorage.removeItem(`${STORAGE_PREFIX}enquiries`);
+    localStorage.removeItem(`${STORAGE_PREFIX}faculty`);
     clearGalleryIndexedDb().catch(console.warn);
     setSettings(initialSchoolSettings);
     setNotices(initialNotices);
@@ -694,6 +779,7 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setGallery(initialGallery);
     setTestimonials(initialTestimonials);
     setEnquiries(initialEnquiries);
+    setFaculty(facultyList);
   };
 
   return (
@@ -723,6 +809,11 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         addEnquiry,
         updateEnquiryStatus,
         deleteEnquiry,
+        faculty,
+        addFacultyMember,
+        updateFacultyMember,
+        deleteFacultyMember,
+        reorderFaculty,
         selectedGalleryImage,
         setSelectedGalleryImage,
         activeNoticeModal,
