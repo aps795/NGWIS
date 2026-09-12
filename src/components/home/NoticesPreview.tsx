@@ -1,8 +1,7 @@
 import React from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
-import { Bell, Calendar, ArrowRight, Eye, Pin, Image } from 'lucide-react';
-import { resolveImageUrl } from '../../utils/imageHelpers';
+import { Bell, Calendar, ArrowRight, Eye, Pin, FileText } from 'lucide-react';
 
 export const NoticesPreview: React.FC = () => {
   const { notices, setActiveNoticeModal, setCurrentView } = useSchoolData();
@@ -48,27 +47,14 @@ export const NoticesPreview: React.FC = () => {
               className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-sm hover:shadow-academic hover:border-gold-400 transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
             >
               <div className="flex items-start space-x-3.5 flex-1">
-                {/* Notice Icon / Thumbnail */}
-                {notice.imageUrl ? (
-                  <div className="w-11 h-11 rounded-xl overflow-hidden border border-slate-200 shadow-sm flex-shrink-0 bg-slate-100 group-hover:border-gold-400 transition-colors">
-                    <img
-                      src={resolveImageUrl(notice.imageUrl)}
-                      alt={notice.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      onError={(e) => {
-                        e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 rounded-xl bg-navy-50 border border-navy-100 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-gold-50 group-hover:border-gold-300 transition-colors">
-                    {notice.isPinned ? (
-                      <Pin className="w-5 h-5 text-gold-600 rotate-45" />
-                    ) : (
-                      <Bell className="w-5 h-5 text-academic-700 group-hover:text-gold-600 transition-colors" />
-                    )}
-                  </div>
-                )}
+                {/* Notice Icon / Pin */}
+                <div className="w-10 h-10 rounded-xl bg-navy-50 border border-navy-100 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-gold-50 group-hover:border-gold-300 transition-colors">
+                  {notice.isPinned ? (
+                    <Pin className="w-5 h-5 text-gold-600 rotate-45" />
+                  ) : (
+                    <Bell className="w-5 h-5 text-academic-700 group-hover:text-gold-600 transition-colors" />
+                  )}
+                </div>
 
                 <div className="space-y-1 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -81,9 +67,9 @@ export const NoticesPreview: React.FC = () => {
                       </span>
                     )}
                     {notice.imageUrl && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded shadow-sm inline-flex items-center gap-1">
-                        <Image className="w-3 h-3 text-amber-700" />
-                        <span>Photo</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-gold-50 text-navy-950 border border-gold-300 px-2 py-0.5 rounded shadow-sm inline-flex items-center gap-1">
+                        <FileText className="w-3 h-3 text-gold-600" />
+                        <span>Doc / JPG</span>
                       </span>
                     )}
                     <span className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
 import { SectionHeading } from '../common/SectionHeading';
-import { Calendar, Clock, MapPin, ArrowRight, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, ArrowRight, X, FileText, Eye, ExternalLink } from 'lucide-react';
 import type { SchoolEvent } from '../../types/school';
 import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const EventsPreview: React.FC = () => {
   const { events } = useSchoolData();
   const [selectedEvent, setSelectedEvent] = useState<SchoolEvent | null>(null);
+  const [eventDocFullscreen, setEventDocFullscreen] = useState(false);
 
   return (
     <section className="py-16 sm:py-24 bg-white relative">
@@ -159,6 +160,40 @@ export const EventsPreview: React.FC = () => {
                 {selectedEvent.description}
               </div>
 
+              {/* Event Poster / Document Action */}
+              {selectedEvent.imageUrl && (
+                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-gold-100 border border-gold-300 flex items-center justify-center flex-shrink-0 text-navy-950">
+                      <FileText className="w-4 h-4 text-gold-700" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-navy-900">Event Circular / Poster Document</p>
+                      <p className="text-[10px] text-slate-500">Official schedule & event announcement (JPG/Doc)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEventDocFullscreen(true)}
+                      className="px-3.5 py-1.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>View Poster / Doc</span>
+                    </button>
+                    <a
+                      href={resolveImageUrl(selectedEvent.imageUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition-colors"
+                      title="Open in new tab"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              )}
+
               <div className="pt-2 flex justify-end">
                 <button
                   onClick={() => setSelectedEvent(null)}
@@ -169,6 +204,50 @@ export const EventsPreview: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Event Document / Poster Fullscreen Lightbox */}
+          {eventDocFullscreen && selectedEvent.imageUrl && (
+            <div
+              className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn"
+              onClick={() => setEventDocFullscreen(false)}
+            >
+              <div
+                className="relative max-w-4xl max-h-[95vh] bg-slate-950 rounded-2xl overflow-hidden shadow-2xl p-2 border border-slate-800 flex flex-col items-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-full flex items-center justify-between p-2 text-white border-b border-slate-800">
+                  <span className="text-xs font-semibold text-slate-300 truncate max-w-md">
+                    {selectedEvent.title} — Event Poster / Document
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={resolveImageUrl(selectedEvent.imageUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 rounded-lg bg-navy-800 hover:bg-navy-700 text-gold-300 text-xs font-semibold flex items-center gap-1 transition-colors"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Open Tab</span>
+                    </a>
+                    <button
+                      onClick={() => setEventDocFullscreen(false)}
+                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-colors"
+                      title="Close viewer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="p-2 overflow-auto max-h-[82vh] w-full flex items-center justify-center">
+                  <img
+                    src={resolveImageUrl(selectedEvent.imageUrl)}
+                    alt={selectedEvent.title}
+                    className="max-h-[80vh] w-auto max-w-full rounded-lg object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </section>
