@@ -47,27 +47,6 @@ Designed with an academic institutional aesthetic, modern responsive layout, ful
 
 ---
 
-## Getting Started
-
-### 1. Install Dependencies
-```bash
-npm install
-```
-
-### 2. Development Server
-```bash
-npm run dev
-```
-
-### 3. Production Build
-```bash
-npm run build
-```
-
-### 4. Preview Production Build
-```bash
-npm run preview
-```
 
 ---
 
