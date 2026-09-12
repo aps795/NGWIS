@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSchoolData } from '../../context/SchoolDataContext';
-import { X, Calendar, Tag, FileText, Download, Printer } from 'lucide-react';
+import { X, Calendar, Tag, FileText, Download, Printer, Image, ExternalLink } from 'lucide-react';
+import { resolveImageUrl } from '../../utils/imageHelpers';
 
 export const NoticeModal: React.FC = () => {
   const { activeNoticeModal, setActiveNoticeModal, settings } = useSchoolData();
@@ -70,6 +71,39 @@ export const NoticeModal: React.FC = () => {
           <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700 whitespace-pre-line pt-2">
             {activeNoticeModal.content}
           </div>
+
+          {/* Attached Notice Photo / Circular Scan */}
+          {activeNoticeModal.imageUrl && (
+            <div className="mt-5 rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
+              <div className="p-3 bg-white border-b border-slate-200 flex items-center justify-between">
+                <span className="text-xs font-bold text-navy-900 flex items-center gap-1.5">
+                  <Image className="w-4 h-4 text-gold-600" />
+                  <span>Official Notice Attachment / Circular Scan</span>
+                </span>
+                <a
+                  href={resolveImageUrl(activeNoticeModal.imageUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-academic-700 hover:text-navy-950 hover:underline"
+                  title="Open full size in new tab"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>View Full Size</span>
+                </a>
+              </div>
+              <div className="p-3 bg-slate-900/5 flex items-center justify-center">
+                <img
+                  src={resolveImageUrl(activeNoticeModal.imageUrl)}
+                  alt={activeNoticeModal.title}
+                  className="max-h-96 w-auto max-w-full rounded-xl object-contain shadow-sm cursor-zoom-in hover:opacity-95 transition-opacity"
+                  onClick={() => window.open(resolveImageUrl(activeNoticeModal.imageUrl), '_blank')}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           {activeNoticeModal.fileDownloadName && (
             <div className="mt-6 p-4 rounded-xl bg-gold-50/60 border border-gold-200 flex items-center justify-between">

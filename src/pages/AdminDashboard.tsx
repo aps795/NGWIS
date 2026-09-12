@@ -106,8 +106,21 @@ export const AdminDashboard: React.FC = () => {
   const [editingAdminNotes, setEditingAdminNotes] = useState<string>('');
   const [notesSavedAlert, setNotesSavedAlert] = useState(false);
 
-  // New Notice form state
+  // Full-size image preview modal
+  const [previewImageModalUrl, setPreviewImageModalUrl] = useState<string | null>(null);
+
+  // New Notice form state with photo attachment
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [noticeUploadMode, setNoticeUploadMode] = useState<'device' | 'drive' | 'url'>('device');
+  const [noticeUploading, setNoticeUploading] = useState(false);
+  const [noticeUploadError, setNoticeUploadError] = useState<string | null>(null);
+  const [noticeSelectedFileName, setNoticeSelectedFileName] = useState<string | null>(null);
+  const [noticeDriveDetected, setNoticeDriveDetected] = useState(false);
+  const [noticeRawInputUrl, setNoticeRawInputUrl] = useState('');
+  const [noticeSocialWarning, setNoticeSocialWarning] = useState<string | null>(null);
+  const [noticeFolderWarning, setNoticeFolderWarning] = useState<string | null>(null);
+  const noticeFileInputRef = useRef<HTMLInputElement>(null);
+
   const [noticeForm, setNoticeForm] = useState<{
     title: string;
     category: NoticeCategory;
@@ -115,17 +128,135 @@ export const AdminDashboard: React.FC = () => {
     content: string;
     date: string;
     isPinned: boolean;
+    imageUrl: string;
   }>({
     title: '',
     category: 'Circular',
     summary: '',
     content: '',
     date: new Date().toISOString().split('T')[0],
-    isPinned: false
+    isPinned: false,
+    imageUrl: ''
   });
 
-  // New Event form state
+  const handleOpenNoticeModal = () => {
+    setNoticeForm({
+      title: '',
+      category: 'Circular',
+      summary: '',
+      content: '',
+      date: new Date().toISOString().split('T')[0],
+      isPinned: false,
+      imageUrl: ''
+    });
+    setNoticeUploadMode('device');
+    setNoticeUploading(false);
+    setNoticeUploadError(null);
+    setNoticeSelectedFileName(null);
+    setNoticeDriveDetected(false);
+    setNoticeRawInputUrl('');
+    setNoticeSocialWarning(null);
+    setNoticeFolderWarning(null);
+    setShowNoticeModal(true);
+  };
+
+  const handleNoticeDeviceUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setNoticeUploadError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+    setNoticeUploading(true);
+    setNoticeUploadError(null);
+    setNoticeSelectedFileName(file.name);
+    try {
+      const compressedBase64 = await compressImageFile(file, 1200, 0.8);
+      setNoticeForm(prev => ({ ...prev, imageUrl: compressedBase64 }));
+    } catch (err: any) {
+      setNoticeUploadError(err.message || 'Error processing circular photo.');
+    } finally {
+      setNoticeUploading(false);
+    }
+  };
+
+  const handleNoticeDriveUrlInput = (rawVal: string) => {
+    setNoticeRawInputUrl(rawVal);
+    setNoticeUploadError(null);
+    if (!rawVal.trim()) {
+      setNoticeDriveDetected(false);
+      setNoticeFolderWarning(null);
+      setNoticeForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    if (isGoogleDriveFolder(rawVal)) {
+      setNoticeFolderWarning('Google Drive folder link detected! Please open the specific circular photo and copy that file\'s link.');
+      setNoticeDriveDetected(false);
+      setNoticeForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    } else {
+      setNoticeFolderWarning(null);
+    }
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setNoticeSocialWarning(`${socialCheck.platform} link detected. Google Drive links must be from drive.google.com.`);
+      setNoticeDriveDetected(false);
+      setNoticeForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    } else {
+      setNoticeSocialWarning(null);
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setNoticeDriveDetected(isDrive);
+    setNoticeForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleNoticeWebUrlInput = (rawVal: string) => {
+    setNoticeRawInputUrl(rawVal);
+    setNoticeUploadError(null);
+    setNoticeFolderWarning(null);
+    if (!rawVal.trim()) {
+      setNoticeDriveDetected(false);
+      setNoticeSocialWarning(null);
+      setNoticeForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setNoticeSocialWarning(`${socialCheck.platform} link detected. Please enter a direct image URL.`);
+    } else {
+      setNoticeSocialWarning(null);
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setNoticeDriveDetected(isDrive);
+    setNoticeForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleClearNoticeImage = () => {
+    setNoticeForm(prev => ({ ...prev, imageUrl: '' }));
+    setNoticeSelectedFileName(null);
+    setNoticeRawInputUrl('');
+    setNoticeUploadError(null);
+    setNoticeFolderWarning(null);
+    setNoticeSocialWarning(null);
+    if (noticeFileInputRef.current) {
+      noticeFileInputRef.current.value = '';
+    }
+  };
+
+  // New Event form state with photo upload
   const [showEventModal, setShowEventModal] = useState(false);
+  const [eventUploadMode, setEventUploadMode] = useState<'device' | 'drive' | 'url'>('device');
+  const [eventUploading, setEventUploading] = useState(false);
+  const [eventUploadError, setEventUploadError] = useState<string | null>(null);
+  const [eventSelectedFileName, setEventSelectedFileName] = useState<string | null>(null);
+  const [eventDriveDetected, setEventDriveDetected] = useState(false);
+  const [eventRawInputUrl, setEventRawInputUrl] = useState('');
+  const [eventSocialWarning, setEventSocialWarning] = useState<string | null>(null);
+  const [eventFolderWarning, setEventFolderWarning] = useState<string | null>(null);
+  const eventFileInputRef = useRef<HTMLInputElement>(null);
+
   const [eventForm, setEventForm] = useState({
     title: '',
     category: 'Sports' as any,
@@ -135,6 +266,112 @@ export const AdminDashboard: React.FC = () => {
     description: '',
     imageUrl: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&w=800&q=80'
   });
+
+  const handleOpenEventModal = () => {
+    setEventForm({
+      title: '',
+      category: 'Sports',
+      date: new Date().toISOString().split('T')[0],
+      time: '09:00 AM – 01:00 PM',
+      venue: 'School Campus',
+      description: '',
+      imageUrl: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&w=800&q=80'
+    });
+    setEventUploadMode('device');
+    setEventUploading(false);
+    setEventUploadError(null);
+    setEventSelectedFileName(null);
+    setEventDriveDetected(false);
+    setEventRawInputUrl('');
+    setEventSocialWarning(null);
+    setEventFolderWarning(null);
+    setShowEventModal(true);
+  };
+
+  const handleEventDeviceUpload = async (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setEventUploadError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+    setEventUploading(true);
+    setEventUploadError(null);
+    setEventSelectedFileName(file.name);
+    try {
+      const compressedBase64 = await compressImageFile(file, 1200, 0.8);
+      setEventForm(prev => ({ ...prev, imageUrl: compressedBase64 }));
+    } catch (err: any) {
+      setEventUploadError(err.message || 'Error processing event photo.');
+    } finally {
+      setEventUploading(false);
+    }
+  };
+
+  const handleEventDriveUrlInput = (rawVal: string) => {
+    setEventRawInputUrl(rawVal);
+    setEventUploadError(null);
+    if (!rawVal.trim()) {
+      setEventDriveDetected(false);
+      setEventFolderWarning(null);
+      setEventForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    if (isGoogleDriveFolder(rawVal)) {
+      setEventFolderWarning('Google Drive folder link detected! Please open the specific photo and copy that file\'s link.');
+      setEventDriveDetected(false);
+      setEventForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    } else {
+      setEventFolderWarning(null);
+    }
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setEventSocialWarning(`${socialCheck.platform} link detected. Google Drive links must be from drive.google.com.`);
+      setEventDriveDetected(false);
+      setEventForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    } else {
+      setEventSocialWarning(null);
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setEventDriveDetected(isDrive);
+    setEventForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleEventWebUrlInput = (rawVal: string) => {
+    setEventRawInputUrl(rawVal);
+    setEventUploadError(null);
+    setEventFolderWarning(null);
+    if (!rawVal.trim()) {
+      setEventDriveDetected(false);
+      setEventSocialWarning(null);
+      setEventForm(prev => ({ ...prev, imageUrl: '' }));
+      return;
+    }
+    const socialCheck = checkSocialWebpageUrl(rawVal);
+    if (socialCheck.isSocial) {
+      setEventSocialWarning(`${socialCheck.platform} link detected. Please enter a direct image URL.`);
+    } else {
+      setEventSocialWarning(null);
+    }
+    const isDrive = isGoogleDriveUrl(rawVal);
+    const converted = convertGoogleDriveUrl(rawVal);
+    setEventDriveDetected(isDrive);
+    setEventForm(prev => ({ ...prev, imageUrl: converted }));
+  };
+
+  const handleClearEventImage = () => {
+    setEventForm(prev => ({ ...prev, imageUrl: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&w=800&q=80' }));
+    setEventSelectedFileName(null);
+    setEventRawInputUrl('');
+    setEventUploadError(null);
+    setEventFolderWarning(null);
+    setEventSocialWarning(null);
+    if (eventFileInputRef.current) {
+      eventFileInputRef.current.value = '';
+    }
+  };
 
   // New Gallery form state
   const [showGalleryModal, setShowGalleryModal] = useState(false);
@@ -724,7 +961,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <button
-                onClick={() => setShowNoticeModal(true)}
+                onClick={handleOpenNoticeModal}
                 className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
@@ -738,24 +975,61 @@ export const AdminDashboard: React.FC = () => {
                   key={n.id}
                   className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-800 px-2 py-0.5 rounded">
-                        {n.category}
-                      </span>
-                      <span className="text-xs text-slate-500">Issued: {n.date}</span>
-                      {n.isPinned && (
-                        <span className="text-[10px] font-bold uppercase bg-gold-500 text-navy-950 px-2 py-0.5 rounded">
-                          Pinned
-                        </span>
-                      )}
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${n.isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
-                        {n.isPublished ? 'Published' : 'Draft'}
-                      </span>
-                    </div>
+                  <div className="flex items-start gap-3.5 flex-1">
+                    {n.imageUrl ? (
+                      <div
+                        onClick={() => setPreviewImageModalUrl(resolveImageUrl(n.imageUrl))}
+                        className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 cursor-pointer group/img flex-shrink-0 bg-slate-200 shadow-sm"
+                        title="Click to view attached circular photo"
+                      >
+                        <img
+                          src={resolveImageUrl(n.imageUrl)}
+                          alt={n.title}
+                          className="w-full h-full object-cover group-hover/img:scale-110 transition-transform"
+                          onError={(e) => {
+                            e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity">
+                          <Eye className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-navy-100/70 border border-navy-200 flex items-center justify-center flex-shrink-0 text-navy-900 mt-1">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                    )}
 
-                    <h4 className="font-serif font-bold text-sm text-navy-900">{n.title}</h4>
-                    <p className="text-xs text-slate-600 line-clamp-1">{n.summary}</p>
+                    <div className="space-y-1 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-800 px-2 py-0.5 rounded">
+                          {n.category}
+                        </span>
+                        <span className="text-xs text-slate-500">Issued: {n.date}</span>
+                        {n.isPinned && (
+                          <span className="text-[10px] font-bold uppercase bg-gold-500 text-navy-950 px-2 py-0.5 rounded">
+                            Pinned
+                          </span>
+                        )}
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${n.isPublished ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                          {n.isPublished ? 'Published' : 'Draft'}
+                        </span>
+                        {n.imageUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setPreviewImageModalUrl(resolveImageUrl(n.imageUrl))}
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 px-2 py-0.5 rounded transition-colors"
+                            title="View attached photo"
+                          >
+                            <Image className="w-3 h-3 text-amber-700" />
+                            <span>Photo Attached</span>
+                          </button>
+                        )}
+                      </div>
+
+                      <h4 className="font-serif font-bold text-sm text-navy-900">{n.title}</h4>
+                      <p className="text-xs text-slate-600 line-clamp-1">{n.summary}</p>
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-2 flex-shrink-0">
@@ -798,7 +1072,7 @@ export const AdminDashboard: React.FC = () => {
               </div>
 
               <button
-                onClick={() => setShowEventModal(true)}
+                onClick={handleOpenEventModal}
                 className="bg-navy-900 hover:bg-navy-800 text-gold-300 text-xs font-bold px-4 py-2.5 rounded-xl shadow flex items-center space-x-1.5 transition-colors self-start sm:self-auto"
               >
                 <Plus className="w-4 h-4" />
@@ -809,7 +1083,23 @@ export const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {events.map((evt) => (
                 <div key={evt.id} className="p-4 rounded-2xl border border-slate-200 bg-slate-50 flex gap-4">
-                  <img src={evt.imageUrl} alt={evt.title} className="w-20 h-20 object-cover rounded-xl flex-shrink-0" />
+                  <div
+                    onClick={() => evt.imageUrl && setPreviewImageModalUrl(resolveImageUrl(evt.imageUrl))}
+                    className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 flex-shrink-0 cursor-pointer group/evt relative bg-slate-200"
+                    title="Click to view full event photo"
+                  >
+                    <img
+                      src={resolveImageUrl(evt.imageUrl)}
+                      alt={evt.title}
+                      onError={(e) => {
+                        e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
+                      }}
+                      className="w-full h-full object-cover group-hover/evt:scale-110 transition-transform"
+                    />
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/evt:opacity-100 flex items-center justify-center transition-opacity">
+                      <Eye className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
                   <div className="space-y-1 flex-1">
                     <span className="text-[10px] font-bold uppercase bg-gold-500 text-navy-950 px-2 py-0.5 rounded">
                       {evt.category}
@@ -1134,94 +1424,326 @@ export const AdminDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* New Notice Modal */}
+      {/* New Notice Modal with Photo Attachment */}
       {showNoticeModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <h3 className="font-serif font-bold text-lg text-navy-900">Create Official Notice</h3>
-            <div className="space-y-3">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 border border-slate-100 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <label className="block text-xs font-bold text-navy-900 mb-1">Title</label>
+                <h3 className="font-serif font-bold text-lg text-navy-950 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-gold-600" />
+                  <span>Create Official Notice / Circular</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Publish notices, circulars, and announcements with optional flyer or document photo.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowNoticeModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <label className="block text-xs font-bold text-navy-900 mb-1">
+                  Notice Title <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={noticeForm.title}
                   onChange={(e) => setNoticeForm({ ...noticeForm, title: e.target.value })}
-                  placeholder="Notice title..."
-                  className="w-full px-3 py-2 border rounded-xl text-xs"
+                  placeholder="e.g. Schedule for Half-Yearly Examinations 2026"
+                  className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-navy-900 mb-1">Category</label>
+                  <label className="block text-xs font-bold text-navy-900 mb-1">
+                    Category <span className="text-rose-500">*</span>
+                  </label>
                   <select
                     value={noticeForm.category}
                     onChange={(e) => setNoticeForm({ ...noticeForm, category: e.target.value as any })}
-                    className="w-full px-3 py-2 border rounded-xl text-xs bg-white"
+                    className="w-full px-3 py-2.5 border rounded-xl text-xs bg-white font-medium focus:ring-2 focus:ring-navy-900 focus:outline-none"
                   >
                     <option value="Circular">Circular</option>
                     <option value="Holiday">Holiday</option>
                     <option value="Examination">Examination</option>
                     <option value="Admission">Admission</option>
                     <option value="Event">Event</option>
+                    <option value="General">General</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-navy-900 mb-1">Date</label>
+                  <label className="block text-xs font-bold text-navy-900 mb-1">
+                    Date of Issue <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="date"
                     value={noticeForm.date}
                     onChange={(e) => setNoticeForm({ ...noticeForm, date: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-xl text-xs"
+                    className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                   />
                 </div>
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-navy-900 mb-1">Summary (1 sentence)</label>
+                <label className="block text-xs font-bold text-navy-900 mb-1">
+                  Summary (Brief Highlight) <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={noticeForm.summary}
                   onChange={(e) => setNoticeForm({ ...noticeForm, summary: e.target.value })}
-                  placeholder="Brief summary..."
-                  className="w-full px-3 py-2 border rounded-xl text-xs"
+                  placeholder="Short one-line summary for notice card..."
+                  className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                 />
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-navy-900 mb-1">Full Notice Content</label>
+                <label className="block text-xs font-bold text-navy-900 mb-1">
+                  Full Notice Content <span className="text-rose-500">*</span>
+                </label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   value={noticeForm.content}
                   onChange={(e) => setNoticeForm({ ...noticeForm, content: e.target.value })}
-                  placeholder="Detailed circular text..."
-                  className="w-full px-3 py-2 border rounded-xl text-xs"
+                  placeholder="Detailed circular text, instructions, and dates..."
+                  className="w-full px-3 py-2 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                 />
+              </div>
+
+              {/* Notice Photo / Document Scan Attachment Section */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-bold text-navy-950 flex items-center gap-1.5">
+                    <Image className="w-3.5 h-3.5 text-gold-600" />
+                    <span>Attach Notice Photo / Circular Scan (Optional)</span>
+                  </label>
+                  {noticeForm.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={handleClearNoticeImage}
+                      className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold"
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 mb-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNoticeUploadMode('device');
+                      setNoticeUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      noticeUploadMode === 'device'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <UploadCloud className="w-3 h-3 text-navy-800" />
+                    <span>Device / Phone</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNoticeUploadMode('drive');
+                      setNoticeUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      noticeUploadMode === 'drive'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <HardDrive className="w-3 h-3 text-navy-800" />
+                    <span>Google Drive</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNoticeUploadMode('url');
+                      setNoticeUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      noticeUploadMode === 'url'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <LinkIcon className="w-3 h-3 text-navy-800" />
+                    <span>Web URL</span>
+                  </button>
+                </div>
+
+                {noticeUploadMode === 'device' && (
+                  <div>
+                    <input
+                      ref={noticeFileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleNoticeDeviceUpload(file);
+                      }}
+                      className="hidden"
+                      id="notice-photo-upload"
+                    />
+                    <label
+                      htmlFor="notice-photo-upload"
+                      className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 hover:border-gold-500 rounded-xl bg-slate-50 hover:bg-gold-50/20 cursor-pointer transition-all"
+                    >
+                      {noticeUploading ? (
+                        <div className="flex items-center space-x-2 text-slate-600 py-1">
+                          <RotateCcw className="w-4 h-4 animate-spin text-navy-900" />
+                          <span className="font-semibold text-xs">Optimizing circular photo...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-slate-600">
+                          <UploadCloud className="w-5 h-5 text-gold-600 flex-shrink-0" />
+                          <span className="font-semibold text-xs text-navy-900">
+                            {noticeSelectedFileName || 'Choose circular photo / scan from Phone or PC'}
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                )}
+
+                {noticeUploadMode === 'drive' && (
+                  <div className="space-y-1.5">
+                    <div className="relative">
+                      <HardDrive className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="url"
+                        value={noticeRawInputUrl}
+                        onChange={(e) => handleNoticeDriveUrlInput(e.target.value)}
+                        placeholder="Paste Google Drive share link (Anyone with the link can view)"
+                        className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                      />
+                    </div>
+                    {noticeDriveDetected && (
+                      <p className="text-[10px] text-emerald-700 flex items-center gap-1 font-semibold">
+                        <Check className="w-3 h-3 text-emerald-600" /> Google Drive photo converted to direct viewable format!
+                      </p>
+                    )}
+                    {noticeFolderWarning && (
+                      <p className="text-[10px] text-amber-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-amber-600 flex-shrink-0" /> {noticeFolderWarning}
+                      </p>
+                    )}
+                    {noticeSocialWarning && (
+                      <p className="text-[10px] text-rose-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-rose-600 flex-shrink-0" /> {noticeSocialWarning}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {noticeUploadMode === 'url' && (
+                  <div className="space-y-1.5">
+                    <div className="relative">
+                      <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="url"
+                        value={noticeRawInputUrl}
+                        onChange={(e) => handleNoticeWebUrlInput(e.target.value)}
+                        placeholder="Paste image URL (https://...jpg, png)"
+                        className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                      />
+                    </div>
+                    {noticeSocialWarning && (
+                      <p className="text-[10px] text-rose-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-rose-600 flex-shrink-0" /> {noticeSocialWarning}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {noticeUploadError && (
+                  <p className="text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 flex-shrink-0" /> {noticeUploadError}
+                  </p>
+                )}
+
+                {/* Live Notice Photo Preview */}
+                {noticeForm.imageUrl && (
+                  <div className="mt-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-3">
+                    <img
+                      src={resolveImageUrl(noticeForm.imageUrl)}
+                      alt="Notice Attachment Preview"
+                      className="w-16 h-16 rounded-lg object-cover border border-slate-200 bg-white"
+                      onError={(e) => {
+                        e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
+                      }}
+                    />
+                    <div className="flex-1">
+                      <p className="text-xs font-bold text-navy-900 flex items-center gap-1.5">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Circular Photo Attached</span>
+                      </p>
+                      <p className="text-[10px] text-slate-500">
+                        This image will be shown on the public Notice Board and in the Notice details popup.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 flex items-center justify-between">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={noticeForm.isPinned}
+                    onChange={(e) => setNoticeForm({ ...noticeForm, isPinned: e.target.checked })}
+                    className="rounded text-navy-900 focus:ring-gold-500 w-3.5 h-3.5"
+                  />
+                  <span className="text-xs font-semibold text-slate-700">Pin to top of Notice Board</span>
+                </label>
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
+            <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
               <button
                 onClick={() => setShowNoticeModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => {
-                  if (!noticeForm.title) return;
+                  if (!noticeForm.title.trim()) {
+                    alert('Please enter a notice title.');
+                    return;
+                  }
+                  if (!noticeForm.summary.trim()) {
+                    alert('Please enter a brief summary.');
+                    return;
+                  }
+                  if (!noticeForm.content.trim()) {
+                    alert('Please enter notice content.');
+                    return;
+                  }
                   addNotice({
-                    ...noticeForm,
-                    isPublished: true
+                    title: noticeForm.title.trim(),
+                    category: noticeForm.category,
+                    date: noticeForm.date,
+                    summary: noticeForm.summary.trim(),
+                    content: noticeForm.content.trim(),
+                    isPinned: noticeForm.isPinned,
+                    isPublished: true,
+                    imageUrl: noticeForm.imageUrl ? noticeForm.imageUrl.trim() : undefined
                   });
                   setShowNoticeModal(false);
-                  setNoticeForm({
-                    title: '',
-                    category: 'Circular',
-                    summary: '',
-                    content: '',
-                    date: new Date().toISOString().split('T')[0],
-                    isPinned: false
-                  });
                 }}
-                className="bg-navy-900 text-gold-300 px-4 py-2 text-xs font-bold rounded-lg"
+                className="bg-navy-900 hover:bg-navy-800 text-gold-300 px-5 py-2.5 text-xs font-bold rounded-xl shadow transition-colors"
               >
                 Publish Notice
               </button>
@@ -1230,38 +1752,62 @@ export const AdminDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* New Event Modal */}
+      {/* New Event Modal with Photo Upload */}
       {showEventModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <h3 className="font-serif font-bold text-lg text-navy-900">Create New School Event</h3>
-            <div className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 border border-slate-100 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Event Title</label>
+                <h3 className="font-serif font-bold text-lg text-navy-950 flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-gold-600" />
+                  <span>Create New School Event</span>
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Schedule upcoming functions, sports days, and exhibitions with official event banners.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowEventModal(false)}
+                className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <label className="block font-bold text-navy-900 mb-1">
+                  Event Title <span className="text-rose-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={eventForm.title}
                   onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
-                  placeholder="Event title..."
-                  className="w-full px-3 py-2 border rounded-xl"
+                  placeholder="e.g. Annual Sports & Athletic Meet 2026"
+                  className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                 />
               </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-navy-900 mb-1">Date</label>
+                  <label className="block font-bold text-navy-900 mb-1">
+                    Event Date <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="date"
                     value={eventForm.date}
                     onChange={(e) => setEventForm({ ...eventForm, date: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-xl"
+                    className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-navy-900 mb-1">Category</label>
+                  <label className="block font-bold text-navy-900 mb-1">
+                    Category <span className="text-rose-500">*</span>
+                  </label>
                   <select
                     value={eventForm.category}
                     onChange={(e) => setEventForm({ ...eventForm, category: e.target.value as any })}
-                    className="w-full px-3 py-2 border rounded-xl bg-white"
+                    className="w-full px-3 py-2.5 border rounded-xl bg-white text-xs font-medium focus:ring-2 focus:ring-navy-900 focus:outline-none"
                   >
                     <option value="Sports">Sports</option>
                     <option value="Cultural">Cultural</option>
@@ -1271,41 +1817,252 @@ export const AdminDashboard: React.FC = () => {
                   </select>
                 </div>
               </div>
-              <div>
-                <label className="block font-bold text-navy-900 mb-1">Time & Venue</label>
-                <input
-                  type="text"
-                  value={eventForm.venue}
-                  onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })}
-                  placeholder="e.g. School Sports Ground"
-                  className="w-full px-3 py-2 border rounded-xl"
-                />
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-navy-900 mb-1">Event Timing</label>
+                  <input
+                    type="text"
+                    value={eventForm.time}
+                    onChange={(e) => setEventForm({ ...eventForm, time: e.target.value })}
+                    placeholder="e.g. 09:00 AM – 01:30 PM"
+                    className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-navy-900 mb-1">Venue Location</label>
+                  <input
+                    type="text"
+                    value={eventForm.venue}
+                    onChange={(e) => setEventForm({ ...eventForm, venue: e.target.value })}
+                    placeholder="e.g. School Sports Ground"
+                    className="w-full px-3 py-2.5 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                  />
+                </div>
               </div>
+
               <div>
-                <label className="block font-bold text-navy-900 mb-1">Short Description</label>
+                <label className="block font-bold text-navy-900 mb-1">
+                  Event Description <span className="text-rose-500">*</span>
+                </label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={eventForm.description}
                   onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-xl"
+                  placeholder="Describe the activities, competitions, or details of the event..."
+                  className="w-full px-3 py-2 border rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
                 />
+              </div>
+
+              {/* Event Banner Photo Upload Section */}
+              <div className="pt-2 border-t border-slate-100">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-bold text-navy-950 flex items-center gap-1.5">
+                    <Image className="w-3.5 h-3.5 text-gold-600" />
+                    <span>Upload Event Banner Photo</span>
+                  </label>
+                  {eventForm.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={handleClearEventImage}
+                      className="text-[11px] text-slate-500 hover:text-navy-900 font-semibold"
+                    >
+                      Reset Photo
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 mb-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEventUploadMode('device');
+                      setEventUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      eventUploadMode === 'device'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <UploadCloud className="w-3 h-3 text-navy-800" />
+                    <span>Device / Phone</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEventUploadMode('drive');
+                      setEventUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      eventUploadMode === 'drive'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <HardDrive className="w-3 h-3 text-navy-800" />
+                    <span>Google Drive</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEventUploadMode('url');
+                      setEventUploadError(null);
+                    }}
+                    className={`py-1.5 px-2 rounded-lg font-semibold text-[11px] flex items-center justify-center gap-1 transition-all ${
+                      eventUploadMode === 'url'
+                        ? 'bg-white text-navy-950 shadow-sm border border-slate-200 font-bold'
+                        : 'text-slate-600 hover:text-navy-950'
+                    }`}
+                  >
+                    <LinkIcon className="w-3 h-3 text-navy-800" />
+                    <span>Web URL</span>
+                  </button>
+                </div>
+
+                {eventUploadMode === 'device' && (
+                  <div>
+                    <input
+                      ref={eventFileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleEventDeviceUpload(file);
+                      }}
+                      className="hidden"
+                      id="event-photo-upload"
+                    />
+                    <label
+                      htmlFor="event-photo-upload"
+                      className="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 hover:border-gold-500 rounded-xl bg-slate-50 hover:bg-gold-50/20 cursor-pointer transition-all"
+                    >
+                      {eventUploading ? (
+                        <div className="flex items-center space-x-2 text-slate-600 py-1">
+                          <RotateCcw className="w-4 h-4 animate-spin text-navy-900" />
+                          <span className="font-semibold text-xs">Optimizing event photo...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-2 text-slate-600">
+                          <UploadCloud className="w-5 h-5 text-gold-600 flex-shrink-0" />
+                          <span className="font-semibold text-xs text-navy-900">
+                            {eventSelectedFileName || 'Choose event photo from Phone or PC'}
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                )}
+
+                {eventUploadMode === 'drive' && (
+                  <div className="space-y-1.5">
+                    <div className="relative">
+                      <HardDrive className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="url"
+                        value={eventRawInputUrl}
+                        onChange={(e) => handleEventDriveUrlInput(e.target.value)}
+                        placeholder="Paste Google Drive share link (Anyone with link can view)"
+                        className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                      />
+                    </div>
+                    {eventDriveDetected && (
+                      <p className="text-[10px] text-emerald-700 flex items-center gap-1 font-semibold">
+                        <Check className="w-3 h-3 text-emerald-600" /> Google Drive photo converted to direct viewable format!
+                      </p>
+                    )}
+                    {eventFolderWarning && (
+                      <p className="text-[10px] text-amber-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-amber-600 flex-shrink-0" /> {eventFolderWarning}
+                      </p>
+                    )}
+                    {eventSocialWarning && (
+                      <p className="text-[10px] text-rose-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-rose-600 flex-shrink-0" /> {eventSocialWarning}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {eventUploadMode === 'url' && (
+                  <div className="space-y-1.5">
+                    <div className="relative">
+                      <LinkIcon className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="url"
+                        value={eventRawInputUrl}
+                        onChange={(e) => handleEventWebUrlInput(e.target.value)}
+                        placeholder="Paste image URL (https://...jpg, png)"
+                        className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-navy-900 focus:outline-none"
+                      />
+                    </div>
+                    {eventSocialWarning && (
+                      <p className="text-[10px] text-rose-700 flex items-center gap-1 font-semibold">
+                        <AlertCircle className="w-3 h-3 text-rose-600 flex-shrink-0" /> {eventSocialWarning}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {eventUploadError && (
+                  <p className="text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 flex-shrink-0" /> {eventUploadError}
+                  </p>
+                )}
+
+                {/* Event Photo Preview */}
+                {eventForm.imageUrl && (
+                  <div className="mt-2.5 relative h-28 w-full rounded-xl overflow-hidden border border-slate-200">
+                    <img
+                      src={resolveImageUrl(eventForm.imageUrl)}
+                      alt="Event Banner Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-2.5">
+                      <div className="text-white">
+                        <span className="text-[9px] uppercase font-bold bg-gold-500 text-navy-950 px-1.5 py-0.5 rounded">
+                          {eventForm.category}
+                        </span>
+                        <p className="text-xs font-bold truncate">{eventForm.title || 'Event Preview'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
+            <div className="flex justify-end space-x-2 pt-3 border-t border-slate-100">
               <button
                 onClick={() => setShowEventModal(false)}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => {
-                  if (!eventForm.title) return;
-                  addEvent(eventForm);
+                  if (!eventForm.title.trim()) {
+                    alert('Please enter an event title.');
+                    return;
+                  }
+                  if (!eventForm.description.trim()) {
+                    alert('Please enter an event description.');
+                    return;
+                  }
+                  addEvent({
+                    title: eventForm.title.trim(),
+                    category: eventForm.category,
+                    date: eventForm.date,
+                    time: eventForm.time.trim(),
+                    venue: eventForm.venue.trim(),
+                    description: eventForm.description.trim(),
+                    imageUrl: eventForm.imageUrl ? eventForm.imageUrl.trim() : 'https://images.unsplash.com/photo-1576678927484-cc907957088c?auto=format&fit=crop&w=800&q=80'
+                  });
                   setShowEventModal(false);
                 }}
-                className="bg-navy-900 text-gold-300 px-4 py-2 text-xs font-bold rounded-lg"
+                className="bg-navy-900 hover:bg-navy-800 text-gold-300 px-5 py-2.5 text-xs font-bold rounded-xl shadow transition-colors"
               >
                 Add Event
               </button>
@@ -1915,6 +2672,31 @@ export const AdminDashboard: React.FC = () => {
                 Close
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Global Image Lightbox Preview */}
+      {previewImageModalUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setPreviewImageModalUrl(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl p-2 border border-slate-800"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setPreviewImageModalUrl(null)}
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white flex items-center justify-center hover:bg-black transition-colors shadow-lg"
+              title="Close image preview"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <img
+              src={previewImageModalUrl}
+              alt="Notice / Event Attachment"
+              className="max-h-[82vh] w-auto max-w-full rounded-2xl object-contain mx-auto"
+            />
           </div>
         </div>
       )}

@@ -17,7 +17,7 @@ export const getNotices = async (req, res, next) => {
 
 export const createNotice = async (req, res, next) => {
   try {
-    const { title, category, summary, content, isPinned, isPublished, fileDownloadName } = req.body;
+    const { title, category, summary, content, isPinned, isPublished, fileDownloadName, imageUrl } = req.body;
 
     if (!title || !category || !summary || !content) {
       return res.status(400).json({
@@ -35,7 +35,8 @@ export const createNotice = async (req, res, next) => {
       content: content.trim(),
       isPinned: Boolean(isPinned),
       isPublished: isPublished !== undefined ? Boolean(isPublished) : true,
-      fileDownloadName: fileDownloadName || undefined
+      fileDownloadName: fileDownloadName || undefined,
+      imageUrl: imageUrl || undefined
     };
 
     const saved = db.addNotice(newNotice);

@@ -10,6 +10,7 @@ export interface Notice {
   isPinned?: boolean;
   isPublished: boolean;
   fileDownloadName?: string;
+  imageUrl?: string;
 }
 
 export type EventCategory = 'Sports' | 'Cultural' | 'Academic' | 'Celebration' | 'Meeting';

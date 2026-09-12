@@ -161,8 +161,65 @@ async function runTests() {
     }
     console.log(`   ✓ Faculty deleted successfully!`);
 
+    // 9. Testing Notice and Event Photo Attachments
+    console.log('9. Testing Notice and Event Photo Attachments...');
+    const createNoticeWithPhotoRes = await fetch(`${baseUrl}/api/notices`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${verify2faJson.token}`
+      },
+      body: JSON.stringify({
+        title: 'Special Circular with Photo Attachment',
+        category: 'Circular',
+        summary: 'Testing circular with attached official flyer photo.',
+        content: 'This is a test circular containing an attached image URL.',
+        imageUrl: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=800&q=80'
+      })
+    });
+    const createNoticeJson = await createNoticeWithPhotoRes.json();
+    if (createNoticeWithPhotoRes.status !== 201 || !createNoticeJson.notice?.imageUrl) {
+      throw new Error(`Notice with photo creation failed: ${JSON.stringify(createNoticeJson)}`);
+    }
+    console.log('   ✓ Notice created with photo attachment successfully:', createNoticeJson.notice.id);
+
+    // Clean up test notice
+    await fetch(`${baseUrl}/api/notices/${createNoticeJson.notice.id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${verify2faJson.token}` }
+    });
+
+    // Create event with photo
+    const createEventWithPhotoRes = await fetch(`${baseUrl}/api/events`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${verify2faJson.token}`
+      },
+      body: JSON.stringify({
+        title: 'Science Fair 2026',
+        date: '2026-11-20',
+        time: '10:00 AM',
+        venue: 'Campus Lab',
+        category: 'Academic',
+        description: 'Exhibition of student science projects.',
+        imageUrl: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80'
+      })
+    });
+    const createEventJson = await createEventWithPhotoRes.json();
+    if (createEventWithPhotoRes.status !== 201 || !createEventJson.event?.imageUrl) {
+      throw new Error(`Event with photo creation failed: ${JSON.stringify(createEventJson)}`);
+    }
+    console.log('   ✓ Event created with photo attachment successfully:', createEventJson.event.id);
+
+    // Clean up test event
+    await fetch(`${baseUrl}/api/events/${createEventJson.event.id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${verify2faJson.token}` }
+    });
+
     console.log('\n===========================================');
-    console.log('ALL 8 BACKEND INTEGRATION TESTS PASSED! 🎉');
+    console.log('ALL 9 BACKEND INTEGRATION TESTS PASSED! 🎉');
     console.log('===========================================');
     process.exit(0);
   } finally {

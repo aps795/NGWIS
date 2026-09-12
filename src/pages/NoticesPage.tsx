@@ -7,9 +7,11 @@ import {
   Eye,
   Pin,
   FileText,
-  Filter
+  Filter,
+  Image
 } from 'lucide-react';
 import type { NoticeCategory } from '../types/school';
+import { resolveImageUrl } from '../utils/imageHelpers';
 
 export const NoticesPage: React.FC = () => {
   const { notices, setActiveNoticeModal } = useSchoolData();
@@ -104,13 +106,26 @@ export const NoticesPage: React.FC = () => {
               className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-academic hover:border-gold-400 transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6 group"
             >
               <div className="flex items-start space-x-4 flex-1">
-                <div className="w-12 h-12 rounded-xl bg-navy-50 border border-navy-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gold-50 group-hover:border-gold-300 transition-colors">
-                  {notice.isPinned ? (
-                    <Pin className="w-6 h-6 text-gold-600 rotate-45" />
-                  ) : (
-                    <FileText className="w-6 h-6 text-academic-700 group-hover:text-gold-600 transition-colors" />
-                  )}
-                </div>
+                {notice.imageUrl ? (
+                  <div className="w-14 h-14 rounded-xl overflow-hidden border border-slate-200 shadow-sm flex-shrink-0 bg-slate-100 group-hover:border-gold-400 transition-colors">
+                    <img
+                      src={resolveImageUrl(notice.imageUrl)}
+                      alt={notice.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      onError={(e) => {
+                        e.currentTarget.src = resolveImageUrl('/campus-building.jpg');
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-navy-50 border border-navy-100 flex items-center justify-center flex-shrink-0 group-hover:bg-gold-50 group-hover:border-gold-300 transition-colors">
+                    {notice.isPinned ? (
+                      <Pin className="w-6 h-6 text-gold-600 rotate-45" />
+                    ) : (
+                      <FileText className="w-6 h-6 text-academic-700 group-hover:text-gold-600 transition-colors" />
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-1.5 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -120,6 +135,12 @@ export const NoticesPage: React.FC = () => {
                     {notice.isPinned && (
                       <span className="text-[10px] font-bold uppercase tracking-wider bg-gold-500 text-navy-950 px-2 py-0.5 rounded shadow-sm">
                         Pinned Circular
+                      </span>
+                    )}
+                    {notice.imageUrl && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 px-2.5 py-0.5 rounded shadow-sm">
+                        <Image className="w-3 h-3 text-amber-700" />
+                        <span>Photo Attached</span>
                       </span>
                     )}
                     <span className="text-xs text-slate-500 flex items-center gap-1">
