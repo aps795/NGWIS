@@ -151,23 +151,15 @@ const getInitialView = (): PageView => {
       return session ? 'admin-dashboard' : 'admin-login';
     }
 
-    const validPublicViews: PageView[] = [
-      'about',
-      'academics',
-      'faculty',
-      'facilities',
-      'activities',
-      'gallery',
-      'admissions',
-      'notices',
-      'contact'
-    ];
-
-    const pathView = rawPath.replace(/^\//, '') as PageView;
-    const hashView = rawHash.replace(/^\//, '') as PageView;
-
-    if (validPublicViews.includes(pathView)) return pathView;
-    if (validPublicViews.includes(hashView)) return hashView;
+    // For the Public Portal: Whenever refreshed or loaded from scratch, by default open 'home'
+    try {
+      if (rawHash && !rawHash.includes('admin')) {
+        window.location.hash = '';
+      }
+      if (rawPath !== '/' && !rawPath.includes('admin')) {
+        window.history.replaceState(null, '', '/' + (window.location.search || ''));
+      }
+    } catch {}
 
     return 'home';
   } catch {
@@ -316,7 +308,28 @@ export const SchoolDataProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
     };
 
-    handleRoute();
+    // Check if initial load is an admin route
+    const initialRawPath = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+    const initialRawHash = window.location.hash.toLowerCase().replace(/^#\/?/, '');
+    const isInitialAdmin =
+      initialRawPath.includes('admin') ||
+      initialRawHash.includes('admin');
+
+    if (isInitialAdmin) {
+      handleRoute();
+    } else {
+      // Public Portal refreshed or loaded: by default open home page
+      setCurrentViewRaw('home');
+      try {
+        if (window.location.hash && !window.location.hash.toLowerCase().includes('admin')) {
+          window.location.hash = '';
+        }
+        if (initialRawPath !== '/' && !initialRawPath.includes('admin')) {
+          window.history.replaceState(null, '', '/' + (window.location.search || ''));
+        }
+      } catch {}
+    }
+
     window.addEventListener('hashchange', handleRoute);
     window.addEventListener('popstate', handleRoute);
     return () => {

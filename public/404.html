@@ -12,7 +12,8 @@
           : pathSegments.join('/');
         
         var search = window.location.search || '';
-        var hash = target ? '#' + target : '';
+        var isAdmin = target.toLowerCase().indexOf('admin') !== -1;
+        var hash = (isAdmin && target) ? '#' + target : '';
         var basePath = (pathSegments.length > 0 && pathSegments[0] === repoName) ? '/' + repoName + '/' : '/';
         window.location.replace(basePath + (hash ? hash : '') + search);
       })();
