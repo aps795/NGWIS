@@ -13,7 +13,7 @@ export interface FacultyMember {
   name: string;
   designation: string;
   departmentOrSubject: string;
-  isSeniorLeadership: boolean; // Bold in official school records (1, 2, 3, 4, 5, 6, 7, 8, 11, 22)
+  isSeniorLeadership: boolean; // Top 10 senior leadership in official school records (S.No. 1 to 10)
   roleCategory: 'leadership' | 'hod' | 'coordinator' | 'teacher' | 'parent_teacher';
   photoUrl?: string;
 }
@@ -93,22 +93,6 @@ export const facultyList: FacultyMember[] = [
   },
   {
     id: 9,
-    name: 'Mr. Sunil Kumar',
-    designation: 'Associate Teacher – Math',
-    departmentOrSubject: 'Mathematics & Arithmetic Reasoning',
-    isSeniorLeadership: false,
-    roleCategory: 'teacher'
-  },
-  {
-    id: 10,
-    name: 'Khushbu Vishwakarma',
-    designation: 'Parent Teacher',
-    departmentOrSubject: 'Parent-Teacher Collaboration & Student Support',
-    isSeniorLeadership: false,
-    roleCategory: 'parent_teacher'
-  },
-  {
-    id: 11,
     name: 'Mr. Manoj Kumar',
     designation: 'Associate Teacher – Science',
     departmentOrSubject: 'General & Applied Sciences',
@@ -117,7 +101,32 @@ export const facultyList: FacultyMember[] = [
     photoUrl: manojImg
   },
   {
+    id: 10,
+    name: 'Mr. Pankaj Dubey',
+    designation: 'Associate Teacher – Hindi',
+    departmentOrSubject: 'Hindi Language & Vyakaran',
+    isSeniorLeadership: true,
+    roleCategory: 'teacher',
+    photoUrl: pankajImg
+  },
+  {
+    id: 11,
+    name: 'Mr. Sunil Kumar',
+    designation: 'Associate Teacher – Math',
+    departmentOrSubject: 'Mathematics & Arithmetic Reasoning',
+    isSeniorLeadership: false,
+    roleCategory: 'teacher'
+  },
+  {
     id: 12,
+    name: 'Khushbu Vishwakarma',
+    designation: 'Parent Teacher',
+    departmentOrSubject: 'Parent-Teacher Collaboration & Student Support',
+    isSeniorLeadership: false,
+    roleCategory: 'parent_teacher'
+  },
+  {
+    id: 13,
     name: 'Mr. Chandan Prajapati',
     designation: 'Assistant Teacher – Science',
     departmentOrSubject: 'General Science & Lab Experiments',
@@ -125,7 +134,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 13,
+    id: 14,
     name: 'Miss Sandhya Roy',
     designation: 'Assistant Teacher – English',
     departmentOrSubject: 'English Grammar & Literature',
@@ -133,7 +142,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 14,
+    id: 15,
     name: 'Mr. Rajan Kumar',
     designation: 'Assistant Teacher – Hindi',
     departmentOrSubject: 'Hindi Language & Composition',
@@ -141,7 +150,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 15,
+    id: 16,
     name: 'Mr. Shashank Tiwari',
     designation: 'Assistant Teacher – Math',
     departmentOrSubject: 'Mathematics & Mental Math',
@@ -149,7 +158,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 16,
+    id: 17,
     name: 'Mr. Shashikant Prajapati',
     designation: 'Assistant Teacher – SST',
     departmentOrSubject: 'Social Studies & Geography',
@@ -157,7 +166,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 17,
+    id: 18,
     name: 'Ms. Purnima Singh',
     designation: 'Assistant Teacher – Art',
     departmentOrSubject: 'Fine Arts, Drawing & Creative Expression',
@@ -165,7 +174,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 18,
+    id: 19,
     name: 'Mr. Kishan Singh',
     designation: 'Assistant Teacher – English',
     departmentOrSubject: 'English Language & Communication Skills',
@@ -173,7 +182,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 19,
+    id: 20,
     name: 'Mrs. Amrita Singh',
     designation: 'Assistant Teacher – English',
     departmentOrSubject: 'English Phonics & Primary Grammar',
@@ -181,7 +190,7 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 20,
+    id: 21,
     name: 'Mr. Satyam Singh',
     designation: 'Assistant Teacher – SST',
     departmentOrSubject: 'Social Studies, History & Civics',
@@ -189,21 +198,12 @@ export const facultyList: FacultyMember[] = [
     roleCategory: 'teacher'
   },
   {
-    id: 21,
+    id: 22,
     name: 'Mr. JN Tiwari',
     designation: 'Assistant Teacher – Hindi',
     departmentOrSubject: 'Hindi Language & Moral Education',
     isSeniorLeadership: false,
     roleCategory: 'teacher'
-  },
-  {
-    id: 22,
-    name: 'Mr. Pankaj Dubey',
-    designation: 'Associate Teacher – Hindi',
-    departmentOrSubject: 'Hindi Language & Vyakaran',
-    isSeniorLeadership: true,
-    roleCategory: 'teacher',
-    photoUrl: pankajImg
   },
   {
     id: 23,

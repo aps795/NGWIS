@@ -103,7 +103,7 @@ export const FacultySection: React.FC = () => {
                   Senior Faculty & Institutional Leadership
                 </h3>
                 <p className="text-xs text-slate-600">
-                  Key Management, Heads of Department & Senior Educators (Records #1–#8, #11, #22)
+                  Key Management, Heads of Department & Senior Educators (Records #1–#10)
                 </p>
               </div>
             </div>

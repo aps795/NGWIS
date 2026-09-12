@@ -132,7 +132,7 @@ export const FacultyPage: React.FC = () => {
                   Senior Faculty & Institutional Leadership
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Distinguished administrators, coordinators, and senior subject teachers (Records #1–#8, #11, #22)
+                  Distinguished administrators, coordinators, and senior subject teachers (Records #1–#10)
                 </p>
               </div>
             </div>
